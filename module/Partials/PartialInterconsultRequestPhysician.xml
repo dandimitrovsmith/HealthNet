@@ -1,0 +1,318 @@
+﻿ <partial>
+ <!-- Tobmodal to enter/edit a consult request -->
+  <section type="tabmodal" badge="none" title="Interconsult Request"	 name="NewConsultModal">
+    <group showif="never">
+      <row name="rowInterConsultPatientId">
+        <!-- Store the PatientId,read and inject the patient info -->
+        <control type="hidden" name="InterConsult_PatientId"
+          datarequest="GetPatientAllFields"
+          appendrequest="PatientId=[InterConsult_PatientId]"
+          inject="ICTPatientInfo"/>
+        <!-- Store the PatientConsultGuid,read and inject the info -->
+        <control type="hidden" 
+          name="PatientConsultGuid"
+          acctsvcreq="true"
+          datarequest="GetConsultRequestsByConsultRequestGuid"
+          appendrequest="consultRequestGuid=[PatientConsultGuid]"
+          inject="grpConsultInfo"/>
+        <control type="button" name="btnResetApproverInfo"
+          action="trigger" reset="AdminApprovedBy,AdminApprovedDateTime,AdminApprovedByName"/>
+      </row>
+      <row name="rowApplicationId1">
+        <!-- Read the user profile and inject the user's RUT (ApplicationId) -->
+        <control type="hidden" name="GetUserId"
+          datarequest="GetUserProfileFromUserId2"
+          appendrequest="UserIdToGet=[ConsultRequestAssignedToId]"
+          inject="rowApplicationId1" provoke="btnApplicationId1"/>
+        <control type="hidden" name="Info_ApplicationId"/>
+        <control type="button" name="btnApplicationId1"
+          action="trigger" set="RequestAssignedToSSN=[Info_ApplicationId]"/>
+      </row>
+    </group>
+    <group name="grpSelectPatient" reveal="InterConsult_PatientId=">
+      <row>
+          <control type="label" label=""	 span="2"/>
+          <control type="button" name="btnSearchPatientNames"
+            label="Search for Patient"	 span="4" icon="search" color="grey"
+            preset="PatientSearchSource=3"
+            action="redirect" target="mdlFindPatients"/>
+        </row>
+        <row showif="never">
+          <control type="hidden" name="SetConsultAdminPatientId"
+            datarequest="GetPatientAllFields"
+            appendrequest="PatientId=[PatientSearchResults]"
+            inject="rowInterConsultPatientId"
+            provoke="InterConsult_PatientId"/>
+      </row>
+    </group>
+    <group name="ICTPatientInfo">
+        <row>
+            <control type="label" label=""	 span="1"/>
+            <control type="label" label="Name"	 align="left" span="3"/>
+            <control type="label" label="Parent"	 align="left" span="3"/>
+            <control type="label" label="Maternal"	 align="left" span="3"/>
+          </row>
+          <row>
+            <control type="label" label=""	 span="1"/>
+            <control type="text" name="InterConsult_PatientFirstName" span="3" readonly="true" />
+            <control type="text" name="InterConsult_PatientMiddleName" span="3" readonly="true" />
+            <control type="text" name="InterConsult_PatientLastName" readonly="true" span="3"/>
+          </row>
+          <row>
+            <control type="label" label="Birth"	 span="2" />
+            <control type="date" name="InterConsult_PatientDOB" readonly="true" span="2" compare="≤now"/>
+            <control type="text" name="InterConsult_PatientAge" readonly="true" span="2"/>
+            <control type="label" label="Sex"	 span="1" />
+            <control type="select" 
+              name="InterConsult_PatientSex" span="3" 
+              readonly="true"  
+              source="Male,Female,Indeterminate"  
+              sourcelabels="1 Male,2 Female,3 Undefined,4 Unknown"	/>
+          </row>
+          <row>
+             <control type="label" label="Account"		 span="2" />
+            <control type="text" name="InterConsult_AccountNumber" span="2" readonly="true" />
+            <control type="text" name="InterConsult_MedicalRecordNumber" span="2" readonly="true"/>
+            <control type="label" label="Marital Status"	 span="2" />
+            <control type="select" name="InterConsult_PtMaritalStatus" span="2"
+              datasource="GetLookupMaritalStatus"
+              source="MaritalStatus,MaritalStatus"
+              readonly="true" />
+           </row>          
+      </group>
+      <!-- Consult request group -->
+      <group name="grpConsultInfo">
+        <!-- AdminApproval and reason for denial -->
+        <row name="rowAdminApproval" reveal="[ListMode]=admin">
+          <control type="label" label="Administrative Approval"	 span="3"/>
+          <control type="buttongroup" name="AdminApproval"
+            span="3" source="Approved,Denied" sourcelabels="Relevant,Not Relevant"	 edit="true" provoke="btnResetAdminApprover"/>
+          <control type="button" name="btnClearAdminApproval" 
+            icon="remove" label="" action="trigger" span="1" reset="rowAdminApproval,rowAdminReason"/>
+          <control type="text" name="AdminApprovedByName" span="3" default="(fullname)"
+            readonly="true"/>
+          <control type="datetime" name="AdminApprovedDateTime" span="2" default="(now)"
+            readonly="true"/>
+          <control type="hidden" name="AdminApprovedBy" default="(userName)"/>
+        </row>
+        <row name="rowAdminReason" reveal="[ListMode]=admin">
+          <control type="label" name="lblAdminReason" label="Reason for Denial"	 span="3" reveal="[AdminApproval]=Denied"/>
+          <control type="text" name="AdminReason" rows="1" edit="true" span="9" required="true" reveal="[AdminApproval]=Denied"/>
+        </row>
+        <!-- Physician Approval and reason for denial -->
+        <row name="rowDocApproval" reveal="[ListMode]=physician">
+          <control type="label" label="Physician Approved"	 span="3"/>
+          <control type="buttongroup" name="PhysicianApproval"
+            span="3" source="Approved,Denied" sourcelabels="Relevant,Not Relevant"	 edit="true" provoke="btnResetDocApprover"/>
+          <control type="button" name="btnClearDoctorApproval" 
+            icon="remove" label="" action="trigger" span="1" reset="rowDocApproval,rowDocReason"/>
+          <control type="text" name="PhysicianApprovedByName" span="3" default="(fullname)"
+            readonly="true"/>
+          <control type="datetime" name="PhysicianApprovedDateTime" span="2" default="(now)"
+            readonly="true"/>
+          <control type="hidden" name="PhysicianApprovedBy" default="(userName)"/>
+        </row>
+        <row name="rowPhysicianReason" reveal="[ListMode]=physician">
+          <control type="label" name="lblPhysicianReason" label="Reason for Denial"	 span="3" reveal="[PhysicianApproval]=Denied"/>
+          <control type="text" name="PhysicianReason" rows="1" edit="true" span="9" required="true" reveal="[PhysicianApproval]=Denied"/>
+        </row>
+        <row>
+          <control type="label" span="3" label="Origin by"	/>
+          <control type="text" name="EnteredByFullName" span="3" readonly="true"/>
+          <control type="datetime" span="3"
+            name="DateTimeEntered" readonly="true" default="now"/>
+          <control type="label" span="1" label="Status"	/>
+          <control type="select" span="2"
+            name="ConsultRequestStatus"  
+            source="Active,Completed,Canceled"
+            sourcelabels="Active,Completed,Canceled"	
+            default="Active" edit="true"
+            required="true"/>
+        </row>
+        <!-- File number (record number of Consult Request),Date and Priority -->
+        <row>
+          <control type="label" span="3" label="Request Date"	/>
+          <control type="datetime" span="3"
+            name="ConsultRequestDateTime" edit="true" required="true" default="now"/>
+          <control type="label" span="1" label="Priority"	/>
+          <control type="select" span="2"
+            name="ConsultRequestPriority"  
+            source="Emergency,Medium,Normal"
+            sourcelabels="Emergency,Medium,Normal"	
+            default="Normal" edit="true"
+            required="true"/>
+          <control type="label" span="1" label="File"		/>
+          <control type="text" span="2"
+            name="ConsultNumber" readonly="true"/>
+        </row>
+        <!-- Consult request types (SIC,OA,and DAU) and ConsultFileReport (required) -->
+        <row>
+          <control type="label" span="3" label="Interconsult Types"	/>
+          <control type="buttongroup" span="3"
+            name="ConsultRequestType"  
+            source="SIC,OA,DAU"
+            edit="true"
+            required="true"/>
+          <control type="label" label="Suspected Health Problem (GES)"	 span="4"/>
+          <control type="buttongroup" span="2" name="ConsultFileReport"
+            tooltip="Suspected GES Health Problem"	
+            source="True,False" sourcelabels="Yes,No"	 edit="true" default="False"/>
+        </row>
+        <!-- From Hospital (Origen) (required)-->
+        <row>
+          <control type="label" label="Origin Hospital"	 span="3"/>
+          <control type="select" 
+            span="3"
+            acctsvc="true" 
+            namefield="RequestingHospitalName"
+            name="RequestingHospital"  
+            default="(facilityData.HospitalName)"
+            datasource="GetTransferHospitalsActive" 
+            source="HospitalName,HospitalGuid" 
+            edit="true" required="true"/>
+          <!-- To Hospital (Destino) (required)-->
+          <control type="label" label="Destination Hospital"	 span="3"/>
+          <control type="select" 
+            span="3"
+            acctsvc="true" 
+            name="RequestToHospital" 
+            namefield="RequestToHospitalName" 
+            default="(facilityData.HospitalName)"
+            datasource="GetTransferHospitalsActive" 
+            source="HospitalName,HospitalGuid" 
+            edit="true" required="true"/>
+        </row> 
+        <row>
+          <!-- Specialty (this triggers the Subspecialty) (required)-->
+          <!-- Note: Specialties and Subspecialties live in the same table -->
+          <!-- Specialties have no ParentSpecialty -->
+          <control type="label" span="3" label="Specialty"	/>
+          <control type="select" span="3"
+            name="ConsultRequestSpecialtyRequested"
+            explicit="true"
+            edit="true" 
+            filter="ParentSpecialty=null"
+            acctsvc="true"
+            required="true"
+            datasource="GetMedicalSpecialties" 
+            source="Specialty,MedicalSpecialtyGuid"
+            provoke="ConsultSubSpecialty"/>
+          <!-- Subspecialty (has parent of Specialty) (optional)-->
+          <control type="label" span="3" label="Subspecialty"	/>
+          <control type="select" span="3"
+            name="ConsultSubSpecialty"
+            explicit="true"
+            edit="true" 
+            acctsvc="true"
+            filter="ParentSpecialty=[ConsultRequestSpecialtyRequested]"
+            datasource="GetMedicalSpecialties" 
+            source="Specialty,MedicalSpecialtyGuid"/>
+        </row>
+        <row>
+          <control type="label" label="Bed Request"	 span="4"/>
+          <control type="text" name="ConsultBedRequirement" span="6" edit="true"/>
+        </row>
+        <!-- Consult reason (required)-->
+        <row>
+          <control type="label" label="Request for"	 span="4"/>
+          <control type="textarea" name="ConsultReason" rows="1" span="8" edit="true" required="true"/>
+        </row>
+        <!-- Consult  diagnosis (optional)-->
+        <row>
+          <control type="label" label="Diagnostic Hypothesis or Diagnosis"	 span="4"/>
+          <control type="typeahead" name="ConsultRequestDiagnosis" span="8" edit="true" 
+            datasource="GetICD10CodesSearchByTerm"
+            term="term"
+            source="ICD10CodeDescription,ICD10Code"/>
+        </row>
+        <!-- Consult diagnosis explaination (optional)-->
+        <row>
+          <control type="label" label="Diagnosis Based on"	 span="4"/>
+          <control type="textarea" span="8" rows="1"
+            name="ConsultRequestSymptoms" edit="true"/>
+        </row>
+        <!-- Completed examinations (optional)-->
+        <row>
+          <control type="label" label="Exams Completed"	 span="4"/>
+          <control type="textarea" span="8" rows="1"
+            name="ExamGuidList" edit="true"/>
+        </row>
+        <!-- Observations (notes) (optional)-->
+        <row>
+          <control type="label" label="Discharge Observations"	 span="4"/>
+          <control type="textarea" name="ConsultNote" rows="1" span="8" edit="true"/>
+        </row>
+        <row>
+          <control type="label" label="Reference Data (Origin)"	 align="left"/>
+        </row>
+        <!-- Originating specialty (required)-->
+        <row name="rowAssignedPhysician">
+          <control type="label" span="2" label="Specialty"	/>
+          <control type="select" span="3"
+            name="ConsultRequestingSpecialty"
+            explicit="true"
+            searchable="true"
+            edit="true" 
+            acctsvc="true"
+            required="true"
+            datasource="GetMedicalSpecialties" 
+            source="Specialty,MedicalSpecialtyGuid"/>
+          <!-- Originating physician (required)-->
+          <control type="label" span="1" label="Professional"	/>
+          <control type="select" name="ConsultRequestAssignedToId"
+            namefield="ConsultRequestAssignedToName"
+            acctsvc="true" datasource="GetUsersByAttributes" append="LocationId=(facilityData.LocationId),role=Physician|MedWave" 
+            source="UserFirstMiddleLast,UserId"
+            searchable="true" 
+            edit="true" span="3"
+            provoke="GetUserId"
+            required="true"/>
+          <!-- Originating physician RUT (ApplicationId from user profile) (required) -->
+          <control type="label" label="Account"		 span="1"/>
+          <control type="text" name="RequestAssignedToSSN" span="2" readonly="true"/>
+        </row>
+    </group>
+     <group name="NewConsultButtons" reveal="[InterConsult_PatientId]!">
+      <row>
+        <!-- Enter a document request -->
+        <control type="modalbutton"
+          name="btnDocumentRequest"
+          color="grey"
+          label="Request File"	
+          preset="DocumentPatientId=[InterConsult_PatientId]"
+          trigger="DocumentPatientId"
+          action="redirect"
+          target="mdlDocumentRequest"/>
+        <!-- Save and close new records -->
+        <control type="modalbutton" 
+          reveal="PatientConsultGuid="
+          name="btnSaveConsult"
+          color="grey"
+          label="Save"	
+          icon="cloud-upload" 
+          action="save|close|new"
+          affector="PatientConsultGuid"
+          setaffector="ConsultRequestGuid"
+          acctsvc="true"
+          capture="grpConsultInfo"
+          datainsert="InsertConsultRequests"
+          appendinsert="ConsultType=request,PatientAccountNumber=[Consult_AccountNumber],PatientId=[InterConsult_PatientId],PatientFirstName=[Consult_PatientFirstName],PatientMiddleName=[Consult_PatientMiddleName],PatientLastName=[Consult_PatientLastName],PatientDOB=[Consult_PatientDOB],PatientSex=[Consult_PatientSex]"
+          provoke="ConsultList"/>
+        <!-- update an existing record -->
+        <control type="modalbutton" 
+          reveal="PatientConsultGuid!"
+          name="UpdateAndCloseConsult"
+          color="grey"
+          label="Update"	
+          icon="cloud-upload" 
+          action="save|close|new"
+          affector="none"
+          acctsvc="true"
+          capture="grpConsultInfo"
+          dataupdate="UpdateConsultRequests"
+          appendupdate="ConsultRequestGuid=[PatientConsultGuid]"
+          provoke="ConsultList"/>
+      </row>
+    </group>
+  </section>
+  </partial>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+  <menu widescreen="true" language="en" dateformat="DMY24">
+    <item widescreen="true" icon="ambulance" link="EnClinicAdmitting.xml" roles="MedWave,Admitting,SysAdmin">Clinic Admitting</item>
+    <item widescreen="true" icon="user-md" link="EnClinicDoctor.xml" roles="MedWave,Physician,SysAdmin">Clinic Physician</item>
+    <item widescreen="true" icon="stethoscope" link="EnClinicNursing.xml" roles="MedWave,Nurse,SysAdmin">Clinic Nurse</item>
+    <item widescreen="true" icon="user-md" link="EnEmergencyDoctor.xml" roles="MedWave,Physician,SysAdmin">EMT</item>
+    <item widescreen="true" icon="hospital" link="EnBedManagement.xml" roles="MedWave,Nurse,Administration,SysAdmin,Director">Bed Management</item>
+    <item widescreen="true" icon="file-text" link="EnUserManagement.xml" roles="MedWave,SysAdmin">User Management</item>
+    <item widescreen="true" icon="print" link="EnReportSetup.xml" roles="MedWave,SysAdmin">Reporting</item>
+    <item widescreen="true" icon="print" link="EnCloneReportSetup.xml" roles="MedWave">Insert Reports</item>  
+  <item icon="double-angle-right" title="Configuration">
+    <item widescreen="true" icon="h-sign" link="EnFacilitySetup.xml" roles="MedWave,SysAdmin">Hospital</item>
+    <item widescreen="true" icon="beaker" link="EnLaboratorySetup.xml" roles="MedWave,SysAdmin">Laboratory</item>
+    <item widescreen="true" icon="medkit" link="EnPharmacyMeds.xml">Medications</item>
+    <item widescreen="true" icon="picture" link="EnImagingSetup.xml" roles="MedWave,SysAdmin">Imaging</item>
+    <item widescreen="true" icon="user-md" link="EnNursingSetup.xml" roles="MedWave,SysAdmin">Nursing</item>
+    <item widescreen="true" icon="file-text" link="EnDocumentationSetup.xml" roles="MedWave,SysAdmin">Documentation</item>
+    <item widescreen="true" icon="stethoscope" link="EnProcedureSetup.xml" roles="MedWave,SysAdmin">Procedures</item>
+    <item widescreen="true" icon="medkit" link="EnMedicationSetup.xml" roles="MedWave,SysAdmin">Medications</item>  
+  </item>
+  <item widescreen="true" icon="file-text" link="EnUserUpdate.xml">My User Account</item>
+</menu>

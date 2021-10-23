@@ -1,0 +1,302 @@
+﻿<partial>
+  <!-- Partial tab to create/edit calendars -->
+  <!-- Enter/edit calendars -->
+	<section type="tab" name="mdlCalendarModal" title="Schedule Calendars"	>
+		<group showif="never">
+			<row>
+        <control type="hidden" name="Wiz_CalendarGuid"/>
+				<control type="button" name="GetCalendarInfo"
+          action="trigger" 
+          set="Wiz_CalendarGuid=[Wiz_CalendarSelect]"
+          provoke="ReadCalendarInfo"/>
+        <control type="hidden" name="ReadCalendarInfo"
+					datarequest="GetSchedulerAppointmentTypesByAppointmentTypeGuid"
+					appendrequest="appointmentGuid=[Wiz_CalendarGuid]"
+					inject="Wiz_CalendarInfo"
+					provoke="WizSchedulerTimes,Wiz_ProviderId"/>
+        <control type="text" name="DropTime_SchedulerExceptionGuid"/>
+        <control type="text" name="DropTime_StartTime"/>
+        <control type="text" name="DropTime_EndTime"/>
+        <control type="button" name="RunReset"
+          action="trigger" set="Reset=Old"/>
+        <control type="text" name="Reset"/>
+				<control type="button" name="btnUpdateDropTime"
+					action="save"
+					affector="none"
+					acctsvc="true"
+					dataupdate="UpdateSchedulerExceptions"
+					appendupdate="schedulerExceptionGuid=[DropTime_SchedulerExceptionGuid],StartDateTime=[DropTime_StartTime],EndDateTime=[DropTime_EndTime]"/>
+			</row>
+       <!-- Template for day view that shows the provider,description,and location-->
+        <template name="timeWeekTemplate" type="markup">
+            [span size=14 color=darkgrey] 
+            ${[[Reason]]}[br]
+						${[[ProviderFirstMiddleLast]]}[br]
+            ${[[ExceptionNotes]]}
+            [/span]
+        </template>
+        <template name="timeMonthTemplate" type="markup">
+            [span size=14 color=darkgrey] 
+            ${[[Reason]]}[br]
+						${[[ProviderFirstMiddleLast]]}
+            [/span]
+        </template>
+		</group>
+    <group>
+      <row>
+        <control type="label" label="Calendar"		 span="3"/>
+        <control type="select" name="Wiz_CalendarSelect" span="6"
+          filter="CalendarType=[CalendarOption]"
+				  datasource="GetSchedulerAppointmentTypesByFacility" 
+				  source="CalendarName,CalendarGuid" 
+					provoke="[Reset]!new;GetCalendarInfo,RunReset"/>
+        <control type="button" name="btnNewCalendar" span="2"
+          reveal="[Wiz_CalendarGuid]!"
+          label="Add New"	 action="new"
+          provoke="Wiz_CalendarSelect"/>
+      </row>
+    </group>
+		<group name="Wiz_CalendarInfo">
+			<row>
+				<control type="hidden" name="CalendarType" default="Outpatient"/>
+			</row>
+			<row>
+				<control type="label" label="Active"	 span="3"/>
+				<control type="buttongroup" name="Wiz_Active"
+					default="True" source="True,False" sourcelabels="Yes,No"	 span="3" edit="true"/>
+        <control type="button" name="Wiz_UpdateCalendar"
+					icon="cloud-upload" span="2" offset="3"
+					label="Update"	
+					reveal="[Wiz_CalendarGuid]!"
+					action="save|new"
+					affector="none"
+					capture="Wiz_CalendarInfo"
+					dataupdate="UpdateSchedulerAppointmentTypes"/>
+				<!-- Note: the update call uses AppointmentTypeGuid NOT CalendarGuid! -->
+				<control type="hidden" name="AppointmentTypeGuid"/>
+			</row>
+      <row>
+				<control type="label" label="Calendar Name"	 span="3"/>
+				<control type="text" name="Wiz_CalendarName"
+					span="6" required="true" edit="true" />
+			</row>
+			<row>
+				<control type="label" span="3" label="Location"		/>
+				<control type="select" name="NewApt_RoomGuid" span="6" 
+					namefield="RoomName"
+					datasource="GetSchedulerRoomsByFacility"
+					filter="RoomType!surgery"
+          explicit="true"
+					source="RoomName,RoomGuid"  
+					edit="true" required="true"/>
+			</row>
+			<row>
+				<!-- Date controls to search by a range of dates (DateTimeEntered) -->
+				<control type="label" label="Calendar Range"	 span="3"/>
+				<control type="date" span="3" name="StartDate"
+				required="true" edit="true"/>
+				<control type="date" span="3" name="EndDate"
+					required="true" edit="true" compare="»[StartDate]"/>
+			</row>
+		</group>
+		<group name="grpSaveNewCalendar" reveal="[Wiz_CalendarGuid]=">
+			<row>
+				<control type="label" label=""	 span="8"/>
+				<control type="button" name="Wiz_SaveCalendar"
+						icon="cloud-upload" span="3"
+						size="large" color="grey"
+						label="Generate New"	
+						action="save"
+						affector="Wiz_CalendarGuid"
+						setaffector="CalendarGuid"
+						capture="Wiz_CalendarInfo"
+						datainsert="InsertSchedulerAppointmentTypes"
+            set="Reset=new"
+            provoke="Wiz_CalendarSelect,WizSchedulerTimes,calAppointmentTypeGuid,NewApt_AppointmentTypeGuid,Complete_AppointmentTypeGuid"/>
+			</row>
+		</group>
+		<group name="grpWizDays" reveal="Wiz_CalendarGuid!">
+      <row>
+        <control type="label" label="View by Physician"	 span="7"/>
+          <control type="select" name="Wiz_ProviderId" span="4" 
+            acctsvc="true"
+            datasource="GetSchedulerExceptionsProvidersByCalendarGuid" 
+            append="CalendarGuid=[Wiz_CalendarGuid]"
+            source="ProviderName,ProviderId" 
+            searchable="true"
+            default="true"
+            edit="true"
+            provoke="WizSchedulerTimes"/>
+          <control type="button" name="btnClearWizProvider"
+            icon="remove" label="" action="trigger" set="Wiz_ProviderId="
+            provoke="WizSchedulerTimes"/>
+      </row>
+      <row>
+        <control type="calendar" span="12"
+          aspect="10/5.5"
+          name="WizSchedulerTimes"
+          headerleft="prev,next today"
+          headercenter="title"
+          headerright="dayGridMonth,timeGridWeek,timeGridDay,listDay"
+          navlinking="true"
+          eventcolor="Status|Background=lightblue;BlockBackground=grey"
+          source="dayGridMonth=timeMonthTemplate,timeGridWeek=timeWeekTemplate,timeGridDay=timeWeekTemplate,listDay=timeWeekTemplate"
+          slotduration="00:15"
+          duration="00:30"
+          businesshours="1,2,3,4,5=06:00-20:00"
+          acctsvcreq="true"
+          edit="true"
+          editable="rowguid!"
+          editduration="rowguid!"
+          idle="[Wiz_CalendarGuid]="
+          datarequest="GetSchedulerExceptionsByDateRange"
+          appendrequest="calendarGuid=[Wiz_CalendarGuid],ProviderId=[Wiz_ProviderId]"
+          map="start=StartDateTime,end=EndDateTime,title=rowguid"
+          daterange="start=start,end=end"
+          key="key"
+          action="redirect"
+          target="mdlExcModal"
+          onselectset="mdlExc_SchedulerExceptionGuid=[[SchedulerExceptionGuid]]"
+          onselect="mdlExc_SchedulerExceptionGuid"
+          droptarget="none"
+          ondropset="DropTime_SchedulerExceptionGuid=[[SchedulerExceptionGuid]],DropTime_StartTime=[[start]],DropTime_EndTime=[[end]]"
+          ondrop="btnUpdateDropTime"
+          resizetarget="none"
+          onresizeset="DropTime_SchedulerExceptionGuid=[[SchedulerExceptionGuid]],DropTime_StartTime=[[start]],DropTime_EndTime=[[end]]"
+          onresize="btnUpdateDropTime"
+					selectable="true"
+					selectabletarget="mdlExcModal"
+					onselectableset="mdlExc_StartDateTime=[[start]],mdlExc_EndDateTime=[[end]]">
+          <control type="button"
+            name="btnRefreshWizTime"
+            label="Refresh"	
+            icon="refresh"
+            action="trigger"
+            trigger="WizSchedulerTimes"/>
+          </control>
+			</row>
+		</group>
+	</section>
+
+	<!-- Enter/Edit Calendar Exceptions -->
+  <section type="tabmodal" badge="none" name="mdlExcModal" title="Appointment Schedule"	 size="small">
+    <group name="mdlExc_GuidStorage">
+      <row>
+        <control type="hidden" name="mdlExc_SchedulerExceptionGuid"
+          acctsvcreq="true"
+          datarequest="GetSchedulerExceptionsByGuid"
+          appendrequest="schedulerExceptionGuid=[mdlExc_SchedulerExceptionGuid]"
+          inject="mdlExcInfo"/>
+      </row>
+    </group>
+    <group name="mdlExcInfo">
+      <row>
+        <control type="hidden" name="mdlExc_CalendarGuid"/>
+        <control type="hidden" name="mdlExc_SchedulerTimeGuid"/>
+				<control type="hidden" name="mdlExc_Type" default="Background"/>
+				<control type="hidden" name="mdlExc_Active" default="True"/>
+			</row>
+      <row>
+        <control type="label" label="Start Date/Time"	 span="4"/>
+        <control type="datetime" name="mdlExc_StartDateTime" required="true" span="4"  edit="true"/>
+      </row>
+      <row>
+        <control type="label" label="End Date/Time"	 span="4"/>
+        <control type="datetime" name="mdlExc_EndDateTime" required="true" span="4"  edit="true"
+					compare="»[mdlExc_StartDateTime]"/>
+      </row>
+      <row name="rowRepeat" reveal="[mdlExc_SchedulerExceptionGuid]=">
+        <control type="label" label="Repeat Each"	 span="4"/>
+        <control type="select" name="RepeatDays" span="4" default="0" edit="true"
+          persist="true"
+          source="0,7,14,21,28" sourcelabels="Do Not Repeat,Week,Two Weeks,Three Weeks,Four Weeks"	/>
+      </row>
+      <row name="rowRepeatUntil" reveal="[RepeatDays]!0">
+        <control type="label" label="To Date"	 span="4"/>
+        <control type="date" name="RepeatUntil" span="4" compare="»[mdlExc_StartDateTime]"  required="true" edit="true" persist="true"/>
+      </row>
+      <row>
+        <control type="label" label="Specialty"	 span="4"/>
+				<control type="select" span="6"
+          name="MdlExc_MedicalSpecialtyGuid"
+					namefield="MdlExc_Reason"
+					explicit="true"
+					edit="true" 
+					acctsvc="true"
+					required="true"
+          persist="true"
+					datasource="GetMedicalSpecialties" 
+					source="Specialty,MedicalSpecialtyGuid"/>
+      </row>
+			<row>
+				<control type="label" label="Anesthesiologist"	 span="4"/>
+				<control type="select" name="MdlExc_ProviderId" span="6" 
+					acctsvc="true" datasource="GetUsersByAttributes" append="LocationId=(facilityData.LocationId),role=Physician|MedWave" 
+					source="UserFirstMiddleLast,UserId" 
+					searchable="true"
+          persist="true"
+          default="true"
+					edit="true"
+					explicit="true"/>
+			</row>
+      <row>
+				<control type="label" label="Physician Notes"	 span="4"/>
+				<control type="textarea" name="MdlExc_ExceptionNotes" span="6" rows="2" edit="true"/>
+			</row>
+		</group>
+		<group>
+      <row name="rowSaveNewExc" reveal="[mdlExc_SchedulerExceptionGuid]=">
+        <control type="label" label=""	 span="5"/>
+				<control type="button" name="btnCloseSaveException"
+          label="Close"	
+          span="3" size="large"
+          color="grey"
+          action="close|new"/>
+        <control type="button" name="btnSaveException"
+          label="Generate"	
+          span="3" size="large"
+          color="grey"
+          icon="cloud-upload"
+          action="save|close|new"
+          affector="none"
+          capture="mdlExcInfo"
+          acctsvc="true"
+          datainsert="InsertSchedulerExceptions"
+					appendinsert="calendarGuid=[Wiz_CalendarGuid]"
+          provoke="WizSchedulerTimes,Wiz_ProviderId"/>
+      </row>
+      <row name="rowUpdateExc" reveal="[mdlExc_SchedulerExceptionGuid]!">
+        <control type="label" label=""	 span="3"/>
+				<control type="button" name="btnCloseUpdateException"
+          label="Close"	
+          span="3" size="large"
+          color="grey"
+          action="close|new"/>
+        <control type="button" name="btnUpdateException"
+          label="Update"	
+          span="3" size="large"
+          color="grey"
+          icon="cloud-upload"
+          action="save|close|new"
+          affector="none"
+          capture="mdlExcInfo"
+          acctsvc="true"
+          dataupdate="UpdateSchedulerExceptions"
+          appendupdate="schedulerExceptionGuid=[mdlExc_SchedulerExceptionGuid]"
+          provoke="WizSchedulerTimes,Wiz_ProviderId"/>
+				<control type="button" name="btnRemoveException"
+          label="Delete"	
+          span="3" size="large"
+          color="red"
+          icon="remove"
+          action="save|close|new"
+          affector="none"
+          acctsvc="true"
+					confirm="Please confirm you wish to eliminate this time block."
+          dataupdate="UpdateSchedulerExceptions"
+          appendupdate="schedulerExceptionGuid=[mdlExc_SchedulerExceptionGuid],active=false"
+          provoke="WizSchedulerTimes,Wiz_ProviderId"/>
+      </row>
+    </group>
+  </section>
+</partial>

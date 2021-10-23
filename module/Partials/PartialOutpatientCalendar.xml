@@ -1,0 +1,1280 @@
+﻿<partial>
+<!-- Start of calendar management (See End of calendar management to copy to another module) -->
+ <!-- A calendar view is shown and the user can select the calendar,view,and physician (ProviderId) -->
+  <section type="tab" name="tabCalendarAppointments" title="Patient Appointments"	 trigger="AppointmentTimes">
+    <group showif="never">
+      <!-- Templates for text messages -->
+      <row>
+        <template name="MoveTextMessage">
+          Su cita con el Dr. ${[Drop_ProviderName]} a sido reprogramada para el día @DateTime en el hospital ${(facilityData.HospitalName)} en el servicio ${[Drop_CalendarName]}. En caso de tener alguna duda favor de comunicarse al ${(facilityData.HospitalPhone)}. 
+        </template>
+        <template name="MoveTelemedicineTextMessage">
+          Su cita de telemedicina con el Dr. ${[Drop_ProviderName]} a sido reprogramada para el día @DateTime. Recibirá un correo electrónico con un enlace para unirse a la conferencia de telemedicina. En caso de tener alguna duda favor de comunicarse al ${(facilityData.HospitalPhone)}. 
+        </template>
+        <template name="NewTextMessage">
+          Su cita con el Dr. ${[NewAptProvider]} a sido programada para el día @DateTime en el hospital ${(facilityData.HospitalName)} en el servicio ${[NewAptCalendarName]}. En caso de tener alguna duda favor de comunicarse al ${(facilityData.HospitalPhone)}.
+        </template>
+        <template name="NewTelemedicineTextMessage">
+          Su cita de telemedicina con el Dr. ${[NewAptProvider]} a sido programada para el día @DateTime. Recibirá un correo electrónico con un enlace para unirse a la conferencia de telemedicina. En caso de tener alguna duda favor de comunicarse al ${(facilityData.HospitalPhone)}.
+        </template>
+        <template name="UpdateTextMessage">
+          Su cita con el Dr. ${[NewAptProvider]} a sido reprogramada para el día @DateTime en el hospital ${(facilityData.HospitalName)} en el servicio ${[NewAptCalendarName]}. En caso de tener alguna duda favor de comunicarse al ${(facilityData.HospitalPhone)}.
+        </template>
+        <template name="UpdateTelemedicineTextMessage">
+          Su cita de telemedicina con el Dr. ${[NewAptProvider]} a sido reprogramada para el día @DateTime. Recibirá un correo electrónico con un enlace para unirse a la conferencia de telemedicina. En caso de tener alguna duda favor de comunicarse al ${(facilityData.HospitalPhone)}.
+        </template>
+        <template name="CancelTextMessage">
+          Se ha cancelado su cita con el Dr. ${[NewAptProvider]} para el día @DateTime. Favor de comunicarse al ${(facilityData.HospitalPhone)} para reprogramar su cita.
+        </template>
+        <template name="RescheduleTextMessage">
+          Su cita con el Dr. ${[NewAptProvider]} para el día @DateTime ha sido programada para ser reprogramada. Será contactado para encontrar otro momento. Favor de comunicarse al ${(facilityData.HospitalPhone)} para reprogramar su cita.
+        </template>
+      </row>
+      <row>
+        <control type="hidden" name="Resize_StartTime"/>
+        <control type="hidden" name="Resize_EndTime"/>
+        <control type="hidden" name="Resize_AppointmentGuid"/>
+        <control type="button" name="btnUpdateResize"
+          action="save"
+          affector="none" 
+          dataupdate="UpdateSchedulerAppointments"
+				  appendupdate="appointmentGuid=[Resize_AppointmentGuid],start=[Resize_StartTime],end=[Resize_EndTime],calculateDuration=true"
+          provoke="AppointmentTimes"/>
+      </row>
+    </group>
+  	<group>
+      <row name="rowCalendarSelection">
+        <!-- Buttongroup to select status (Active=scheduled and confirmed,Completed=completed and No Show,All=all but canceled -->
+        <control type="buttongroup" name="btngrpSelectStatus"
+          span="3" default="Active"
+          source="Active,Completed,No Show"
+          sourcelabels="Active,Completed,No Show"	
+          trigger="optCalendars,AppointmentTimes,AppointmentList"/>
+        <!-- Select the calendarto view -->
+        <control type="select" 
+				  name="calAppointmentTypeGuid" span="4"
+          namefield="calAppointmentName"
+				  datasource="GetSchedulerAppointmentTypesByFacility" 
+				  source="CalendarName,CalendarGuid" 
+					filter="Active=true,CalendarType!Surgery"
+				  default="true"
+				  edit="true" 
+          explicit="true"
+					sort="CalendarName=asc"
+          set="DepartmentGuidLookup=[[DepartmentGuid]]"
+				  provoke="CalendarProviderId"/>
+        <!-- Select control for provider (physician) to view appointments only for this provider -->
+        <control type="label" label="Physician"			 span="1" />
+				<control type="select" name="CalendarProviderId" span="3"
+					acctsvc="true" 
+				  datasource="GetSchedulerTimesProvidersByCalendarGuid"
+					append="CalendarGuid=[calAppointmentTypeGuid]" 
+				  source="ProviderName,ProviderId" 
+				  searchable="true"
+				  provoke="AppointmentTimes,AppointmentTimes2"/>
+        <!-- Button to clear provider selection -->
+				<control type="button" name="btnResetProvider"
+					icon="remove" label="" action="trigger" 
+					set="CalendarProviderId="
+					provoke="AppointmentTimes,AppointmentTimes2"/>
+        <!-- Templates are used to format the data shown in each calendar view -->
+        <!-- This allows each view to have an appropriate data set -->
+        <!-- A green checkmark is shown if the appointment is confirmed -->
+        <!-- A facetime-video icon is shown if IsTelemedicine is set to true -->
+        <!-- Template for month and week views that shows only the patient name-->
+        <template name="dayGridMonthTemplate" type="markup">
+            [span size=14 color=darkgrey] 
+            [IF ${[[Reschedule]]}=true][icon color=red]refresh[/icon][/IF]
+            [IF ${[[SchedulerTimeGuid]]}=][icon color=red]star[/icon][/IF]
+            [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+             [IF ${[[IsTelemedicine]]}=true][icon color=blue]facetime-video[/icon][/IF] 
+             ${[[PatientFirstMiddleLast]]}[/span] 
+             [IF ${[[PatientFirstMiddleLast]]}=] ${[[AptProviderLastName]]}-${[[Description]]} [/IF]
+        </template>
+        <!-- Template for day view that shows the provider,description,and location-->
+        <template name="timeGridDayTemplate" type="markup">
+            [span size=14 color=darkgrey] 
+            [IF ${[[Reschedule]]}=true][icon color=red]refresh[/icon][/IF]
+            [IF ${[[SchedulerTimeGuid]]}=][icon color=red]star[/icon][/IF]
+            [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+            [IF ${[[IsTelemedicine]]}=true][icon color=blue]facetime-video[/icon][/IF]
+            [IF ${[[PatientFirstMiddleLast]]}!] ${[[PatientFirstMiddleLast]]} [/IF]
+            [icon color=darkblue]user-md[/icon] ${[[AptProviderLastName]]}-${[[Description]]} [icon color=darkblue]hospital[/icon] ${[[AptRoomName]]} [/span]
+        </template>
+        <!-- Template for agenda (list) view that shows the provider,description,and location-->
+        <template name="listMonthTemplate" type="markup">
+            [span size=14 color=darkgrey] 
+            [IF ${[[Reschedule]]}=true][icon color=red]refresh[/icon][/IF]
+            [IF ${[[SchedulerTimeGuid]]}=][icon color=red]star[/icon][/IF]
+            [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+            [IF ${[[IsTelemedicine]]}=true][icon color=blue]facetime-video[/icon][/IF] 
+            ${[[PatientFirstMiddleLast]]} [icon color=darkblue]user-md[/icon] ${[[AptProviderLastName]]}-${[[Description]]}  [icon color=darkblue]hospital[/icon] ${[[AptRoomName]]}[/span]
+        </template>
+        <template name="CalendarParameters" type="markup">
+          calendarGuid=${[[calAppointmentTypeGuid]]},ProviderId=${[[CalendarProviderId]]}
+        </template>
+      </row>
+			<row>
+        <!-- Option control displays one calendar for Active and another for complete and no show -->
+        <control type="options" name="optCalendars" affector="btngrpSelectStatus" span="12">
+          <!-- Calendar control is configured to accept click on an appointment in all views-->
+          <!-- GetSchedulerTimesByDateRange returns time slots and appointments -->
+          <!-- Includes extraordinary appointments (that have no SchedulerTimeGuid) -->
+          <!-- appendrequest="calendarGuid=[calAppointmentTypeGuid],ProviderId=[CalendarProviderId]" 
+          -->
+          <control type="calendar" option="Active" span="12"
+            name="AppointmentTimes"
+            headerleft="prev,next today"
+            headercenter="title"
+            headerright="dayGridMonth,timeGridWeek,timeGridDay,listDay"
+            navlinking="true"
+            eventcolor="ColorFlag|Green=yellowgreen;Yellow=yellow;Gray=grey"
+            source="dayGridMonth=dayGridMonthTemplate,timeGridWeek=dayGridMonthTemplate,timeGridDay=timeGridDayTemplate,listDay=listMonthTemplate"
+            slotduration="00:10"
+            duration="00:30"
+            displayhours="07:30-18:00"
+            acctsvcreq="true"
+            aspect="10/7"
+            edit="true"
+            editable="AppointmentGuids!"
+            idle="[calAppointmentTypeGuid]=" 
+            datarequest="GetSchedulerTimesByDateRange"
+            appendrequest="calendarGuid=[calAppointmentTypeGuid],ProviderId=[CalendarProviderId]"
+            map="start=StartTime,end=EndTime,title=rowguid"
+            daterange="startDate=start,endDate=end"
+            key="key"
+            action="redirect"
+            target="NewAppointmentModal"
+            onselectset="NewApt_Source=1,NewApt_ColorFlag=[[ColorFlag]],NewApt_AppointmentGuid=[[AppointmentGuids]],NewApt_Start=[[StartTime]],NewApt_AppointmentTypeGuid=[calAppointmentTypeGuid],NewApt_SchedulerTimesGuid=[[SchedulerTimeGuid]],NewApt_ProviderId=[[AptProviderId]],NewApt_RoomGuid=[[RoomGuid]],NewApt_Subject=[[Subject]],NewApt_IsTelemedicine=[[IsTelemedicine]]"
+            onselect="[NewApt_AppointmentGuid]!;NewApt_AppointmentGuid,GetCalendarBenefits"
+            droptarget="mdlDropTarget"
+            ondropset="Drop_Source=1,Drop_AppointmentTypeGuid=[calAppointmentTypeGuid],Drop_AppointmentGuids=[[AppointmentGuids]],Drop_StartTime=[[StartTime]],Drop_EndTime=[[EndTime]],Drop_SchedulerTimeGuid=[[SchedulerTimeGuid]],Drop_PatientId=[[PatientId]],Drop_ProviderName=[[ProviderFirstMiddleLast]],Drop_RoomName=[[AptRoomName]],Drop_CalendarName=[calAppointmentName],Drop_IsTelemedicine=[[IsTelemedicine]]"
+            ondrop="SelectTimeSlot,NewTimeGuid,Drop_PatientId"
+            resizetarget="none"
+            onresize="btnUpdateResize"
+            onresizeset="Resize_AppointmentGuid=[[AppointmentGuids]],Resize_StartTime=[[StartTime]],Resize_EndTime=[[EndTime]]"
+            selectable="true"
+            selectabletarget="mdlModifyDay"
+            onselectableset="CalendarDate=[[start]]">
+            <!-- Button to refresh the calendar -->
+            <control type="button" name="btnRefreshCalendar"
+              icon="refresh" label="Refresh"	 action="trigger" trigger="AppointmentTimes"/>
+            <!-- Button for new unscheduled appointments (allows appointments outside of scheduled times) -->
+            <control type="button" name="btnCalendarReports"
+              icon="star" label="Reports"	 color="grey"
+              preset="Report_CalendarGuid=[calAppointmentTypeGuid],Report_Type=Admitting"
+              action="redirect" target="mdlReports"/>
+          </control>
+          <!-- template for month view of complete and no show appointments  -->
+          <template name="dayGridMonthTemplate2" type="markup">
+              [span size=14 color=darkgrey] 
+              [IF ${[[IsTelemedicine]]}=true][icon color=blue]facetime-video[/icon][/IF] ${[[PatientFirstMiddleLast]]}[/span] 
+          </template>
+          <!-- Template for day view of complete and no show that shows the provider,description,and location-->
+          <template name="timeGridDayTemplate2" type="markup">
+              [span size=14 color=darkgrey] 
+              [IF ${[[IsTelemedicine]]}=true][icon color=blue]facetime-video[/icon][/IF] ${[[PatientFirstMiddleLast]]} [icon color=darkblue]user-md[/icon] ${[[AptProviderLastName]]}-${[[Description]]} [icon color=darkblue]hospital[/icon] ${[[AptRoomName]]}[/span]
+          </template>
+          <!-- Template for agenda (list) view for complete and no showthat shows the provider,description,and location-->
+          <template name="listMonthTemplate2" type="markup">
+              [span size=14 color=darkgrey] 
+              [IF ${[[IsTelemedicine]]}=true][icon color=blue]facetime-video[/icon][/IF] ${[[PatientFirstMiddleLast]]}   [icon color=darkblue]user-md[/icon] ${[[AptProviderLastName]]}-${[[Description]]}  [icon color=darkblue]hospital[/icon] ${[[AptRoomName]]}[/span]
+          </template>
+          <!-- Calendar to show complete and no show appointments -->
+          <control 
+            type="calendar" 
+            span="12"
+            aspect="10/7"
+            label="Completed Appointments"	 
+            name="AppointmentList"
+            option="Completed,No Show"
+            headerleft="prev,next today"
+            slotduration="00:10"
+            duration="00:30"
+            headercenter="title"
+            headerright="dayGridMonth,timeGridWeek,timeGridDay,listDay"
+            eventcolor="Status|Completed=yellow;No Show=orange"
+            navlinking="true"
+            datarequest="GetPatientAppointmentsByDateRange"
+            appendrequest="appointmentTypeGuid=[calAppointmentTypeGuid],status=[btngrpSelectStatus]"
+            source="dayGridMonth=dayGridMonthTemplate2,timeGridWeek=dayGridMonthTemplate2,timeGridDay=timeGridDayTemplate2,listDay=listMonthTemplate2"
+            map="start=Start,end=End,title=PatientFirstMiddleLast"
+            daterange="startDateTime=start,endDateTime=end"
+            idle="[calAppointmentTypeGuid]="
+            key="key"
+            action="redirect"
+            target="CompletedAppointmentModal"
+            onselectset="Complete_AppointmentGuid=[[AppointmentGuid]],Complete_Start=[[Start]],Complete_AppointmentTypeGuid=[calAppointmentTypeGuid],Complete_ProviderId=[[ProviderId]],Complete_RoomGuid=[[RoomGuid]],Complete_Subject=[[Subject]],Complete_IsTelemedicine=[[IsTelemedicine]],Complete_Status=[[Status]]"
+            onselect="Complete_AppointmentGuid">
+            <!-- Button to refresh complete and no-show appointments -->
+            <control type="button" name="btnRefreshComplete"
+              icon="refresh" label="Refresh"	 action="trigger" trigger="AppointmentList"/>
+          </control>
+        </control>
+      </row>
+		</group>
+  </section>
+
+	<!-- A calendar view is shown and the user can select the physician (ProviderId) and view -->
+  <section type="tab" name="tabPhysicianAppointments" title="Appointments by Physician and Room"	>
+  	<group>
+      <row>
+        <!-- Buttongroup to select status (Active=scheduled and confirmed,Completed=completed and No Show,All=all but canceled -->
+        <control type="buttongroup" name="btngrpSelectStatus2"
+          span="3" default="Active"
+          source="Active,Completed,No Show"
+          sourcelabels="Active,Completed,No Show"	
+          trigger="optCalendars2,AppointmentTimes2,AppointmentList2"/>
+        <!-- Select control for provider (physician) to view appointments only for this provider -->
+        <control type="label" label="Physician"			 span="1" />
+				<control type="select" name="ProviderId2" span="3" 
+					acctsvc="true" datasource="GetUsersByAttributes" append="LocationId=(facilityData.LocationId),role=Physician|MedWave" 
+					source="UserFirstMiddleLast,UserId" 
+					edit="true"
+				  provoke="AppointmentTimes2"/>
+        <control type="label" label="Room"	 span="1" />
+			  <control type="select" name="ExamRoomGuid" span="3" 
+          datasource="GetSchedulerRoomsByFacility"
+          filter="Active=true"
+          explicit="true"
+          source="RoomName,RoomGuid"
+          provoke="AppointmentTimes2"/>
+        <!-- Templates are used to format the data shown in each calendar view -->
+        <!-- This allows each view to have an appropriate data set -->
+        <!-- A green checkmark is shown if the appointment is confirmed -->
+        <!-- A facetime-video icon is shown if IsTelemedicine is set to true -->
+        <!-- Template for month and week views that shows only the patient name-->
+        <template name="dayGridMonthTemplate3" type="markup">
+            [span size=14 color=darkgrey] 
+            [IF ${[[Reschedule]]}=true][icon color=red]refresh[/icon][/IF]
+            [IF ${[[SchedulerTimeGuid]]}=][icon color=red]star[/icon][/IF]
+            [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+             [IF ${[[IsTelemedicine]]}=true][icon color=blue]facetime-video[/icon][/IF]
+             ${[[PatientFirstMiddleLast]]}[/span]
+						[IF ${[[PatientFirstMiddleLast]]}=] ${[[CalendarName]]}[/IF]
+            
+        </template>
+        <!-- Template for day view that shows the provider,description,and location-->
+        <template name="timeGridDayTemplate3" type="markup">
+            [span size=14 color=darkgrey] 
+            [IF ${[[Reschedule]]}=true][icon color=red]refresh[/icon][/IF]
+            [IF ${[[SchedulerTimeGuid]]}=][icon color=red]star[/icon][/IF]
+            [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+            [IF ${[[IsTelemedicine]]}=true][icon color=blue]facetime-video[/icon][/IF] 
+						${[[PatientFirstMiddleLast]]} ${[[Description]]} [icon color=darkblue]hospital[/icon] ${[[AptRoomName]]}[/span]
+        </template>
+        <!-- Template for agenda (list) view that shows the provider,description,and location-->
+        <template name="listMonthTemplate3" type="markup">
+            [span size=14 color=darkgrey] 
+            [IF ${[[Reschedule]]}=true][icon color=red]refresh[/icon][/IF]
+            [IF ${[[SchedulerTimeGuid]]}=][icon color=red]star[/icon][/IF]
+            [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+            [IF ${[[IsTelemedicine]]}=true][icon color=blue]facetime-video[/icon][/IF] 
+						${[[PatientFirstMiddleLast]]}  ${[[Description]]}  [icon color=darkblue]hospital[/icon] ${[[AptRoomName]]}[/span]
+        </template>
+      </row>
+			<row>
+        <!-- Option control displays one calendar for Active and another for complete and no show -->
+        <control type="options" name="optCalendars2" affector="btngrpSelectStatus2" span="12">
+          <!-- Calendar control is configured to accept click on an appointment in all views-->
+          <!-- GetSchedulerTimesByDateRange returns time slots and appointments -->
+          <!-- Includes extraordinary appointments (that have no SchedulerTimeGuid) -->
+          <control type="calendar" option="Active" span="12"
+            name="AppointmentTimes2"
+            headerleft="prev,next today"
+            headercenter="title"
+            headerright="dayGridMonth,timeGridWeek,timeGridDay,listDay"
+            navlinking="true"
+            slotduration="00:10"
+            duration="00:30"
+            eventcolor="ColorFlag|Green=yellowgreen;Yellow=yellow;Gray=grey"
+            source="dayGridMonth=dayGridMonthTemplate3,timeGridWeek=dayGridMonthTemplate3,timeGridDay=timeGridDayTemplate3,listDay=listMonthTemplate3"
+            acctsvcreq="true"
+            edit="true"
+            aspect="10/7"
+            idle="ProviderId2=+ExamRoomGuid="
+            editable="AppointmentGuids!"
+            datarequest="GetSchedulerTimesByDateRange"
+            appendrequest="ProviderId=[ProviderId2],RoomGuid=[ExamRoomGuid]"
+            map="start=StartTime,end=EndTime,title=rowguid"
+            daterange="startDate=start,endDate=end"
+            key="key"
+            action="redirect"
+            target="NewAppointmentModal"
+            onselectset="NewApt_Source=2,NewApt_ColorFlag=[[ColorFlag]],NewApt_AppointmentGuid=[[AppointmentGuids]],NewApt_Start=[[StartTime]],NewApt_AppointmentTypeGuid=[[CalendarGuid]],NewApt_SchedulerTimesGuid=[[SchedulerTimeGuid]],NewApt_ProviderId=[[AptProviderId]],NewApt_RoomGuid=[[RoomGuid]],NewApt_Subject=[[Subject]],NewApt_IsTelemedicine=[[IsTelemedicine]]"
+            onselect="[NewApt_AppointmentGuid]!;NewApt_AppointmentGuid,GetCalendarBenefits"
+            droptarget="mdlDropTarget"
+            ondropset="Drop_Source=2,Drop_AppointmentTypeGuid=[[CalendarGuid]],Drop_AppointmentGuids=[[AppointmentGuids]],Drop_StartTime=[[StartTime]],Drop_EndTime=[[EndTime]],Drop_SchedulerTimeGuid=[[SchedulerTimeGuid]],Drop_PatientId=[[PatientId]],Drop_ProviderName=[[ProviderFirstMiddleLast]],Drop_RoomName=[[AptRoomName]],Drop_CalendarName=[calAppointmentName],Drop_IsTelemedicine=[[IsTelemedicine]]"
+            ondrop="SelectTimeSlot,NewTimeGuid,Drop_PatientId">
+            <!-- Button to refresh the calendar -->
+            <control type="button" name="btnRefreshCalendar2"
+              icon="refresh" label="Refresh"	 action="trigger" trigger="AppointmentTimes2"/>
+          </control>
+          <!-- template for month view of complete and no show appointments  -->
+          <template name="dayGridMonthTemplate4" type="markup">
+              [span size=14 color=darkgrey] 
+              [IF ${[[IsTelemedicine]]}=true][icon color=blue]facetime-video[/icon][/IF] 
+							${[[PatientFirstMiddleLast]]}[/span] 
+          </template>
+          <!-- Template for day view of complete and no show that shows the provider,description,and location-->
+          <template name="timeGridDayTemplate4" type="markup">
+              [span size=14 color=darkgrey] 
+              [IF ${[[IsTelemedicine]]}=true][icon color=blue]facetime-video[/icon][/IF] 
+							${[[PatientFirstMiddleLast]]} 
+							${[[Description]]} 
+							[icon color=darkblue]hospital[/icon] ${[[AptRoomName]]}[/span]
+          </template>
+          <!-- Template for agenda (list) view for complete and no showthat shows the provider,description,and location-->
+          <template name="listMonthTemplate4" type="markup">
+              [span size=14 color=darkgrey] 
+              [IF ${[[IsTelemedicine]]}=true][icon color=blue]facetime-video[/icon][/IF] 
+							${[[PatientFirstMiddleLast]]}   
+							${[[Description]]}  
+							[icon color=darkblue]hospital[/icon] ${[[AptRoomName]]}[/span]
+          </template>
+          <!-- Calendar to show complete and no show appointments -->
+          <control 
+            type="calendar" 
+            span="12"
+            aspect="10/7"
+            label="Completed Appointments"	 
+            name="AppointmentList2"
+            option="Completed,No Show"
+            headerleft="prev,next today"
+            headercenter="title"
+            headerright="dayGridMonth,timeGridWeek,timeGridDay,listDay"
+            eventcolor="Status|Completed=yellow;No Show=orange"
+            navlinking="true"
+            slotduration="00:10"
+            duration="00:30"
+            idle="[ProviderId2]="
+            datarequest="GetPatientAppointmentsByDateRange"
+            appendrequest="appointmentTypeGuid=all,status=[btngrpSelectStatus2],providerId=[ProviderId2]"
+            source="dayGridMonth=dayGridMonthTemplate4,timeGridWeek=dayGridMonthTemplate4,timeGridDay=timeGridDayTemplate4,listDay=listMonthTemplate4"
+            map="start=Start,end=End,title=PatientFirstMiddleLast"
+            daterange="startDateTime=start,endDateTime=end"
+            key="key"
+            action="redirect"
+            target="CompletedAppointmentModal"
+            onselectset="Complete_AppointmentGuid=[[AppointmentGuid]],Complete_Start=[[Start]],Complete_AppointmentTypeGuid=[calAppointmentTypeGuid],Complete_ProviderId=[[ProviderId]],Complete_RoomGuid=[[RoomGuid]],Complete_Subject=[[Subject]],Complete_IsTelemedicine=[[IsTelemedicine]],Complete_Status=[[Status]]"
+            onselect="Complete_AppointmentGuid">
+            <!-- Button to refresh complete and no-show appointments -->
+            <control type="button" name="btnRefreshComplete2"
+              icon="refresh" label="Refresh"	 action="trigger" trigger="AppointmentList2"/>
+          </control>
+        </control>
+      </row>
+		</group>
+  </section>
+
+	<!-- Tabmodal to block day or set appointments for reschedule -->
+	<section type="tabmodal" badge="none" name="mdlModifyDay" title="Modify Day"	 size="small">
+		<group>
+			<row showif="never">
+				<control type="hidden" name="CalendarDate"/>
+      </row>
+    </group>
+    <group>
+			<row>
+				<control type="label" label=""	 span="4"/>
+				<!-- Button to block/unblock a day -->
+				<control type="button" name="btnBlockDay"
+					color="grey" icon="remove" label="Block/Unblock Day"	 span="5" size="large"
+					action="save|close|new"
+					affector="none"
+					acctsvc="true"
+          confirm="Please confirm you want to block all appointments for this day."	
+					datainsert="InsertSchedulerExceptions"
+					appendinsert="CalendarGuid=[calAppointmentTypeGuid],Type=Off,Active=true,Reason=Blocked Day,StartDateTime=[CalendarDate],EndDateTime=[CalendarDate],ProviderId=[CalendarProviderId]"
+					provoke="AppointmentTimes"/>
+			</row>
+      <!-- ?? These need a new call -->
+			<row showif="never">
+				<control type="label" label=""	 span="4"/>
+				<!-- Button to set appointments for rescheduling -->
+				<control type="button" name="btnRescheduleDay"
+					color="red" icon="refresh" label="Reschedule Day"	 span="5" size="large"
+					action="save|close|new"
+					affector="none"
+					acctsvc="true"
+          confirm="Please confirm you want to schedule all appointments for rescheduling for this day."	
+					datainsert="UpdateSchedulerAppointmentsSetReschedule"
+					appendinsert="CalendarGuid=[calAppointmentTypeGuid],StartDate=[CalendarDate],ProviderId=[CalendarProviderId]"
+					provoke="AppointmentTimes"/>
+			</row>
+		</group>
+	</section>
+
+  <!-- Tabmodal that appears when an appointment is dragged and dropped -->
+  <section type="tabmodal" badge="none" name="mdlDropTarget" title="Please Confirm"	 size="small" noclose="true">
+    <group name="grpDropInfo" showif="never">
+      <!-- Variables for drag and drop -->
+      <!-- Drop_Source holds the pointer to the screen that called this modal and must have a persist -->
+      <!-- Otherwise it is cleared when the screen is closed and the refresh is not run -->
+      <row>
+        <control type="text" persist="true" name="Drop_Source"/>
+        <control type="text" name="Drop_AppointmentGuids"/>
+        <control type="text" name="Drop_StartTime"/>
+        <control type="text" name="Drop_EndTime"/>
+        <control type="text" name="Drop_SchedulerTimeGuid"/>
+        <control type="text" name="Drop_ProviderName"/>
+        <control type="text" name="Drop_CalendarName"/>
+        <control type="text" name="Drop_AppointmentTypeGuid"/>
+        <control type="text" name="Drop_RoomName"/>
+        <control type="text" name="Drop_IsTelemedicine"/>
+        <control type="text" name="Drop_PatientId"
+          datarequest="GetPatientAllFields"
+          appendrequest="PatientId=[Drop_PatientId]"
+          inject="rowDropPatientInfo"/>
+        <!-- Call to get available time slots with the same time as the dropped appointment -->
+        <!-- This allows the system to assign a time slot on the day an appointment is dropped -->
+        <control type="hidden" name="NewTimeGuid"
+          acctsvcreq="true"
+          datarequest="GetAvailableSchedulerTimeGuid"
+          appendrequest="CalendarGuid=[Drop_AppointmentTypeGuid],DateTime=[Drop_StartTime]"
+          inject="rowNewTimeSlot"
+          provoke="Drop_AreAvailableTimes"/>
+        <!-- Call to determine if there are available time slots in the day -->
+        <!-- This allows the system to determine if showing a list of time slots is warranted -->
+        <!-- If no records are returned,the user is not shown a list of time slots for the day -->
+        <control type="hidden" name="Drop_AreAvailableTimes"
+          acctsvcreq="true"
+          datarequest="ConfirmSchedulerTime"
+					appendrequest="calendarGuid=[Drop_AppointmentTypeGuid],date=[Drop_StartTime],topOne=true"
+          inject="rowAvailableTimes"/>
+      </row>
+      <!-- Stores the result of NewTimeGuid call above for use in reveals-->
+      <row name="rowNewTimeSlot">
+        <control type="text" name="New_SchedulerTimeGuid"/>
+      </row>
+      <!-- Stores the result of Drop_AreAvailableTimes above for use in reveals -->
+      <row name="rowAvailableTimes">
+        <control type="text" name="Available_SchedulerTimeGuid"/>
+      </row>
+      <row name="rowDropPatientInfo">
+        <control type="text" name="Drop_PatientCellPhone"/>
+        <control type="text" name="Drop_PatientFirstName"/>
+        <control type="text" name="Drop_PatientMiddleName"/>
+        <control type="text" name="Drop_PatientLastName"/>
+      </row>
+      
+    </group>
+    <!-- The code below uses a series of reveals to display options for the user -->
+    <!-- These include accepting the proposed date/time for the dropped appointment,-->
+    <!-- Selecting a different time for the dropped appointment from a list of avilable time slots -->
+    <!-- Or canceling the move. The calendar is refreshed in each of these options. -->
+    <!-- A matching schedulertimeguid has been found for the dropped record so show the group -->
+    <group name="grpNewSchedulerTimeGuid" reveal="[New_SchedulerTimeGuid]!">
+      <!-- The appointment has a SchedulerTimeGuid (is a normalappointment) so show the row -->
+      <row name="rowNewSchedulerTimeGuid1" reveal="[Drop_SchedulerTimeGuid]!">
+        <!-- user is prompted -->
+        <control type="label" label=""	 span="3"/>
+        <control type="header">Por favor,confirme que desea mover esta cita.</control>
+      </row>
+      <!-- The appointment has a SchedulerTimeGuid (is a normalappointment) so show the row -->
+      <row name="rowNewSchedulerTimeGuid2" reveal="[Drop_SchedulerTimeGuid]!">
+        <control type="label" label=""	 span="2"/>
+        <!-- Cancel button closes the screen and refreshes the calendar from the database -->
+        <control type="button" name="btnCancelMove4" size="large" color="grey"
+          label="Cancel"	 icon="remove" action="close" span="3" provoke="[Drop_Source]=1;AppointmentTimes^AppointmentTimes2"/>
+        <!-- Other time button displays the list of available times by setting New_SchedulerTimeGuid= -->
+        <!-- This hides this group and reveals grpSchedulerTimeGuid (list of available times) -->
+        <control type="button" name="btnOtherTime1" action="trigger"
+          label="Another Time"	 icon="clock" span="3" size="large" color="grey"
+          set="New_SchedulerTimeGuid=" trigger="SelectTimeSlot"/>
+        <!-- Button to complete the move (assigns start,end and SchedulerTimeGuid) -->
+       <control type="button" name="btnCompleteMove2" action="save|close|new"
+          reveal="[Drop_IsTelemedicine]=false"
+          label="Continue"	 span="3" icon="move" color="green" size="large"
+          affector="none" 
+          dataupdate="UpdateSchedulerAppointments"
+          appendupdate="appointmentGuid=[Drop_AppointmentGuids],start=[Drop_StartTime],end=[Drop_EndTime],schedulerTimesGuid=[New_SchedulerTimeGuid],txtMessage=[MoveTextMessage]"
+          provoke="[Drop_Source]=1;AppointmentTimes^AppointmentTimes2"/>
+        <control type="button" name="btnCompleteMove22" action="save|close|new"
+          reveal="[Drop_IsTelemedicine]=true"
+          label="Continue"	 span="3" icon="move" color="green" size="large"
+          affector="none" 
+          dataupdate="UpdateSchedulerAppointments"
+          appendupdate="appointmentGuid=[Drop_AppointmentGuids],start=[Drop_StartTime],end=[Drop_EndTime],schedulerTimesGuid=[New_SchedulerTimeGuid],txtMessage=[MoveTelemedicineTextMessage]"
+          provoke="[Drop_Source]=1;AppointmentTimes^AppointmentTimes2"/>
+      </row>
+    </group>
+
+    <!-- No schedulertimeguid wasfound  (this is an extraordinary appointment) -->
+    <group name="grpNoSchedulerTimeGuid" reveal="[Drop_SchedulerTimeGuid]=">
+      <!-- If this is an extraordinary appointment (no scheduler time guid) allow move -->
+      <!-- to any day and time -->
+      <row>
+        <!-- Prompt the user -->
+        <control type="label" label=""	 span="3"/>
+        <control type="header">Por favor,confirme que desea mover esta cita.</control>
+      </row>
+      <row>
+        <control type="label" label=""	 span="5"/>
+        <!-- Button to cancel the move and refresh the calendar -->
+        <control type="button" name="btnCancelMove5" size="large" color="grey"
+          label="Cancel"	 icon="remove" action="close" span="3" provoke="[Drop_Source]=1;AppointmentTimes^AppointmentTimes2"/>
+        <!-- Button to complete the move (assign the start and end with no SchedulerTimeGuid) -->
+       <control type="button" name="btnCompleteMove3" action="save|close|new"
+          label="Continue"	 span="3" icon="move" color="green" size="large"
+          reveal="[Drop_IsTelemedicine]=false"
+          affector="none" 
+          dataupdate="UpdateSchedulerAppointments"
+          appendupdate="appointmentGuid=[Drop_AppointmentGuids],start=[Drop_StartTime],end=[Drop_EndTime],txtMessage=[MoveTextMessage]"
+          provoke="[Drop_Source]=1;AppointmentTimes^AppointmentTimes2"/>
+      <control type="button" name="btnCompleteMove33" action="save|close|new"
+          label="Continue"	 span="3" icon="move" color="green" size="large"
+          reveal="[Drop_IsTelemedicine]=true"
+          affector="none" 
+          dataupdate="UpdateSchedulerAppointments"
+          appendupdate="appointmentGuid=[Drop_AppointmentGuids],start=[Drop_StartTime],end=[Drop_EndTime],txtMessage=[MoveTelemedicineTextMessage]"
+          provoke="[Drop_Source]=1;AppointmentTimes^AppointmentTimes2"/>
+      </row>
+    </group>
+    <!-- Display group if there is a SchedulerTimeGuid (this is a normal appointment) -->
+    <group name="grpSchedulerTimeGuid" reveal="[Drop_SchedulerTimeGuid]!">
+      <!-- This is a standard (has SchedulerTimeGuid) appointment so show list of time slots-->
+      <row name="rowHasAppointmentGuids1" reveal="[New_SchedulerTimeGuid]=+[Available_SchedulerTimeGuid]!">
+        <!-- Datagrid to display a list of available time slots for this appointment -->
+        <control type="datagrid"
+					span="12" label="Please select a time for this appointment."	
+					name="SelectTimeSlot"
+					rows="15"
+					acctsvcreq="true"
+					filter="ColorFlag=Green"
+					rowcolor="ColorFlag|Green=green"
+          idle="[Drop_AppointmentTypeGuid]="
+					datarequest="GetSchedulerTimesByDate"
+					appendrequest="calendarGuid=[Drop_AppointmentTypeGuid],date=[Drop_StartTime]"
+					source="StartTime2,CalendarName,Description,AptProviderName,AptRoomName"
+					sourcelabels="Time,Calendar,Consultation,Medical,Room"	
+					align="|left|left|left"
+					format="time"
+					sort="StartTime2=asc"
+					key="key"
+					onselectset="Drop_SchedulerTimeGuid=[[SchedulerTimeGuid]]"
+					onselect="btnCompleteMove">
+          <!-- Button to cancel the current move and refresh the calendar -->
+          <control type="button" name="btnCancelMove3"
+          label="Cancel"	 icon="remove" action="close" 
+          provoke="[Drop_Source]=1;AppointmentTimes^AppointmentTimes2"/>
+          <!-- Button to create extraordinary appointment -->
+          <control type="button" name="btnCreateExtraordinary"
+          label="Create Extraordinary Appointment"	 icon="star"
+          reveal="[Drop_IsTelemedicine]=false"
+          action="save|close|new"
+          affector="none" 
+          confirm="Please confirm you want to create an extraordinary appointment."	
+          dataupdate="UpdateSchedulerAppointments"
+				  appendupdate="appointmentGuid=[Drop_AppointmentGuids],start=[Drop_StartTime],end=[Drop_EndTime],schedulerTimesGuid=null,txtMessage=[MoveTextMessage]"
+          provoke="[Drop_Source]=1;AppointmentTimes^AppointmentTimes2"/>
+          <control type="button" name="btnCreateExtraordinary2"
+          label="Create Extraordinary Appointment"	 icon="star"
+          reveal="[Drop_IsTelemedicine]=true"
+          action="save|close|new"
+          affector="none" 
+          confirm="Please confirm you want to create an extraordinary appointment."	
+          dataupdate="UpdateSchedulerAppointments"
+				  appendupdate="appointmentGuid=[Drop_AppointmentGuids],start=[Drop_StartTime],end=[Drop_EndTime],schedulerTimesGuid=null,txtMessage=[MoveTelemedicineTextMessage]"
+          provoke="[Drop_Source]=1;AppointmentTimes^AppointmentTimes2"/>
+        </control>
+      </row>
+      <row showif="never">
+        <!-- Hidden button that completes selection of a time slot from the list -->
+        <control type="button" name="btnCompleteMove" action="save|close|new"
+          affector="none" 
+          dataupdate="UpdateSchedulerAppointments"
+				  appendupdate="appointmentGuid=[Drop_AppointmentGuids],start=[Drop_StartTime],end=[Drop_EndTime],schedulerTimesGuid=[Drop_SchedulerTimeGuid],txtMessage=[MoveTextMessage]"
+          provoke="[Drop_Source]=1;AppointmentTimes^AppointmentTimes2"/>
+      </row>
+      <!-- There is no available time slot or matching time slot -->
+      <!-- This case is a regular appointment being dropped in a day when there are no available time slots -->
+      <row name="rowNoAppointmentGuids1" reveal="[New_SchedulerTimeGuid]=+[Available_SchedulerTimeGuid]=">
+        <control type="label" label=""	 span="3"/>
+        <control type="header">No hay horarios de citas disponibles en esta fecha.</control>
+      </row>
+      <!-- There is no available time slot or matching time slot -->
+      <row name="rowNoAppointmentGuids2" reveal="[New_SchedulerTimeGuid]=+[Available_SchedulerTimeGuid]=">
+        <control type="label" label=""	 span="3"/>
+        <!-- Button to cancel the current move and refresh the calendar -->
+        <control type="button" name="btnCloseNoAvailableTimes" span="3"
+          size="large"
+          color="grey" label="Cancel"	 
+          action="close"
+          provoke="[Drop_Source]=1;AppointmentTimes^AppointmentTimes2"/>
+        <!-- Button to update the appointment and set the SchedulerTimeGuid to null -->
+        <control type="button" name="btnSaveNoAvailableTimes" span="5"
+          size="large"
+          reveal="[Drop_IsTelemedicine]=false"
+          color="grey" label="Create Extraordinary Appointment"	 
+          action="save|close|new"
+          affector="none" 
+          dataupdate="UpdateSchedulerAppointments"
+				  appendupdate="appointmentGuid=[Drop_AppointmentGuids],start=[Drop_StartTime],end=[Drop_EndTime],schedulerTimesGuid=null,txtMessage=[MoveTextMessage]"
+          provoke="[Drop_Source]=1;AppointmentTimes^AppointmentTimes2"/>
+         <control type="button" name="btnSaveNoAvailableTimes2" span="5"
+          size="large"
+          reveal="[Drop_IsTelemedicine]=true"
+          color="grey" label="Create Extraordinary Appointment"	 
+          action="save|close|new"
+          affector="none" 
+          dataupdate="UpdateSchedulerAppointments"
+				  appendupdate="appointmentGuid=[Drop_AppointmentGuids],start=[Drop_StartTime],end=[Drop_EndTime],schedulerTimesGuid=null,txtMessage=[MoveTelemedicineTextMessage]"
+          provoke="[Drop_Source]=1;AppointmentTimes^AppointmentTimes2"/>
+      </row>
+    </group>
+  </section>
+
+  <!-- Locate an available calendar time from a list of appointment slots -->
+	<section type="tabmodal" badge="none" name="SelectTime2" title="Schedule Appointment"	 size="small">
+		<group>
+			<row>
+        <!-- Select the calendar to view -->
+				<control type="select" 
+					name="SelectCalendarGuid2" span="5"
+					datasource="GetSchedulerAppointmentTypesByFacility"
+					filter="Active=true,CalendarType!Surgery" 
+					default="true"
+					source="CalendarName,CalendarGuid" 
+					persist="true"
+					edit="true"  
+					trigger="SelectAppointmentTimes2"/>
+        <!-- Select the date to view -->
+				<control type="date" span="4" 
+					name="SelectDate2" 
+					default="now"
+					trigger="SelectAppointmentTimes2"/>
+			</row>
+			<row>
+        <!-- Display the list of available times and select one for the appointment -->
+				<control type="datagrid" 
+					span="12"
+					name="SelectAppointmentTimes2"
+					label="Click the time to move the selected appointment."	
+					rows="20"
+					fitrows="true"
+					acctsvcreq="true"
+					filter="ColorFlag=Green"
+					rowcolor="ColorFlag|Green=green"
+          idle="[SelectCalendarGuid2]="
+					datarequest="GetSchedulerTimesByDate"
+					appendrequest="calendarGuid=[SelectCalendarGuid2],date=[SelectDate2]"
+					source="StartTime2,Description,AptProviderName,AptRoomName"
+					sourcelabels="Time,Consultation,Doctor,Room"	
+					align="|left|left|left"
+					format="time"
+					sort="StartTime2=asc"
+					key="rowguid"
+					onselectset="Apt_Start=[[StartTime]],Apt_SchedulerTimesGuid=[[SchedulerTimeGuid]],Apt_AppointmentTypeGuid=[SelectCalendarGuid2],Apt_ProviderId=[[ProviderId]],Apt_RoomGuid=[[RoomGuid]],NewApt_Start=[[StartTime]],NewApt_SchedulerTimesGuid=[[SchedulerTimeGuid]],NewApt_AppointmentTypeGuid=[SelectCalendarGuid2],NewApt_ProviderId=[[ProviderId]],NewApt_RoomGuid=[[RoomGuid]]"
+					onselect="CloseMoveAppointmentButton,GetCalendarBenefits"/>
+			</row>
+			<row showif="never">
+        <!-- Close this window when a time slot has been selected -->
+				<control type="button"
+					name="CloseMoveAppointmentButton"
+					action="close"/>
+			</row>
+		</group>  
+	</section>
+
+	<!-- Enter and edit patient appointments -->
+	<section type="tabmodal" badge="none" name="NewAppointmentModal" title="Appointment"	 size="small">
+		<group showif="never">
+      <row>
+        <!-- Store the color flag from the appointment -->
+        <control type="hidden" name="NewApt_ColorFlag"/>
+        <control type="hidden" name="NewApt_Source" persist="true"/>
+        <!-- Store the indicator that this is an extraordinary appointment (allows editing of datetime,physician and location) -->
+        <control type="hidden" name="NewApt_AllowEdit"/>
+        <!-- Get the appointment information from the appointment record (existing appointment) -->
+         <control type="hidden"
+          name="NewApt_AppointmentGuid"
+          datarequest="GetSchedulerAppointmentsByAppointmentGuid"
+          appendrequest="AppointmentGuid=[NewApt_AppointmentGuid]"
+          inject="rowNewAptGetPatient"
+          provoke="NewApt_PatientId"/>
+      </row>
+			<row name="rowNewAptGetPatient">
+        <!-- Get the patient information and insert into the form -->
+        <control type="hidden" name="NewApt_Reschedule"/>
+				<control type="hidden" name="NewApt_PatientId"
+					datarequest="GetPatientAllFields"
+					appendrequest="PatientId=[NewApt_PatientId]"
+					inject="NewApt_PatientInfo,rowPatientId"/>
+	  	</row>
+			<row>
+        <!-- Get the calendar information (prestacion,providerid,etc.) and inject into the form -->
+				<control type="hidden" name="GetCalendarBenefits"
+						datarequest="GetSchedulerAppointmentTypesByAppointmentTypeGuid"
+						appendrequest="AppointmentGuid=[NewApt_AppointmentTypeGuid]"
+						inject="rowAppointmentServices"
+            provoke="GetDayBlockedStatus"/>
+			</row>
+      <row>
+        <!-- Close this window when redirecting to the patient chart -->
+        <control type="button" name="btnCloseNewAppointmentModal"
+          action="close|new"/>
+      </row>
+      <row name="rowBlockedDayStatus">
+        <control type="hidden" name="GetDayBlockedStatus"
+          acctsvcreq="true" 
+          datarequest="GetSchedulerTimesBlockedDay"
+          appendrequest="calendarGuid=[NewApt_AppointmentTypeGuid],date=[NewApt_Start]"
+          inject="rowBlockedDayStatus"/>
+        <control type="hidden" name="ExceptionExists" default="false"/>
+      </row>
+		</group>
+    <group name="grpSearchForPatient" reveal="[NewApt_PatientId]=">
+			<row name="rowPatientSearch" reveal="[NewApt_ColorFlag]=Green">
+				 <!-- Search for patients and inject info into the form (hide once patient is chosen)-->
+				<control type="label" label="Search"	 span="1"/>
+				<control type="text" name="Sch1_PatientFirstName" span="3" action="trigger" trigger="btnTriggerFind1"/>
+				<control type="text" name="Sch1_PatientMiddleName" span="3" action="trigger" trigger="btnTriggerFind1"/>
+				<control type="text" name="Sch1_PatientLastName" span="3" action="trigger" trigger="btnTriggerFind1"/>
+				<control type="button" name="btnTriggerFind1"
+					span="1" icon="search" label=""
+					action="redirect" 
+          trigger="grdFindPatient1"
+					target="mdlFindPatient1"/>
+				<control type="button" name="btnResetFind1"
+					span="1" icon="remove" label=""
+					action="trigger" 
+					set="Sch1_PatientFirstName=,Sch1_PatientMiddleName=,Sch1_PatientLastName="/>
+			</row>
+		</group>
+
+		<group name="grpBlockedAppointment" reveal="[NewApt_ColorFlag]=Gray">
+      <!-- The timeslot is currently blocked but this might be because the day is blocked -->
+      <row name="rowUnblockUserPrompt" reveal="[ExceptionExists]=false">
+        <!-- user is prompted that the time slot is blocked-->
+        <control type="label" label=""	 span="3"/>
+        <control type="header">Por favor,confirma que desea desbloquear esta cita.</control>
+      </row>
+      <row name="rowUnblockTimeSlot" reveal="[ExceptionExists]=false">
+        <control type="label" label=""	 span="5"/>
+        <!-- Cancel button closes the screen -->
+        <control type="button" name="btnCancelUnblockTimeSlot" size="large" color="grey" span="3"
+          label="Cancel"	 icon="remove" action="close|new"/>
+        <!-- Button to unblock the appointment time -->
+       <control type="button" name="btnUnblockTimeSlot" action="save|close|new"
+          label="Unlock"	 span="3" icon="cloud-upload" color="green" size="large"
+          affector="none" 
+					acctsvc="true"
+				  datainsert="InsertSchedulerExceptions"
+				  appendinsert="CalendarGuid=[NewApt_AppointmentTypeGuid],SchedulerTimeGuid=[NewApt_SchedulerTimesGuid],Type=Off,Active=true,Reason=Blocked,StartDateTime=[NewApt_Start],EndDateTime=[NewApt_Start]"
+				  provoke="[NewApt_Source]=1;AppointmentTimes,[NewApt_Source]=2;AppointmentTimes2,[NewApt_Source]=3;Appointments"/>
+      </row>
+      <row name="rowDayBlockedUserPrompt" reveal="[ExceptionExists]=true">
+        <!-- user is prompted that the time slot is blocked-->
+        <control type="label" label=""	 span="5"/>
+        <control type="header">Este día está bloqueado.</control>
+      </row>
+      <row name="rowDayBlockedCloseButton" reveal="[ExceptionExists]=true">
+        <control type="label" label=""	 span="8"/>
+        <control type="button" name="btnCloseDayBlocked" size="large" color="grey" span="3"
+          label="Close"	 icon="remove" action="close|new"/>
+      </row>
+    </group>
+    
+		<group name="NewApt_PatientInfo"  reveal="[NewApt_ColorFlag]!Gray">	
+			<row name="rowCalPatientNames" reveal="[NewApt_PatientId]!">
+				<control type="label" label=""	 span="1"/>
+				<control type="text" name="NewApt_PatientFirstName" span="3" readonly="true" required="true"/>
+				<control type="text" name="NewApt_PatientMiddleName" span="3" readonly="true"  required="true"/>
+				<control type="text" name="NewApt_PatientLastName" span="3" readonly="true"/> 
+        <!-- Button to redirect to the patient chart (shown only in edit mode)-->
+        <!-- This also closes this modal -->
+        <control type="button"
+				  reveal="[NewApt_AppointmentGuid]!" 
+				  name="btnAdmitAppointment"
+				  span="2"
+				  action="redirect" 
+				  icon="search"
+				  label="Patient"			
+          preset="Admit_AppointmentGuid=[NewApt_AppointmentGuid]"
+          trigger="Admit_AppointmentGuid,btnCloseNewAppointmentModal"
+				  target="PatientTabModal"/> 
+		</row>
+		<row>
+			<control type="label" label="Account"		 span="2"/>
+			<control type="text" name="NewApt_AccountNumber" span="3" readonly="true"/>
+			<control type="label" label="Birth"	 span="2"/>
+			<control type="date" name="NewApt_PatientDOB" span="3" readonly="true"/>
+      <!-- Button to complete and appointment (shown only in edit mode)-->
+      <control type="button" name="btnCompleteAppointment"
+          reveal="[NewApt_AppointmentGuid]!"
+          span="2" action="save|close|new" color="green"
+          icon="cloud-upload" label="Complete"	
+          confirm="Please confirm you want to complete this appointment."
+          affector="none"
+          dataupdate="UpdateSchedulerAppointments"
+          appendupdate="appointmentGuid=[NewApt_AppointmentGuid],Status=Completed"
+          provoke="[NewApt_Source]=1;AppointmentTimes,[NewApt_Source]=2;AppointmentTimes2,[NewApt_Source]=3;Appointments"/>
+			<!-- Block an appointment  -->
+			<control type="button"
+					name="btnBlockTime"
+					span="2"
+				  reveal="[NewApt_AppointmentGuid]=" 
+				  label="Block"	 icon="remove" color="grey"
+				  action="save|close|new"
+				  affector="none"
+				  acctsvc="true"
+				  confirm="Please confirm you want to block this appointment time."
+				  datainsert="InsertSchedulerExceptions"
+				  appendinsert="CalendarGuid=[NewApt_AppointmentTypeGuid],SchedulerTimeGuid=[NewApt_SchedulerTimesGuid],Type=Off,Active=true,Reason=Blocked,StartDateTime=[NewApt_Start],EndDateTime=[NewApt_Start]"
+				  provoke="[NewApt_Source]=1;AppointmentTimes,[NewApt_Source]=2;AppointmentTimes2,[NewApt_Source]=3;Appointments"/>
+		</row>
+		<row>
+			<control type="label" label="Phone"	 span="2" />
+			<control type="text" name="NewApt__PtPhoneNumber" span="3" readonly="true" />
+			<control type="label" label="Cell Phone"	 span="2" />
+			<control type="text" name="NewApt__PatientCellPhone" span="3" readonly="true"/>
+      <!-- Button to set an appointment to No Show (shown only in edit mode) -->
+      <control type="button" name="btnNoShowAppointment"
+          reveal="[NewApt_AppointmentGuid]!"
+          span="2" action="save|close|new" color="orange"
+          icon="cloud-upload" label="No Show"	
+          confirm="Please confirm you want to set this appointment as No Show."
+          affector="none"
+          dataupdate="UpdateSchedulerAppointments"
+          appendupdate="appointmentGuid=[NewApt_AppointmentGuid],Status=No Show"
+          provoke="[NewApt_Source]=1;AppointmentTimes,[NewApt_Source]=2;AppointmentTimes2,[NewApt_Source]=3;Appointments"/>
+		</row>
+		<row>
+			<control type="label" label="Address"	 span="2"/>
+			<control type="text" name="NewApt_PrimaryPayorAddLineOne" span="3" readonly="true"/>
+			<control type="label" label="City"	 span="2"/>
+			<control type="text" name="NewApt_PrimaryPayorCity" span="3" readonly="true"/>
+      <!-- Button to cancel an appointment (shown only in edit mode) -->
+      <control type="button" name="btnCancelAppointment"
+          reveal="[NewApt_AppointmentGuid]!"
+          span="2" action="save|close|new" color="red"
+          icon="cloud-upload" label="Cancel"	
+          confirm="Please confirm you want to cancel this appointment."
+          affector="none"
+          dataupdate="UpdateSchedulerAppointments"
+          appendupdate="appointmentGuid=[NewApt_AppointmentGuid],Status=Canceled,start=[NewApt_Start],txtMessage=[CancelTextMessage]"
+          provoke="[NewApt_Source]=1;AppointmentTimes,[NewApt_Source]=2;AppointmentTimes2,[NewApt_Source]=3;Appointments"/>
+		</row>
+		<row>
+			<control type="label" label="Province"	 span="2"/>
+			<control type="text" name="NewApt_PrimaryPayorAddLineTwo" span="3" readonly="true"/>
+			<control type="label" label="Country"	 span="2"/>
+			<control type="text" name="NewApt_PrimaryPayorState" span="3" readonly="true"/>
+      <!-- Flag to reschedule the appointment -->
+      <control type="button" name="btnNewAptReschedule"
+        reveal="[NewApt_Reschedule]=false"
+        span="2" action="save|close|new" color="red"
+        label="Reschedule"	
+        confirm="Please confirm you want to set this appointment to be rescheduled."	
+        affector="none"
+        dataupdate="UpdateSchedulerAppointments"
+        appendupdate="appointmentGuid=[NewApt_AppointmentGuid],reschedule=true,txtMessage=[RescheduleTextMessage]"
+        provoke="[NewApt_Source]=1;AppointmentTimes,[NewApt_Source]=2;AppointmentTimes2,[NewApt_Source]=3;Appointments"/>
+      <control type="button" name="btnNewAptCancelReschedule"
+        reveal="[NewApt_Reschedule]=true"
+        span="2" action="save|close|new" color="green"
+        label="Cancel"	 icon="refresh"
+        confirm="Please confirm you want to cancel this appointment."	
+        affector="none"
+        capture="NewApt_AppointmentInfo"
+        dataupdate="UpdateSchedulerAppointments"
+        appendupdate="appointmentGuid=[NewApt_AppointmentGuid],reschedule=false,txtMessage=[MoveTextMessage]"
+        provoke="[NewApt_Source]=1;AppointmentTimes,[NewApt_Source]=2;AppointmentTimes2,[NewApt_Source]=3;Appointments"/>
+		</row>
+		<row>
+			<control type="label" label="Email"		 span="2"/>
+			<control type="text" name="NewApt_PatientEmail" span="3" readonly="true"/>
+			<control type="label" label="Nationality"	 span="2" />
+			<control type="select" name="NewApt_Nationality" span="3"
+				source="Country,Code" datasource="GetCountries" 
+				readonly="true" />
+		</row>
+	</group>
+	<group name="NewApt_AppointmentInfo" reveal="[NewApt_ColorFlag]!Gray">
+		<row name="rowPatientId">
+      <!-- Store the patientid -->
+			<control type="hidden" name="NewAptInfo_PatientId"/>
+		</row>
+    <row>
+      <!-- Store the schedulertimesguid -->
+      <control type="hidden" name="NewApt_SchedulerTimesGuid"/>
+      <control type="hidden" name="NewApt_SchedulerTimeGuid"/>
+    </row>
+		<row>
+      <!-- Select the calendar for the appointment (editable directly only for extraordinary appointments) -->
+      <!-- (Other appointmens are scheduled by selecting a time from a calndar view.) -->
+			<control type="label" label="Calendar"		 span="2" />
+			<control type="select" 
+        name="NewApt_AppointmentTypeGuid"
+        namefield="NewAptCalendarName"
+        span="8"
+        datasource="GetSchedulerAppointmentTypesByFacility" 
+        source="CalendarName,CalendarGuid" 
+        filter="Active=true"
+        required="true"
+        readonly="true"/>
+      <!-- Button to select a time slot from a calendar view (with no default) -->
+      <control type="button" 
+				reveal="[NewApt_AppointmentTypeGuid]="
+				name="btnSetNewAppointmentButton"
+				span="2" label="Schedule"	 icon="calendar"
+				trigger="SelectAppointmentTimes2"
+				action="redirect"
+				target="SelectTime2"/>
+      <!-- Button to select a time slot from a calendar view (with default)-->
+      <control type="button" 
+				reveal="[NewApt_AppointmentTypeGuid]!"
+				name="btnMoveAppointmentButton"
+				span="2" label="Move"	 icon="calendar"
+        preset="SelectCalendarGuid2=[NewApt_AppointmentTypeGuid]"
+				trigger="SelectAppointmentTimes2"
+				action="redirect"
+				target="SelectTime2"/>
+    </row>
+    <row>
+      <!-- The datetime of the appointment (editable directly only for extraordinary appointments) -->
+			<control type="label" label="Scheduled"	 span="2" />
+			<control type="datetime" name="NewApt_Start" 
+				span="4" edit="[NewApt_AllowEdit]=true" required="true"/>
+      <control type="label" name="DurationLabel" label="Duration"	 badge="min" span="3" reveal="[NewApt_AllowEdit]=true" persist="true"/>
+			<control type="integer" name="NewApt_DurationMinutes" min="0" max="600"
+				span="2" reveal="[NewApt_AllowEdit]=true"/>
+		</row>
+		<row>
+      <!-- The provider for the appointment -->
+			<control type="label" label="Physician"			 span="2" />
+			<control type="select" name="NewApt_ProviderId" span="4" 
+        namefield="NewAptProvider"
+				acctsvc="true" datasource="GetUsersByAttributes" append="LocationId=(facilityData.LocationId),role=Physician|MedWave" 
+				source="UserFirstMiddleLast,UserId" 
+				edit="[NewApt_AllowEdit]=true"/>
+      <!-- The exam room/office for the appointent -->
+			<control type="label" label="Room"	 span="1" />
+			<control type="select" name="NewApt_RoomGuid" span="4" 
+				datasource="GetSchedulerRoomsByFacility"
+				filter="Active=true"
+				explicit="true"
+		  	source="RoomName,RoomGuid"  
+				edit="[NewApt_AllowEdit]=true"/>
+		</row>
+		<row name="rowAppointmentServices">
+      <!-- The prestacion from the Calendar -->
+			<control type="label" label="Benefit"	 span="2" />
+			<control type="select" injectname="BenefitList" name="NewApt_ExamGuid" span="9" required="true"
+				tooltip="Enter the code or partial description to search for the benefit."	
+				namefield="ServiceName"
+				searchable="true"
+				acctsvc="true"
+				datasource="GetExaminations"
+				filter="Active=true"
+				source="ExamCode|ExamName,Guid" readonly="true"/>
+		</row>
+		<row>
+      <!-- Reason for the appointment -->
+			<control type="label" label="Reason"	 span="2"/>
+			<control type="text" name="NewApt_Subject" edit="true" required="true" span="9" 
+				tooltip="Enter the reason for the visit."	/>
+		</row>
+    <!-- buttongroup indicates if this is a telemedicine appointment (shows if patient has an email) -->
+    <row name="rowNewAptTelemedicine" reveal="[NewApt_PatientEmail]!">
+      <control type="label" label="Telemedicine"	 span="2"/>
+      <control type="buttongroup" name="NewApt_IsTelemedicine"
+        span="3" source="True,False" sourcelabels="Yes,No"	 default="False" edit="true"/>
+    </row>
+	</group>	
+  <!-- Save telemedicine appointments -->
+  <group name="grpSaveTelemedicineAppointmentButtons" reveal="[NewApt_IsTelemedicine]=True">
+		<row name="rowSaveNewTelemedicineAppointment" reveal="[NewApt_ColorFlag]!Gray">
+		  <control type="label" label=""	 align="left" span="2" />
+      <!-- Close the appointment modal without saving -->
+		  <control type="button" name="CancelNewTelemedicineAppointment"
+			  span="3" size="large"
+			  action="close|new"
+			  color="grey"
+			  icon="cancel"
+			  label="Close"	/>
+      <!-- Save a newappointment -->
+		  <control type="button" name="SaveNewTelemedicineAppointment"
+        reveal="[NewApt_AppointmentGuid]="
+			  span="5" size="large"
+			  action="save|close|new"
+			  color="grey"
+			  affector="NewApt_AppointmentGuid"
+				setaffector="AppointmentGuid"
+			  icon="cloud-upload"
+			  label="Save Telemedicine Appointment"	
+        confirmsvc="true"
+        confirmrequest="ConfirmAppointmentTime"
+        appendconfirm="CalendarGuid=[NewApt_AppointmentTypeGuid],SchedulerTimesGuid=[NewApt_SchedulerTimesGuid],StartDateTime=[NewApt_Start]"
+        confirmresponse="length=0|This appointment time has been taken by another user"
+			  capture="NewApt_AppointmentInfo"
+			  datainsert="InsertSchedulerAppointments"
+				compare="[NewAptInfo_PatientId]!|Por favor seleccione un paciente para esta cita."
+			  appendinsert="Active=true,Status=Scheduled,txtMessage=[NewTelemedicineTextMessage],reschedule=false"
+			  provoke="[NewApt_Source]=1;AppointmentTimes,[NewApt_Source]=2;AppointmentTimes2,[NewApt_Source]=3;Appointments"/>
+			<!-- Update appointment -->
+			<control type="button" name="btnUpdateTelemedicineAppointment"
+        reveal="[NewApt_AppointmentGuid]!"
+				span="5" size="large" color="grey"
+				action="save|close|new" 
+				confirm="Please confirm you want to update this appointment"	
+				affector="none"
+				capture="NewApt_AppointmentInfo"
+				label="Update Telemedicine Appointment"	 
+				icon="cloud-upload"
+				dataupdate="UpdateSchedulerAppointments"
+				appendupdate="appointmentGuid=[NewApt_AppointmentGuid],txtMessage=[UpdateTelemedicineTextMessage]"
+				provoke="[NewApt_Source]=1;AppointmentTimes,[NewApt_Source]=2;AppointmentTimes2,[NewApt_Source]=3;Appointments"/>
+      </row>
+		</group>
+  <!-- Save regular appointments -->
+	<group name="grpSaveNewAppointmentButtons" reveal="[NewApt_IsTelemedicine]=False">
+		<row name="rowSaveNewAppointment" reveal="[NewApt_ColorFlag]!Gray">
+		  <control type="label" label=""	align="left" span="2" />
+      <!-- Close the appointment modal without saving -->
+		  <control type="button" name="CancelNewAppointment"
+			  span="3" size="large"
+			  action="close|new"
+			  color="grey"
+			  icon="cancel"
+			  label="Close"	/>
+      <!-- Save a newappointment -->
+		  <control type="button" name="SaveNewAppointment"
+        reveal="[NewApt_AppointmentGuid]="
+			  span="3" size="large"
+			  action="save|close|new"
+			  color="grey"
+			  affector="NewApt_AppointmentGuid"
+				setaffector="AppointmentGuid"
+			  icon="cloud-upload"
+			  label="Save"	
+        confirmsvc="true"
+        confirmrequest="ConfirmAppointmentTime"
+        appendconfirm="CalendarGuid=[NewApt_AppointmentTypeGuid],SchedulerTimesGuid=[NewApt_SchedulerTimesGuid],StartDateTime=[NewApt_Start]"
+        confirmresponse="length=0|This appointment time has been taken by another user"
+			  capture="NewApt_AppointmentInfo"
+			  datainsert="InsertSchedulerAppointments"
+				compare="[NewAptInfo_PatientId]!|Por favor seleccione un paciente para esta cita."
+			  appendinsert="Active=true,Status=Scheduled,txtMessage=[NewTextMessage],reschedule=false"
+			  provoke="[NewApt_Source]=1;AppointmentTimes,[NewApt_Source]=2;AppointmentTimes2,[NewApt_Source]=3;Appointments"/>
+			<!-- Update appointment -->
+			<control type="button" name="btnUpdateAppointment"
+        reveal="[NewApt_AppointmentGuid]!"
+				span="3" size="large" color="grey"
+				action="save|close|new" 
+				confirm="Please confirm you want to update this appointment"	
+				affector="none"
+				capture="NewApt_AppointmentInfo"
+				label="Update"	 
+				icon="cloud-upload"
+				dataupdate="UpdateSchedulerAppointments"
+				appendupdate="appointmentGuid=[NewApt_AppointmentGuid],txtMessage=[UpdateTextMessage]"
+				provoke="[NewApt_Source]=1;AppointmentTimes,[NewApt_Source]=2;AppointmentTimes2,[NewApt_Source]=3;Appointments"/>
+      </row>
+		</group>
+  </section>
+
+  <!-- View completed or no show patient appointments -->
+	<section type="tabmodal" badge="none" name="CompletedAppointmentModal" title="Completed Appointment"	 size="small">
+		<group showif="never">
+      <row>
+        <!-- Get the appointment information from the appointment record (existing appointment) -->
+         <control type="text"
+          name="Complete_AppointmentGuid"
+          datarequest="GetSchedulerAppointmentsByAppointmentGuid"
+          appendrequest="AppointmentGuid=[Complete_AppointmentGuid]"
+          inject="rowCompleteGetPatient"
+          provoke="Complete_PatientId"/>
+      </row>
+			<row name="rowCompleteGetPatient">
+        <!-- Get the patient information and insert into the form -->
+				<control type="text" name="Complete_PatientId"
+					datarequest="GetPatientAllFields"
+					appendrequest="PatientId=[Complete_PatientId]"
+          inject="CompletedPatientInfo"
+          provoke="GetCompleteCalendarBenefits"/>
+	  	</row>
+			<row>
+        <!-- Get the calendar information (prestacion,providerid,etc.) and inject into the form -->
+				<control type="hidden" name="GetCompleteCalendarBenefits"
+						datarequest="GetSchedulerAppointmentTypesByAppointmentTypeGuid"
+						appendrequest="AppointmentGuid=[Complete_AppointmentTypeGuid]"
+						inject="rowCompleteAppointmentServices"/>
+			</row>
+      <row>
+        <!-- Close this window when redirecting to the patient chart -->
+        <control type="button" name="btnCloseCompletedAppointmentModal"
+          action="close|new"/>
+      </row>
+		</group>
+		<group name="CompletedPatientInfo">	
+			<row>
+				<control type="label" label=""	 span="1"/>
+				<control type="text" name="Complete_PatientFirstName" span="3" readonly="true" required="true"/>
+				<control type="text" name="Complete_PatientMiddleName" span="3" readonly="true"  required="true"/>
+				<control type="text" name="Complete_PatientLastName" span="3" readonly="true"/> 
+        <!-- Button to redirect to the patient chart (shown only in edit mode)-->
+        <!-- This also closes this modal -->
+        <control type="button"
+				  name="btnCompletedAdmitAppointment"
+				  span="2"
+				  action="redirect" 
+				  icon="search"
+				  label="Patient"			
+          preset="Patient_AppointmentGuid=[Complete_AppointmentGuid]"
+          trigger="Patient_AppointmentGuid,btnCloseCompletedAppointmentModal"
+				  target="PatientTabModal"/> 
+		</row>
+		<row>
+			<control type="label" label="Account"		 span="2"/>
+			<control type="text" name="Complete_AccountNumber" span="3" readonly="true"/>
+			<control type="label" label="Birth"	 span="2"/>
+			<control type="date" name="Complete_PatientDOB" span="3" readonly="true"/>
+		</row>
+		<row>
+			<control type="label" label="Phone"	 span="2" />
+			<control type="text" name="Complete__PtPhoneNumber" span="3" readonly="true" />
+			<control type="label" label="Cell Phone"	 span="2" />
+			<control type="text" name="Complete__PatientCellPhone" span="3" readonly="true"/>
+		</row>
+		<row>
+			<control type="label" label="Address"	 span="2"/>
+			<control type="text" name="Complete_PrimaryPayorAddLineOne" span="3" readonly="true"/>
+			<control type="label" label="City"	 span="2"/>
+			<control type="text" name="Complete_PrimaryPayorCity" span="3" readonly="true"/>
+		</row>
+		<row>
+			<control type="label" label="Province"	 span="2"/>
+			<control type="text" name="Complete_PrimaryPayorAddLineTwo"  span="3" readonly="true"/>
+			<control type="label" label="Country"	 span="2"/>
+			<control type="text" name="Complete_PrimaryPayorState" span="3" readonly="true"/>
+		</row>
+		<row>
+			<control type="label" label="Email"		 span="2"/>
+			<control type="text" name="Complete_PatientEmail" span="3" readonly="true"/>
+			<control type="label" label="Nationality"	 span="2" />
+			<control type="select" name="Complete_Nationality" span="3"
+				source="Country,Code" datasource="GetCountries" 
+				readonly="true" />
+		</row>
+	</group>
+	<group name="Complete_AppointmentInfo">
+		<row name="rowCompletePatientId">
+      <!-- Store the patientid -->
+			<control type="hidden" name="CompleteInfo_PatientId"/>
+		</row>
+    <row>
+      <!-- Store the schedulertimesguid -->
+      <control type="hidden" name="Complete_SchedulerTimesGuid"/>
+    </row>
+		<row>
+      <!-- Select the calendar for the appointment (editable directly only for extraordinary appointments) -->
+      <!-- (Other appointmens are scheduled by selecting a time from a calndar view.) -->
+			<control type="label" label="Calendar"		 span="2" />
+			<control type="select" 
+        name="Complete_AppointmentTypeGuid"
+        span="8"
+        datasource="GetSchedulerAppointmentTypesByFacility" 
+        source="CalendarName,CalendarGuid" 
+        filter="Active=true"
+        required="true"
+        readonly="true"/>
+    </row>
+    <row>
+      <!-- The datetime of the appointment (editable directly only for extraordinary appointments) -->
+			<control type="label" label="Scheduled"	 span="2" />
+			<control type="datetime" name="Complete_Start" 
+				span="4" persist="true" readonly="true"/>
+			<control type="hidden" name="Complete_SchedulerTimeGuid"/>
+      <!-- The status of the appointment (readonly) -->
+      <control type="label" label="Status"	 span="1"/>
+      <control type="select" name="Complete_Status" span="4"
+        source="Scheduled,Confirmed,Completed,No Show,Canceled"
+        sourcelabels="Scheduled,Confirmed,Completed,No Show,Canceled"	
+        readonly="true" default="Scheduled"/>
+		</row>
+		<row>
+      <!-- The provider for the appointment -->
+			<control type="label" label="Physician"			 span="2" />
+			<control type="select" name="Complete_ProviderId" span="4" 
+				acctsvc="true" datasource="GetUsersByAttributes" append="LocationId=(facilityData.LocationId),role=Physician|MedWave" 
+				source="UserFirstMiddleLast,UserId" 
+				readonly="true"/>
+      <!-- The exam room/office for the appointent -->
+			<control type="label" label="Room"	 span="1" />
+			<control type="select" name="Complete_RoomGuid" span="4" 
+				datasource="GetSchedulerRoomsByFacility"
+				filter="Active=true"
+				explicit="true"
+		  	source="RoomName,RoomGuid"  
+				readonly="true"/>
+		</row>
+		<row name="rowCompleteAppointmentServices">
+      <!-- The prestacion from the Calendar -->
+			<control type="label" label="Benefit"	 span="2" />
+			<control type="select" injectname="Complete_BenefitList" name="Complete_ExamGuid"      span="9"
+				tooltip="Enter the code or partial description to search for the benefit."	
+				searchable="true"
+				acctsvc="true"
+				datasource="GetExaminations"
+				filter="Active=true"
+				source="ExamCode|ExamName,Guid" readonly="true"/>
+		</row>
+		<row>
+      <!-- Reason for the appointment -->
+			<control type="label" label="Reason"	 span="2"/>
+			<control type="text" name="Complete_Subject" readonly="true" span="9" 
+				tooltip="Enter the reason for the visit."	/>
+		</row>
+    <!-- buttongroup indicates if this is a telemedicine appointment (shows if patient has an email) -->
+    <row name="rowCompleteTelemedicine" reveal="Complete_PatientEmail!">
+      <control type="label" label="Telemedicine"	 span="2"/>
+      <control type="buttongroup" name="Complete_IsTelemedicine"
+        span="3" source="True,False" sourcelabels="Yes,No"	 readonly="true"/>
+    </row>
+	</group>	
+	<group>
+		<row>
+      <control type="label" label="" span="8"/>
+      <!-- Close the appointment modal without saving -->
+		  <control type="button" name="CancelCompletedAppointment"
+			  span="3" size="large"
+			  action="close|new"
+			  color="grey"
+			  icon="cancel"
+			  label="Close"	/>
+    </row>
+	</group>
+  </section>
+
+  <!-- Find patients by name/MRN/Account Number  -->	
+  <section type="tabmodal" badge="none" name="mdlFindPatient1" title="Search for Patients"	 size="small">
+		<group>
+			<row>
+        <!-- Display a list of patients for the selected criteria -->
+				<control type="datagrid"
+					label="Click on the patient to insert in the appointment."	 
+					name="grdFindPatient1"
+					searchable="true"
+					span="12"
+					rows="20"
+					acctsvcreq="true" datarequest="GetPatientNamesMatchingByFacilityDanEdition"  
+					appendrequest="firstName=[Sch1_PatientFirstName],middleName=[Sch1_PatientMiddleName],lastName=[Sch1_PatientLastName]"
+					source="AccountNumber,MedicalRecordNumber,PatientDOB,PatientFullName,OpenPatientVisit"
+					sourcelabels="Account,File,Birth,Name,Open Visit"	
+					align="||left|left"
+					format="||date||boolean"
+					sort="PatientFullName=asc"
+					key="RecordUniqueId"
+					onselectset="NewApt_PatientId=[[RecordUniqueId]]"
+					onselect="NewApt_PatientId,CloseFindPatient1"/>
+				</row>
+        <!-- Close this screen when a patient isselected -->
+				<row showif="never">
+					<control type="button" name="CloseFindPatient1" action="close"/>
+				</row>
+      </group>
+    </section>
+  <!-- End calendar management -->
+</partial>

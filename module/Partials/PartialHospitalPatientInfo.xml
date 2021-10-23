@@ -1,0 +1,97 @@
+﻿<partial>
+  <!-- Partial outpatient patient demographic information -->
+  <!-- Used in clinic nurse and clinic physician modules -->
+  <row>
+    <control type="hidden" name="HasOpenVisit"/>
+    <control type="hidden" name="PatientVisit"/>
+  </row>
+  <row>
+      <control type="label" label="Name"	 align="left" span="4"/>
+      <control type="label" label="Parent"	 align="left" span="4"/>
+      <control type="label" label="Maternal"	 align="left" span="4"/>
+  </row>
+  <row>
+    <control type="text" name="Consult_PatientFirstName" span="4" required="true" edit="true"  />
+    <control type="text" name="Consult_PatientMiddleName" span="4" required="true" edit="true"  />
+    <control type="text" name="Consult_PatientLastName" span="4" edit="true" />
+  </row>
+  <row>
+    <control type="label" label="Birth"	 span="2" />
+    <control type="date" name="Consult_PatientDOB" span="3" required="true" edit="true" compare="≤now"/>
+    <control type="text" name="Consult_PatientAge" span="3" readonly="true"/>
+    <control type="label" label="Sex"	 span="1" />
+    <control type="select" 
+      name="Consult_PatientSex" span="3" 
+      required="true" 
+      source="Male,Female,Indeterminate"  
+      edit="true" 
+      sourcelabels="1 Male,2 Female,3 Undefined,4 Unknown"	/>
+  </row>
+  <row>
+      <control type="label" label="Account"	 span="2" />
+    <control type="text" name="Consult_AccountNumber" span="3"
+       required="true" edit="true"/>
+    <control type="text" name="Consult_MedicalRecordNumber" span="2" readonly="true"/> 
+    <control type="label" label="Marital Status"	 span="2" />
+    <control type="select" name="Consult_PtMaritalStatus" span="3"
+      datasource="GetLookupMaritalStatus"
+      source="MaritalStatus,MaritalStatus"
+      explicit="true" 
+      edit="true"/>
+  </row>
+  <row>
+    <control type="label" label="Phone"	 span="2" />
+    <control type="text" name="Consult_PtPhoneNumber" span="4"
+      placeholder="Telephone" edit="true" />
+    <control type="label" label="Cell Phone"	 span="2" />
+    <control type="text" name="Consult_PatientCellPhone" span="4" edit="true"/>
+  </row>
+  <row name="rowFinancialClass" reveal="btngrpShow=Open">
+    <control type="label" label="Financial Class"	 span="2"/>
+    <control type="select" name="Consult_FinancialClass" span="4"
+      searchable="multiple"
+      source="A,B,C,D" edit="true" />
+    <control type="label" label="Companion"	 span="2"/>
+    <control type="text" name="Consult_PrimaryPayorFirstName" span="4"
+      edit="true"/>
+  </row>
+  <row name="rowAddress" reveal="btngrpShow=Open">
+    <control type="label" label="Address"	 span="2"/>
+    <control type="text" name="Consult_PrimaryPayorAddLineOne" span="4" edit="true"/>
+    <control type="label" label="City"	 span="2"/>
+    <control type="text" name="Consult_PrimaryPayorCity" span="4"  edit="true"/>
+  </row>
+  <row name="rowProvince" reveal="btngrpShow=Open"> 
+    <control type="label" label="Province"	 span="2"/>
+    <control type="text" name="Consult_PrimaryPayorAddLineTwo"  span="4" edit="true"/>
+    <control type="label" label="Country"	 span="2"/>
+    <control type="text" name="Consult_PrimaryPayorState" span="4" edit="true"/>
+  </row>
+  <row name="rowEmail" reveal="btngrpShow=Open">
+    <control type="label" label="Email"		 span="2"/>
+    <control type="text" name="Consult_PatientEmail" verify="email" span="4" edit="true"/>
+    <control type="label" label="Nationality"	 span="2" />
+    <control type="select" name="Consult_Nationality" span="4"
+      source="Country,Code" datasource="GetCountries" 
+      edit="true" />
+  </row>
+  <row name="rowIndigenous" reveal="btngrpShow=Open">
+    <control type="label" label="Indigenous"	 span="2"/>
+    <control type="select" name="Consult_IndigenousStatus" span="4"
+      source="Bambuti,Bacwa,West Batwa,East Batwa"
+    	 explicit="true" edit="true"/>
+    <control type="label" label="Instruction"	 span="2"/>
+    <control type="select" name="Consult_LevelOfEducation" span="4"
+      source="1,2,3,4,5,6,97,98"
+      sourcelabels="Pre-Basic,Basic,Middle,Higher Level Technician,University Professional,No Education,Does Not Remember,Does Not Respond"	 explicit="true" edit="true"/>
+  </row>
+  <row name="Occupation" reveal="btngrpShow=Open">
+    <control type="label" label="Occupational"	 span="2"/>
+    <control type="select" name="Consult_EmploymentStatus" span="4"
+      source="0,1,2,99"
+      sourcelabels="Inactive,Active,Unemployed,Unknown"	
+      explicit="true" edit="true"/>
+    <control type="label" label="Assigned"	 span="2"/>
+    <control type="text" name="Consult_RoomFullName" span="4" readonly="true"/>
+  </row>
+</partial>

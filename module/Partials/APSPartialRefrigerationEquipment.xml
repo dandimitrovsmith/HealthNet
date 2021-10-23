@@ -1,0 +1,128 @@
+﻿<partial>
+  <!-- Modal to enter/edit surgery equipment list -->
+	<section type="tabmodal" badge="none" name="mdlBiomedicalEquipment" title="Vaccine Storage"	>
+		<group showif="never">
+			<row>
+				<control type="hidden" name="DeviceGuid"
+					datarequest="GetMedicalDeviceItemsByDeviceGuid"
+					appendrequest="DeviceGuid=[DeviceGuid]"
+					inject="grpMedicalDevice"
+					provoke="grdDeviceTemperature"/>
+			</row>
+		</group>
+		<group name="grpMedicalDevice">
+			<row>
+				<control type="label" label="Active"	 span="2"/>
+				<control type="buttongroup" name="Device_Active" span="3"
+					source="True,False" sourcelabels="Yes,No"	 default="True" edit="true" />
+				<control type="label" label="Status"	 span="2"/>
+				<control type="select" name="Device_DeviceStatus" span="3"
+					source="In Service,Cleaning,Maintenance" 
+					explicit="true"
+					sourcelabels="In Service,Cleaning,Maintenance"	 
+					default="Service" edit="true" />
+        <control type="button" name="btnPrintTemperatureReport"
+          reveal="[DeviceGuid]!" span="2"
+          preset="Report_ReportId=f073fdc2922,ReportDeviceGuid=[DeviceGuid],StartDateParameter=true,EndDateParameter=true,Report_ReportFileName=f073fdc2922,Report_ReportName=Registro de Temeraturas"
+          action="redirect"
+          label="Temperature"	 
+          icon="print" 
+          target="mdlReportCriteria"/>
+			</row>
+			<row>
+				<control type="label" label="Code"	 span="2"/>
+				<control type="text" name="Device_DeviceCode" span="3" edit="true" required="true"/>
+				<control type="label" label="Type"			 span="2"/>
+				<control type="text" name="Device_DeviceType" span="3" readonly="true" default="Refrigeration"/>
+			</row>
+			<row>
+				<control type="label" label="Description"	 span="2"/>
+				<control type="textarea" name="Device_DeviceDescription" span="8" rows="1" edit="true" />
+			</row>
+			<row>
+				<control type="label" label="Manufacturer"	 span="2"/>
+				<control type="text" name="Device_Manufacturer" span="8" edit="true" />
+			</row>
+			<row>
+				<control type="label" label="Serial Number"	 span="2"/>
+				<control type="text" name="Device_SerialNumber" span="3" edit="true" />
+				<control type="label" label="Lot"	 span="2"/>
+				<control type="text" name="Device_LotNumber" span="3" edit="true" />
+			</row>
+			<row>
+				<control type="label" label="Notes"	 span="2"/>
+				<control type="textarea" name="Device_Notes" span="8" rows="1" edit="true" />
+			</row>
+		</group>
+		<group name="grpSaveNewDevice" reveal="[DeviceGuid]=">
+			<row>
+				<control type="modalbutton" name="btnSaveNewDevice"
+          reveal="[DeviceGuid]="
+					icon="cloud-upload" label="Save"	
+					action="save" color="green"
+					affector="DeviceGuid"
+					setaffector="DeviceGuid"
+					capture="grpMedicalDevice"
+					datainsert="InsertMedicalDeviceItems"
+					provoke="grdMedicalDevices,grdDeviceTemperature"/>
+        <control type="modalbutton" name="btnUpdateMedicalDevice"
+					reveal="[DeviceGuid]!"
+					icon="cloud-upload" label="Update"	
+					action="save|close|new"
+					affector="DeviceGuid"
+					setaffector="DeviceGuid"
+					capture="grpMedicalDevice"
+					dataupdate="UpdateMedicalDeviceItems"
+					appendupdate="DeviceGuid=[DeviceGuid]"
+					provoke="grdMedicalDevices"/>
+			</row>
+		</group>
+		<group name="grpDeviceGrids" reveal="[DeviceGuid]!">
+			<row>
+        <control type="datagrid" 
+          label="Temperature Record"	 
+          name="grdDeviceTemperature"
+          searchable="true"
+          rows="5" cols="12"
+          acctsvcreq="true"
+          datarequest="GetMedicalDeviceMaintenanceItems"
+          appendrequest="MaintenanceGuid=[DeviceGuid]"
+          source="DateTimeEntered,Quantity,Notes,EnteredByFullName"
+          sourcelabels="Date/Time,Temperature,Notes,Delivery by"	
+          align="|center|left|left"
+          format="datetime"
+          sort="DateTimeEntered=desc"
+          key="MaintenanceItemGuid">
+          <control type="button" name="btnNewWorkOrderFromGrid"
+            label="Add New"	 icon="plus"
+            action="redirect" 
+            target="mdlMedicalDeviceTemperature"/>
+        </control>
+			</row>
+		</group>
+	</section>
+  <!-- Tabmodal to enter temperature readings -->
+  <section type="tabmodal" name="mdlMedicalDeviceTemperature" badge="none" title="Temperature Record"	 size="small">
+    <group name="grpTempInfo">
+      <row>
+        <control type="label" label="Temperature"	 badge="C" span="4"/>
+        <control type="text" name="Temp_Quantity" span="2" min="-30" max="80" required="true"/>
+      </row>
+      <row>
+        <control type="label" label="Notes"	 span="4"/>
+        <control type="textarea" name="Temp_Notes" span="7" rows="2"/>
+      </row>
+      <row>
+        <control type="modalbutton" name="btnSaveTemp"
+          icon="cloud-upload" label="Save"	
+          color="green" action="save|close|new"
+          acctsvc="true"
+          affector="none"
+          capture="grpTempInfo"
+          datainsert="InsertMedicalDeviceMaintenanceItems"
+          appendinsert="MaintenanceGuid=[DeviceGuid],Active=true"
+          provoke="grdDeviceTemperature"/>
+      </row>
+    </group>
+  </section>
+</partial>

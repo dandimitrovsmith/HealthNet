@@ -1,0 +1,115 @@
+﻿<partial>
+  <!-- Partial Hospital Nursing Patient Buttons -->
+    <row>
+      <control type="buttongroup" name="btngrpShow"
+        span="12" edit="true"
+        source="Open,Close"
+        color="grey,grey"
+        sourcelabels="Open,Close"	
+        default="Close"/>
+    </row>
+    <row>
+      <control type="button" 
+        name="Consult_PatientUpdate"
+        reveal="PatientId!" 
+        span="12" 
+        label="Update"	
+        affector="none"
+        capture="PatientInfo" 
+        icon="cloud-upload"
+        action="save"
+        confirm="Please confirm you want to update this patient."	
+        appendconfirm="runinput=[Consult_AccountNumber]"
+        confirmresponse="CheckDigitResult=true|Invalid National ID!"
+        datainsert="UpdatePatient"
+        appendinsert="PatientId=[PatientId]"
+        provoke="btnUpdateVisitInfo"/>
+    </row>
+    <row>
+      <control type="button" name="addNursingNotes" span="12"
+        color="yellowgreen"
+        action="redirect|view"
+        target="patient-notes"
+        append="patientid=[PatientId],patientvisit=[PatientVisitGuid],notetype=Nurse"
+        label="Notes"	
+        icon="user-md"/>
+    </row>
+    <row>
+      <control type="button" name="btnAcknowledgeRed"
+          reveal="[UnAcknowledgedOrders]»0"
+          span="12"
+          color="red" icon="warning-sign" 
+          label="Acknowledge"	
+          action="redirect|view"
+          target="acknowledge"
+          append="patientid=[PatientId],patientvisit=[PatientVisitGuid],distinct=true"
+          provoke="GetUnAcknowledgedOrders"/>
+        <control type="button" name="btnAcknowledgeGreen"
+          reveal="[UnAcknowledgedOrders]=0"
+          span="12"
+          color="green" icon="thumbs-up" 
+          label="Acknowledge"	
+          action="redirect|view"
+          target="acknowledge"
+          append="patientid=[PatientId],patientvisit=[PatientVisitGuid],distinct=true"
+          provoke="GetUnAcknowledgedOrders"/>
+    </row>
+    <row name="rowTimeLine" reveal="HasOpenVisit=true">
+    <!-- Display the patient time line -->
+    <control type="button" name="btnTimeline"
+        span="12"
+        color="yellow" icon="time" 
+        label="Timeline"	
+        action="redirect|view"
+        target="timeline"
+        append="patientid=[PatientId],patientvisit=[PatientVisitGuid],distinct=true"
+        provoke="GetUnacknowledgedOrders"/>
+    </row>
+    <row name="rowPrintReports" reveal="btngrpShow=Open">
+    <control type="button" name="btnReports"
+       reveal="[PatientId]!"
+      span="12"
+      icon="print" label="Reports"	
+      preset="Report_PatientId=[PatientId],Report_Type=Patient,Report_PatientFirstName=[Consult_PatientFirstName],Report_PatientMiddleName=[Consult_PatientMiddleName],Report_PatientLastName=[Consult_PatientLastName]"
+      trigger="ReportList,Report_VisitId"
+      action="redirect" target="mdlReports"/>
+  </row>
+    <row name="rowPrintLabels" reveal="btngrpShow=Open">
+      <control type="button"
+        reveal="PatientVisitGuid!" 
+        span="12"
+        name="PrintLabel"
+        action="print" 
+        mode="report" 
+        label="Labels"	 
+        icon="print" 
+        append="id=34b8cb70ec7,FacilityId=(facility),PatientId=[PatientId],PatientVisit=[PatientVisitGuid]" />
+    </row>
+    <row name="rowPrintWristBand" reveal="btngrpShow=Open">
+      <control type="button"
+        reveal="PatientVisitGuid!" 
+        span="12"
+        name="PrintWristBand"
+        action="print" 
+        mode="report" 
+        label="Wristband"	 
+        icon="print" 
+        append="id=34b8cb70ec7,FacilityId=(facility),PatientId=[PatientId],PatientVisit=[PatientVisitGuid]" />
+    </row>
+    <row name="rowSendText" reveal="btngrpShow=Open">
+      <control type="button" name="btnSendTextMessage2"  
+        reveal="[Consult_PatientCellPhone]!"
+        span="12" icon="envelope" label="Text"	
+        preset="phoneNumber=[Consult_PatientCellPhone]"
+        trigger="grdPhysicianMessages2"
+        action="redirect" target="mdlSendTextMessage"/>
+  </row>
+  <row name="rowSendEmail" reveal="btngrpShow=Open">
+    <control type="button" name="btnSendEmailMessage2"
+      reveal="[Consult_PatientEmail]!"
+      span="12" icon="envelope" label="Email"			
+      preset="Send_EmailAddress=[Consult_PatientEmail],Send_PatientId=[PatientId]"
+      trigger="grdPhysicianMessages1"
+      action="redirect" target="mdlSendEmailMessage"/>
+  </row>
+</partial>

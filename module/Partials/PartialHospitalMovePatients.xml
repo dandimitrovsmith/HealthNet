@@ -1,0 +1,27 @@
+﻿<partial>
+  <!-- Move clinic patients within queus -->
+  <section type="tabmodal" badge="none" name="mdlMovePatient" title="Move"	 size="small">
+    <group>
+      <row>
+        <control type="label" label=""	 span="4"/>
+        <control type="button" name="btnMoveToEsperando"
+          span="4" icon="move" label="Waiting"	
+          color="orange" 
+          action="save|close|new"
+          dataupdate="UpdatePatientVisitAllFields"
+          appendupdate="patientId=[PatientId],patientVisitUniqueId=[PatientVisitGuid],departmentGuid=[DepartmentGuidLookup],hospitalService=Waiting"
+          provoke="PatientList,ClosePatientTabModal"/>
+      </row>
+      <row>
+        <control type="label" label=""	 span="4"/>
+        <control type="button" name="btnMoveToHospitalization"
+          span="4" icon="move" label="Hospitalization"	
+          color="orange" 
+          action="save|close|new"
+          dataupdate="UpdatePatientVisitAllFields"
+          appendupdate="patientId=[PatientId],patientVisitUniqueId=[PatientVisitGuid],departmentGuid=[DepartmentGuidLookup],hospitalService=Hospitalization"
+          provoke="PatientList,ClosePatientTabModal"/>
+      </row>
+    </group>
+  </section>
+  </partial>

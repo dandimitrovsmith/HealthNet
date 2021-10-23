@@ -1,0 +1,74 @@
+﻿<partial>
+  <!-- Partial admitting patient list by department-->
+  <!--This window displays a list of currently admitted patients for a department -->
+  <section name="tabAdmittedPatients" type="tab" title="Admitted Patients"	 trigger="PatientList">
+    <group showif="never">
+      <row> 
+        <control type="hidden" name="GetLastDepartment"
+          datarequest="GetUserProfileFromUserId2"
+          appendrequest="UserIdToGet=(userName)"
+          inject="rowSetDepartment,rowSetCalendar"
+					provoke="PatientList"/>
+        <control type="button" 
+          name="SaveLastDepartment"
+          action="save"
+      		affector="none"
+      		datainsert="UpdateUserProfileSetDepartment"
+          appendinsert="UserId=(userName),departmentGuid=[DepartmentGuidLookup]"/>
+      </row>
+    </group>
+    <group>
+      <row name="rowSetDepartment">
+          <control type="select" 
+            span="4"
+            name="DepartmentGuidLookup"
+            injectname="Department" 
+            acctsvc="true"
+            explicit="true"
+            edit="true"
+            datasource="GetDepartmentsActive" 
+            source="DepartmentName,DepartmentGuid"
+            provoke="SaveLastDepartment,PatientList"/>
+      </row>
+      <row>
+        <control type="datagrid" label="Admitted Patients"	 
+          name="PatientList"
+          persist="true"
+          action="redirect" 
+          target="PatientTabModal"
+          searchable="true"
+          edit="only"
+          span="12"
+          rows="25"
+          fitrows="true"
+          datarequest="GetPatientListWithOpenVisitsByFacility"
+					rowcolor="ReadyForDischarge|True=green"
+          idle="[DepartmentGuidLookup]="
+          appendrequest="excludephoto=true,DepartmentGuid=[DepartmentGuidLookup]" 
+          source="ReadyForDischarge,AdmitDateTime,AccountNumber,PatientFullName,PatientDOB,PatientSex,HospitalService,Room"
+          sourcelabels="Discharge,Admitted,Account,Name,Birth,Sex,Service,Room"	
+          translate="PatientSex"
+          align="||left|left|left|left|left|left"
+          format="boolean|datetime_short|||date"
+          sort="AdmitDateTime=asc"
+          key="RecordUniqueId"
+          onselectset="PatientId=[[RecordUniqueId]],PatientVisitGuid=[[PatientVisitId]]"
+          onselect="PatientId"> 
+          
+					<control type="button" name="btnAdmitPatients"
+						reveal="[DepartmentGuidLookup]!"
+						action="redirect" icon="folder-open" label="Enter / Search"	
+						target="PatientTabModal"/>
+					<control type="button" name="btnMergePatients"
+						action="redirect" icon="group" label="Merge"	 target="mdlMergePatients"/>
+          <!-- Button to print aditting reports -->
+            <control type="button" name="btnPrintAdmittingReportsFromAdmitList"
+              preset="Report_CalendarGuid=[calAppointmentTypeGuid],Report_Type=Admitting" trigger="ReportList"
+              label="Reports"	 icon="print" action="redirect" target="mdlReports"/>
+					<control type="button" name="RefreshAppointments2" label="Refresh"	
+						icon="refresh" action="trigger" trigger="PatientList"/>
+        </control>
+        </row>
+      </group>
+  </section>
+</partial>

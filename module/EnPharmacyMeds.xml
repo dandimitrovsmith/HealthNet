@@ -1,0 +1,1118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+  <!--Last Edit by Dan 4/14/2018-->
+<module name="Pharmacy Medications" type="onload" trigger="PharmacyFormulary">
+  <!-- Medication Formulary -->
+  <section type="tab" title="Medications"	>
+    <group>
+      <row>
+        <control type="datagrid" label="Medications"	 name="PharmacyFormulary"
+          searchable="true"
+          action="redirect"
+          target="mdlNewFormularyItem" 
+          span="12" rows="25"
+          datarequest="GetDrugFormularyByFacility"
+          appendrequest="getAll=true"
+          acctsvcreq="true"
+          source="Active,ItemNumber,DrugTradeName,GenericName,DrugStrength,BasePrice"
+          sourcelabels="Active,Item Number,Trade Name,Generic Name,Dosis,Base Price"	
+          key="FormularyItemGuid"
+          align="|left|left|left|left|right"
+          format="boolean|||||0,0.00"
+          sort="GenericName=asc"
+          onselectset="FormularyItemGuid=[[FormularyItemGuid]],DrugRoute=[[DrugRoute]],iv_DrugRoute=[[DrugRoute]]"
+          onselect="DrugRoute,iv_DrugRoute,FormularyItemGuid">
+        <control type="button" name="btnNewFormularyItem"
+          label="Add New"	 icon="plus" 
+          action="redirect" target="mdlNewFormularyItem"/>
+        <control type="button" name="btnRefreshFormulary"
+          label="Update"	 icon="refresh" 
+          action="trigger" provoke="PharmacyFormulary"/>
+        <control type="button" 
+            reveal="(userName)=dansmith@sonic.net|julie.earnest@ehrinternational.com|kimberly.diaz@ehrinternational.com"
+            name="btnPrintInventoryAudit"
+            action="print"
+            mode="report"
+            label="Inventory Audit"		
+            icon="print"
+            append="id=7f27505f1e6,FacilityId=(facility),CurrentDateTime=(dateTimeNow)"/>
+        </control>
+      </row>
+    </group>
+  </section>
+  <!-- Formulary Items -->
+  <section type="tabmodal" name="mdlNewFormularyItem" title="Medications"	 badge="none"
+    enteredby="EnteredBy" updatedby="UpdatedBy" 
+    dtentered="DateTimeEntered" dtupdated="DateTimeLastUpdated">
+    <group showif="never">
+      <row>
+        <control type="hidden" name="FormularyItemGuid"
+          acctsvcreq="true"
+          datarequest="GetDrugFormularyByFormularyItemGuid"
+          appendrequest="formularyItemGuid=[FormularyItemGuid]"
+          inject="NewFormularyItemGroup"
+          provoke="grdDispensePackages"/>
+      </row>
+    </group>
+    <group name="NewFormularyItemGroup">
+      <columns>
+      <column span="8">
+      <row>
+        <control type="hidden" name="ItemMasterGuid"/>
+      </row>
+      <row>
+        <control type="label" label="Brand Name"	 span="3"/>
+        <control type="textarea" name="DrugTradeName" span="9" edit="true" rows="1"  required="true"/>
+      </row>
+      <row>
+        <control type="label" label="Generic Name"	 span="3"/>
+        <control type="textarea" name="GenericName" span="9" rows="1" required="true" edit="true"/>
+      </row>
+      <row name="rvlRoute" reveal="Intravenous=False">
+        <control type="label" label="Default Route"	 span="3"/>
+        <control type="select" name="DrugRoute" span="5" edit="true" required="true" translate="true"
+          datasource="GetNciDrugRoutes" source="RouteText,RouteCode"/>
+        <control type="label" label="Lock Route"	 span="3"/>
+        <control type="buttongroup" sourcelabels="Yes,No"	 source="True,False" name="LockRoute" span="1" edit="true" default="False" align="left"/>
+      </row>
+      <row name="rvlIVRoute" reveal="Intravenous=True">
+        <control type="label" label="Route"	 span="3"/>
+        <control type="select" name="iv_DrugRoute" span="6" edit="true" 
+          datasource="GetNciDrugRoutes" source="RouteText,RouteCode"/>
+        <control type="select" name="IVMod" span="3" edit="true" datasource="" 
+          default="IVPR" sourcelabels="Primary,Piggyback,Push"		 source="IVPR,IVPB,IVP"/>
+      </row>
+      <row>
+        <control type="label" label="Default Frequency"	 span="4"/>
+        <control type="select" name="DefaultFrequency" span="8" edit="true" 
+          datasource="GetDrugFrequenciesByFacility" source="FrequencyName,FrequencyGuid"/>
+      </row>
+      <row>
+        <control type="label" label="Required Tests"	 span="3"/>
+        <control type="select" name="MandatoryLabs" span="9" edit="true" 
+          datasource="GetLabPanelsByFacility" source="LabPanelName,LabPanelGuid"/>        
+      </row>
+      <row>
+        <control type="label" label="Order Notes"	 span="3"/>
+        <control type="textarea" name="Note" rows="2" span="9" edit="true"/>
+      </row>
+      <row>
+        <control type="label" label="Pharmacy Notes"	 span="3"/>
+        <control type="textarea" name="PharmacyNote" rows="2" span="9" edit="true"/>
+      </row>
+      <row>
+        <control type="label" label="Drug Form"	 span="3"/>
+        <control type="label" label="Fluid"	 span="1"/>
+        <control type="buttongroup" name="Fluid" sourcelabels="Yes,No"	 source="True,False" default="False" span="1" edit="true"/>
+        <control type="label" label="Intravenous"	 span="2"/>
+        <control type="buttongroup" name="Intravenous" sourcelabels="Yes,No"	 source="True,False" default="False" span="1" edit="true"/>
+        <control type="label" label="Dose by Weight"	 span="3"/>
+        <control type="buttongroup" name="WeightDose" sourcelabels="Yes,No"	 source="True,False" default="False" span="1" edit="true"/>
+        
+      </row>
+      <row name="rvlIVInfo" reveal="Intravenous=True">
+        <control type="label" label="Intravenous Information"	 span="4"/>
+        <control type="buttongroup" name="PremixedFluid" sourcelabels="Yes,No"	 source="True,False" span="1" default="False" edit="true"/>
+        <control type="label" label="Premixed"	 align="left" span="2"/>
+      </row>
+      <row name="rvlIVInfusion" reveal="Intravenous=True">
+        <control type="label" label="Infusion Rate"	 span="4"/>
+        <control type="text" name="InfusionRate" span="7" edit="true" />
+      </row>
+      <row name="rvlIVDiluent" reveal="Intravenous=True,PremixedFluid!True">
+        <control type="label" label="Diluent Solution"	 span="4"/>
+        <control type="text" name="DiluentSolution" span="7" edit="true" />
+      </row>
+      <row name="rvlWeightDose" reveal="WeightDose=True">
+        <control type="label" label="Dose / Weight Ratio"	 span="4"/>
+        <!-- <control type="text" name="DoseRatio" span="2" edit="true"  format="0.00" required="true" /> -->
+        <control type="text" name="DoseRatio" span="2" edit="true"  format="0,0.00" />
+        <control type="label" label="/ kg"	 align="left" span="3"/>
+      </row>      
+      <row>
+        <control type="label" label="Min / Max Dose"	 span="4"/>
+        <!-- <control type="integer" name="MinDose" span="2" edit="true" compare="[MinDose]«[MaxDose]|Dose Min must be less than Dose Max" />
+        <control type="integer" name="MaxDose" span="2" edit="true" compare="[MaxDose]»[MinDose]|Dose Max must be greater than Dose Min" /> -->
+        <control type="integer" name="MinDose" span="2" edit="true" />
+        <control type="integer" name="MaxDose" span="2" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Max 24 Hr Dosage"	 span="4"/>
+        <control type="integer" name="MaxDose24Hr" span="4" edit="true"/>
+      </row>
+      <row>
+        <control type="label" label="Dose on Hand"	 span="4"/>
+        <!-- <control type="integer" name="DoseOnHandStrength" span="2" edit="true"/> -->
+        <control type="text" name="DoseOnHandStrength" span="2" edit="true" format="0,0.00" />
+        <control type="select" name="DoseOnHandUOM" span="2" edit="true" translate="true" 
+          default="none" source="mg,mcg,gm,kg,meq,%,unit,ea,none"/>
+      </row>
+      <row>
+        <control type="label" label="Dose Unit"	 span="4"/>
+        <!-- <control type="integer" name="DosageStrength" span="2" edit="true" required="true" /> -->
+        <control type="text" name="DosageStrength" span="2" edit="true" format="0,0.00" />
+        <control type="select" name="DosageUOM" span="2" edit="true" translate="true"
+          default="ml" source="ml,mcL,microL,L,mol,mmol,mcmol,drop,vial,gm,unit,ea,tablet,capsule,cartridge,container,lozenge,packet,sachet,hr,min,sec"/>
+      </row>
+      <row>
+        <control type="label" label="Pharmacology Group"	 span="4" />
+        <control type="select" name="PharmacologyGroup" span="7" edit="true" translate="true"
+          acctsvc="true" datasource="GetLookupPharmacologyGroup" 
+          source="GroupName,GroupName" 
+          sort="GroupName=asc"/>
+      </row>
+      </column>
+      <column span="4">
+        <row>
+        <control type="label" label="Active"	 span="6" />
+        <control type="buttongroup" name="Active" span="6" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True"/>
+        </row>
+        <row>
+          <control type="label" label="Vidal Code"	 span="6" />
+          <control type="integer" name="VidalCommonNameGroupId" span="6" edit="true" required="true"/>
+        </row>
+        <row>
+          <control type="label" label="NDC Code"	 span="6" />
+          <control type="text" name="DrugNDC" span="6" edit="true"/>
+        </row>
+        <row>
+          <control type="label" label="External NDC"	 span="6" />
+          <control type="text" name="ExternalNDC" span="6" edit="true"/>
+        </row>
+        <row>
+          <control type="label" label="Item Number"	 span="6" />
+          <control type="text" name="ItemNumber" span="6" edit="true" required="true"/>        
+        </row>
+        <row>
+          <control type="label" label="RxNorm"		 span="6" />
+          <control type="text" name="RxCui" span="6" edit="true"/>
+        </row>
+        <row>
+          <control type="label" label="Cost"	 span="6" />
+          <control type="text" name="Cost" span="6" edit="true" format="0,000.00"/>        
+        </row>
+        <row>
+          <control type="label" label="Base Price"	 span="6" />
+          <control type="text" name="BasePrice" span="6" edit="true" format="0,000.00"/>        
+        </row>
+        <row>
+          <control type="label" label="C Level"	 span="6" />
+          <control type="select" name="CLevel" span="6" edit="true" default="0" source="0,1,2,3,4,5,6"/>        
+        </row>
+        <row>
+          <control type="label" label="Soft Stop Days"	 span="6" />
+          <control type="integer" name="SoftStopLength" span="6" edit="true"/>
+        </row>
+        <row>
+          <control type="label" label="External ID"		 span="6" />
+          <control type="integer" name="ExternalID" span="6" edit="true"/>
+        </row>
+        <row>
+          <control type="label" label="External ID 2"	 span="6" />
+          <control type="integer" name="ExternalId2" span="6" edit="true"/>
+        </row>
+        <row>
+          <control type="label" label="CGI"		 span="6" />
+          <control type="integer" name="CompositeGenericIndex" span="6" edit="true"/>
+        </row>  
+        <row>
+          <control type="label" span="6" label="Revenue Code"	/>  
+          <control type="select" span="6" name="RevenueCodeName,RevenueCode"
+            datasource="GetRevenueCodesForThisFacility"
+            filter="Active=true"
+            acctsvc="true" 
+            edit="true"
+            source="RevenueCode|RevenueCodeDescription,RevenueCode" 
+            />
+        </row>
+      </column>
+      </columns>
+      <row divider="true">
+        <control type="label" label="Scan Med at Admin"	 span="3"/>
+        <control type="buttongroup" name="ScanMedMAR" sourcelabels="Yes,No"	 source="True,False" span="1" default="False" edit="true"/>  
+        <control type="label" label="Scan Patient"	 span="2"/>
+        <control type="buttongroup" name="ScanPatientMAR" sourcelabels="Yes,No"	 source="True,False" span="1" default="False" edit="true"/>
+        <control type="label" label="Pharmacy Protocol"	 span="2" />
+        <control type="buttongroup" name="PerPharmacyProtocol" sourcelabels="Yes,No"	 source="True,False" span="1" default="False" edit="true"/>
+        <control type="button" 
+          name="btnCloseFormulary" 
+          span="2"
+          label="Close"	
+          color="grey"
+          action="close|new"/>
+      </row>
+      <row>
+        <control type="label" label="Black Box"	 span="3" />
+        <control type="buttongroup" name="BlackBox" sourcelabels="Yes,No"	 source="True,False" span="1" default="False" edit="true"/>
+        <control type="label" label="Maximum Alert"	 span="2" />
+        <control type="buttongroup" name="HighAlert" sourcelabels="Yes,No"	 source="True,False" span="1" default="False" edit="true"/>
+        <control type="label" label="Fall Risk"	 span="2" />
+        <control type="buttongroup" name="FallRisk" sourcelabels="Yes,No"	 source="True,False" span="1" default="False" edit="true"/>
+        <control type="button" 
+          span="2"
+          reveal="[FormularyItemGuid]!"
+          name="btnUpdateFormularyItem" 
+          label="Update"	
+          color="green"
+          action="save|close|new"
+          affector="none"
+          acctsvc="true"
+          capture="NewFormularyItemGroup"
+          dataupdate="UpdateDrugFormularyItem"
+          appendupdate="FormularyItemGuid=[FormularyItemGuid]"
+          provoke="PharmacyFormulary"/>
+        <control type="button" 
+          span="2"
+          name="btnSaveFormularyItem" 
+          label="Save"	
+          reveal="[FormularyItemGuid]="
+          color="green"
+          action="save"
+          acctsvc="true"
+          capture="NewFormularyItemGroup"
+          datainsert="InsertDrugFormularyItem"
+          affector="FormularyItemGuid"
+          setaffector="FormularyItemGuid"
+          provoke="FormularyItemGuid,btnInsertDispensePackage,grdDispensePackages,PharmacyFormulary"/>
+      </row>
+      <row showif="never">
+        <control type="button" name="btnInsertDispensePackage"
+          action="save"
+          affector="none"
+          datainsert="InsertMedDispensePackages"
+          appendinsert="active=1,formularyItemGuid=[FormularyItemGuid],packageCount=1,packagePrice=[BasePrice],status=Active"/>
+      </row>
+      <row>
+        <control type="label" label="Multiple Signatories"	 span="3" />
+        <control type="buttongroup" name="RequiresMultipleSigners" sourcelabels="Yes,No"	 source="True,False" span="1" default="False" edit="true"/>
+        <control type="label" label="Charge on Admin"	 span="2" />
+        <control type="buttongroup" name="ChargeOnMedAdmin" sourcelabels="Yes,No"	 source="True,False" span="1" default="True" edit="true"/>
+        <control type="label" label="Late Email"	 span="2" />
+        <control type="buttongroup" name="NotifyOnLateAdmin" sourcelabels="Yes,No"	 source="True,False" span="1" default="False" edit="true"/>
+        <control type="button" 
+          span="2"
+          reveal="[FormularyItemGuid]!"
+          name="btnItemMasterModal" 
+          label="Inventory"	
+          color="blue"
+          icon="hand-right"
+          trigger="GetItemMasterGuid"
+          action="redirect"
+          target="mdlItemMaster"/>
+      </row>
+      <row>
+        <control type="label" label="Multi-Ingredient"	 span="3" />
+        <control type="buttongroup" name="MultiComponentNonComplex" sourcelabels="Yes,No"	 source="True,False" span="1" default="False" edit="true"/>
+        <control type="label" label="Patient Chargeable"	 span="2" />
+        <control type="buttongroup" name="PatientChargeable" sourcelabels="Yes,No"	 source="True,False" span="1" default="True" edit="true"/>
+      </row>
+      <row name="rowDispensePackages" reveal="[FormularyItemGuid]!">
+        <control type="datagrid" name="grdDispensePackages"
+          label="Dispense Packages"	
+          span="12" rows="5"
+          modalname="mdlDispensePackages"
+          acctsvcreq="true"
+          idle="[FormularyItemGuid]="
+          datarequest="GetMedDispensePackagesByFormularyItemGuid"
+          appendrequest="FormularyItemGuid=[FormularyItemGuid]"
+          datainsert="InsertMedDispensePackages"
+          appendinsert="FormularyItemGuid=[FormularyItemGuid]"
+          dataupdate="UpdateMedDispensePackages"
+          source="Active,PackageDescription,PackageCount,PackagePrice"
+          sourcelabels="Active,Package,Account,Price"	
+          format="boolean||0|0,000.00"
+          align="|left"
+          sort="PackageDescription=asc"
+          key="PackageGuid"/>
+      </row>
+    </group>
+  </section>
+
+  <!-- Tabmodal to enter/edit dispense packages -->
+  <section type="modal" badge="none" name="mdlDispensePackages" title="Packages"	 size="small">
+    <group>
+      <row>
+        <control type="label" label="Active"	 span="4"/>
+        <control type="buttongroup" name="Package_Active" span="2" edit="true" default="true"
+          source="true,false" sourcelabels="Yes,No"	/>
+      </row>
+      <row>
+        <control type="label" label="Find Packages"	 span="4"/>
+        <control type="select" name="selPackageTypes" span="6"
+          acctsvc="true" explicit="true" edit="true"
+          datasource="GetMedDispensePackagesByFacility"
+          source="PackageDescription,PackageGuid"
+          set="PackageDescription=[[PackageDescription]],PackageCount=[[PackageCount]]"/>
+      </row>
+      <row>
+        <control type="label" label="Package"	 span="4"/>
+        <control type="text" name="PackageDescription" span="6" required="true" edit="true"/>
+      </row>
+      <row>
+        <control type="label" label="Account"	 span="4"/>
+        <control type="text" name="PackageCount" span="2" format="0" min="1" max="100" default="1" required="true" edit="true"/>
+      </row>
+      <row>
+        <control type="label" label="Base Price"	 span="4"/>
+        <control type="text" name="PackagePrice" span="2" edit="true" min="0" max="10000" format="0.00"/>
+      </row>
+    </group>
+  </section>
+
+  <section type="tab" title="Medication Frequencies"	>     
+    <group>     
+      <row showif="never">
+        <control type="text" name="UserRoles" edit="true" span="4" value="(user.UserRoles)"/>
+        <control type="text" name="UserId" edit="true" span="4" value="(user.UserId)"/>
+        <control type="text" name="AllowEdit" edit="true" span="4"/>
+        <control type="button" name="btnAllowEdit" edit="true" span="4" action="set" set="AllowEdit=yes"/> 
+      </row>
+      <!-- reveal="[UserId]=kimberly.diaz@ehrinternational.com,[UserId]=ballitorob@yahoo.com" -->
+      <row name="MedicationFrequenciesEhriUser" reveal="[UserId]=kimberly.diaz@ehrinternational.com,[UserId]=ballitorob@yahoo.com">
+        <control type="datagrid" label="Medication Frequencies (Only available to kimberly.diaz@ehrinternational.com and ballitorob@yahoo.com)"	
+          name="MedicationFrequencies1"
+          modalname="NewMedicationFrequency1"
+          span="12"
+          searchable="true"
+          rows="20"
+          datasource="GetDrugFrequenciesByFacilityAll"
+          datarequest="GetDrugFrequenciesByFacilityAll"       
+          acctsvcinsert="true"
+          acctsvcupdate="true"
+          datainsert="InsertDrugFrequencies"
+          dataupdate="UpdateDrugFrequencies"
+          source="Active,FrequencyCode,FrequencyName,Scheduled,ScheduledTimes"
+          sourcelabels="Active,Code,Name,Scheduled,Scheduled Time"	
+          align="|left|left||left"
+          format="boolean|||boolean|"
+          sort="FrequencyName=asc"
+          key="FrequencyGuid"
+          provoke="FrequencyCode"/>
+      </row>
+
+      <!-- reveal="[UserId]!kimberly.diaz@ehrinternational.com+[UserId]!ballitorob@yahoo.com" -->
+      <row name="MedicationFrequenciesNormalUser" reveal="[UserId]!kimberly.diaz@ehrinternational.com+[UserId]!ballitorob@yahoo.com">
+        <control type="datagrid" label="Medication Frequencies"	
+          name="MedicationFrequencies2"
+          modalname="NewMedicationFrequency2"
+          span="12"
+          searchable="true"
+          rows="20"
+          datasource="GetDrugFrequenciesByFacilityAll"
+          datarequest="GetDrugFrequenciesByFacilityAll"
+          edit="only"         
+          acctsvcupdate="true"          
+          dataupdate="UpdateDrugFrequencies"
+          source="Active,FrequencyCode,FrequencyName,Scheduled,ScheduledTimes"
+          sourcelabels="Active,Code,Name,Scheduled,Scheduled Time"	
+          align="|left|left||left"
+          format="boolean|||boolean|"
+          sort="FrequencyName=asc"
+          key="FrequencyGuid"
+          provoke="FrequencyCode">
+            
+        </control> 
+      </row>
+    </group>
+  </section>
+
+  <section type="modal" name="NewMedicationFrequency1" title="Medication Frequencies"	 size="small"
+       enteredby="EnteredByFullName" updatedby="UpdatedByFullName"
+       dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">
+    <group name="NewMedicationFrequencyGroup1">
+      <row>
+        <control type="label" label="Active"	 span="4"/>
+        <control type="buttongroup" name="NewMedicationFrequencyGroup1_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True"/>
+      </row>  
+      <row>
+        <control type="label" label="Frequency Name"	 span="4"/>
+        <control type="text" name="NewMedicationFrequencyGroup1_FrequencyName" span="6" required="true" edit="true"/>
+      </row>  
+      <row>
+        <control type="label" label="Frequency Code"	 span="4"/>
+        <control type="select" name="NewMedicationFrequencyGroup1_FrequencyCode" span="6"  edit="true"  required="true"
+          datasource="GetLookupDrugFrequencies" source="FrequencyCode|FrequencyDescription,FrequencyCode" sort="FrequencyCode=asc"/>
+      </row>  
+      <row>
+        <control type="label" label="Scheduled"	 span="4"/>
+        <control type="buttongroup" name="NewMedicationFrequencyGroup1_Scheduled" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True"/>
+      </row>
+      <row name="NewMedicationFrequencyGroup1_rowScheduledTimes" reveal="NewMedicationFrequencyGroup1_Scheduled=True">
+        <control type="label" label="Hours"	 span="4" />
+        <control type="textarea" name="NewMedicationFrequencyGroup1_ScheduledTimes" span="6" edit="true" rows="1" required="NewMedicationFrequencyGroup1_Scheduled=True"/>
+        
+      </row>
+    </group>
+  </section>
+
+  <section type="modal" name="NewMedicationFrequency2" title="Medication Frequencies"	 size="small"
+    enteredby="EnteredByFullName" updatedby="UpdatedByFullName"
+    dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">
+    <group name="NewMedicationFrequencyGroup2">
+      <row>
+        <control type="label" label="Active"	 span="4"/>
+        <control type="buttongroup" name="NewMedicationFrequencyGroup2_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True"/>
+      </row>     
+      <row>
+        <control type="label" label="Frequency Name"	 span="4"/>
+        <control type="text" name="NewMedicationFrequencyGroup2_FrequencyName" span="6" required="true" edit="true"/>
+      </row>     
+      <row>
+        <control type="label" label="Frequency Code"	 span="4"/>
+        <control type="select" name="NewMedicationFrequencyGroup2_FrequencyCode" span="6"  edit="false"
+          datasource="GetLookupDrugFrequencies" source="FrequencyCode|FrequencyDescription,FrequencyCode" sort="FrequencyCode=asc"/>
+      </row>      
+      <row>
+        <control type="label" label="Scheduled"	 span="4"/>
+        <control type="buttongroup" name="NewMedicationFrequencyGroup2_Scheduled" span="2" sourcelabels="Yes,No"	 source="True,False" edit="false" default="True"/>
+      </row>
+      <row name="NewMedicationFrequencyGroup2_rowScheduledTimes" reveal="NewMedicationFrequencyGroup2_Scheduled=True">
+        <control type="label" label="Hours"	 span="4" />
+        <control type="textarea" name="NewMedicationFrequencyGroup2_ScheduledTimes" span="6" edit="false" rows="1"/>
+        
+      </row>
+    </group>
+  </section>
+
+  <!-- Item Master tabmodal enter and edit Item Master Items -->
+  <section type="tabmodal" badge="none" name="mdlItemMaster" title="Item Master"	>
+    <group name="ItemMasterGuidGroup" showif="never">
+      <row>
+        <!-- Get the item and inject to the Item Master screen -->
+        <control type="hidden"
+          name="GetItemMasterGuid" 
+          acctsvcreq="true"
+          datarequest="GetItemByItemGuid"
+          appendrequest="ItemMasterGuid=[ItemMasterGuid]"
+          inject="ItemInfo"
+          provoke="grdInventoryStock|active,GetNumberOfEaches"/>
+      </row>
+      <row>
+        <!-- Save the item prior to printing -->
+        <control type="button" name="btnSaveItemToPrint"
+          action="save"
+          affector="none"
+          capture="ItemInfo"
+          acctsvc="true"
+          dataupdate="UpdateItemMasterItem"
+          appendupdate="itemMasterGuid=[ItemMasterGuid]"
+          provoke="RunLabelPrint"/>
+        <!-- Get the number of eaches for an item -->
+        <control type="hidden" name="GetNumberOfEaches"
+          acctsvcreq="true"
+          datarequest="GetItemMasterRelatedUnitsOfMeasureByRelatedUnitGuid"
+          appendrequest="RelatedUnitGuid=[AquiredUOMGuid]"
+          inject="rowEaches"/>
+      </row>
+      <row name="rowEaches">
+          <!-- Store number of eaches to compare AcquiredUOM -->
+         <control type="hidden" name="hid_NumberOfEaches"/>
+      </row>
+      <row>
+        <!-- Stores the reportid for printing labels -->
+        <control type="hidden" name="ReportId"/>
+        <!-- Print the label report -->
+        <control type="button" name="RunLabelPrint"
+          action="print"
+          mode="report" 
+          append="id=[ReportId],ItemMasterGuid=[ItemMasterGuid]"/>
+      </row>
+    </group>
+
+    <!-- Item Master information -->
+    <group name="ItemInfo">
+      <row>
+        <!-- Set the Active status for the item -->
+        <control type="label" span="2" label="Active"	/>
+        <control type="buttongroup" span="2" name="Status"
+          required="true" edit="true" source="Active,Canceled" sourcelabels="Yes,No"	 default="Active"/>
+        <!-- The stocked item indicator identifies items that are purchased -->
+        <!--  Note: Inventory (not StockedItemIndicator) indicates that the item is managed by the inventory system -->
+        <control type="label" label="Purchased Item"	 span="4"/>
+        <control type="buttongroup" name="StockedItemIndicator"
+          span="2"
+          source="true,false" sourcelabels="Yes,No"	
+          default="true" edit="true"/>
+
+        <!-- Save and update buttons -->
+        <!-- Save a serialized item and verify that the unit of measure is 1 in edit mode-->
+        <control type="button" name="btnUpdateItemSerialized"
+          reveal="IsSerialized=true"
+          showif="edit"
+          span="2" 
+          label="Update"	 icon="cloud-upload"
+          action="save|close|new"
+          affector="none"
+          capture="ItemInfo"
+          acctsvc="true"
+          compare="[hid_NumberOfEaches]=1|Cannot save: Serialized items must be purchased in individual units of measure."
+          dataupdate="UpdateItemMasterItem"
+          appendupdate="itemMasterGuid=[ItemMasterGuid]"
+          provoke="ItemMasterList"/>
+        <!-- Save an unserialized item in edit mode -->
+        <control type="button" name="btnUpdateItemUnSerialized"
+          reveal="IsSerialized=false"
+          showif="edit"
+          span="2" 
+          label="Update"	 icon="cloud-upload"
+          action="save|close|new"
+          affector="none"
+          capture="ItemInfo"
+          acctsvc="true"
+          dataupdate="UpdateItemMasterItem"
+          appendupdate="itemMasterGuid=[ItemMasterGuid]"
+          provoke="ItemMasterList"/>
+        <!-- Save a new serialized item -->
+        <control type="button" name="btnSaveItemSerialized"
+          reveal="IsSerialized=true"
+          showif="add"
+          span="2" 
+          label="Generate"	 icon="cloud-upload"
+          action="save"
+          affector="none"
+          capture="ItemInfo"
+          acctsvc="true"
+          compare="[hid_NumberOfEaches]=1|Cannot save: Serialized items must be purchased in individual units of measure."
+          datainsert="InsertItemMasterItem"
+          provoke="ItemMasterList"/>
+        <!-- Save an unserialized item -->
+        <control type="button" name="btnSaveItemUnserialized"
+          reveal="IsSerialized=false"
+          showif="add"
+          span="2" 
+          label="Generate"	 icon="cloud-upload"
+          action="save"
+          affector="none"
+          capture="ItemInfo"
+          acctsvc="true"
+          datainsert="InsertItemMasterItem"
+          provoke="ItemMasterList"/>
+      </row>
+      <row>
+        <!-- Select a Category -->        
+        <control type="label" label="Category"			 span="2"/>
+        <control type="select" name="CategoryGuid" required="true" edit="true"
+          namefield="Category"
+          acctsvc="true"
+          explicit="true"
+          span="3" 
+          translate="true"
+          datasource="GetItemMasterCategoriesByFacilityActive" 
+          source="CategoryDescription,ItemCategoryGuid"/>
+        <!-- Inventory indicates if the item will be tracked through the inventory system -->
+        <!-- Note: The StockedItemIndicator denotes that the item is a purchased item -->
+        <control type="label" span="3" label="Inventory"	/>
+        <control type="buttongroup" span="2" name="Inventory"
+          sourcelabels="Yes,No"	 source="True,False" default="True" edit="true"
+          provoke="mdlStockItems"/>
+        <!-- the following buttons display if the type of barcode matches -->
+        <!-- Use Code128 report -->
+        <control type="button" name="btnPrintCode128"
+          icon="print"
+          showif="edit"
+          span="2"
+          reveal="UPCCode=Code128"
+          label="Labels"	 
+          action="trigger"
+          set="ReportId=9c2e7b93cbc"
+          provoke="btnSaveItemToPrint"/>
+        <!-- Use Code93 report -->
+        <control type="button" name="btnPrintCode93"
+          icon="print"
+          showif="edit"
+          span="2"
+          reveal="UPCCode=Code93"
+          label="Labels"	
+          action="trigger"
+          set="ReportId=f9ba99885e9"
+          provoke="btnSaveItemToPrint"/> 
+        <!-- Use code39 report -->
+        <control type="button" name="btnPrintCode39"
+          icon="print" span="2"
+          showif="edit"
+          reveal="UPCCode=Code39"
+          label="Labels"	
+          action="trigger"
+          set="ReportId=6f917613b97"
+          provoke="btnSaveItemToPrint"/>  
+        <!-- Use EAN-13 report -->
+        <control type="button" name="btnPrintEAN-13"
+          icon="print" span="2"
+          showif="edit"
+          reveal="UPCCode=EAN-13"
+          label="Labels"	
+          action="trigger"
+          set="ReportId=2df9f67a175"
+          provoke="btnSaveItemToPrint"/> 
+        <!-- Use Standard 2 of 5 -->
+        <control type="button" name="btnPrintStandard2of5"
+          icon="print" span="2"
+          showif="edit"
+          reveal="UPCCode=Standard 2 of 5"
+          label="Labels"	 
+          action="trigger"
+          set="ReportId=9e823730a02"
+          provoke="btnSaveItemToPrint"/>
+        <!-- Use Interleaved 2 of 5 -->
+        <control type="button" name="btnPrintInterleaved2of5"
+          icon="print" span="2"
+          showif="edit"
+          reveal="UPCCode=Interleaved 2 of 5"
+          label="Labels"	 
+          action="trigger"
+          set="ReportId=acb5606e426"
+          provoke="btnSaveItemToPrint"/>
+        <!-- Use codabar report -->
+        <control type="button" name="btnPrintCodabar"
+          icon="print" span="2"
+          showif="edit"
+          reveal="UPCCode=Codabar"
+          label="Labels"	
+          action="trigger"
+          set="ReportId=1e4c67c3111"
+          provoke="btnSaveItemToPrint"/> 
+        <!-- User QR report -->
+        <control type="button" name="btnPrintQR"
+          icon="print" span="2"
+          showif="edit"
+          reveal="UPCCode=QR"
+          label="Labels"	 
+          action="trigger"
+          set="ReportId=9b862393f1c"
+          provoke="btnSaveItemToPrint"/>
+        <!-- Use native HarmoniMD QR (Guid) -->
+        <control type="button" name="btnPrintGuidQR"
+          icon="print" span="2"
+          showif="edit"
+          reveal="UPCCode=QR-Harmoni"
+          label="Labels"	
+          action="redirect"
+          target="mdlPrintHarmoniQR"/>
+      </row>      
+      <row>
+        <!-- Item number -->
+        <control type="label" span="2" label="Item Code"	/>
+        <control type="text" span="3" name="mdl_ItemNumber" edit="true" required="true" />
+        <!-- Indicates that the item is charged to patients -->
+        <control type="label" span="3" label="Patient Charge"	/>        
+         <control type="buttongroup" span="2" name="mdl_PatientChargeable"
+          tooltip="Select Yes,if this item will be charged to patients"
+          sourcelabels="Yes,No"	 source="True,False"  default="True" edit="true" required="true" /> 
+        <control type="button" name="btnTransactionHistory"
+          reveal="[Inventory]=true"
+          span="2"
+          icon="search" label="History"	
+          trigger="grdItemHistory" 
+          action="redirect" target="mdlItemHistory"/>
+      </row>
+      <row>
+        <!-- The item name -->
+        <control type="label" span="2" label="Item"	/>        
+        <control type="textarea" span="9" name="ItemName" rows="2" required="true" edit="true" />
+      </row>
+      <row>
+        <!-- A description of the item  will appear on Purchase Orders  and is optional-->
+        <control type="label" span="2" label="Description"	/>        
+        <control type="textarea" span="9" rows="2" name="ItemDescription" edit="true" />
+      </row>
+      <!-- Show stock levels if this is an inventoried item -->
+      <!-- Note: These are overall stock levels,inventory locations also have stock levels -->
+      <row name="rowStockLevels" reveal="Inventory=true">
+        <control type="label" label="Minimum Stock"	 span="2"/>
+        <control type="text" name="MinimumStock" span="1" edit="true" format="0"/>
+        <control type="label" label="Maximum Stock"	 span="2"/>
+        <control type="text" name="MaximumStock" span="1" edit="true" format="0"/>
+        <control type="label" label="Count Cycle"	 span="3"/>
+        <control type="select" name="CountCycle" span="2"
+          source="1,7,30,90,365" 
+          sourcelabels="Day,Week,Month,Quarter,Yearly"	
+          edit="true"/>
+      </row>
+      <!-- Batch and serialized indicators-->
+      <row name="rowSerialized" reveal="Inventory=true">
+        <control type="label" span="2" label="Serialized"	/>        
+        <control type="buttongroup" span="2" name="IsSerialized"
+          sourcelabels="Yes,No"	 source="True,False" default="False" edit="true" required="true" />
+        <control type="label" span="5" label="Subject to Expiration"	/>        
+        <control type="buttongroup" span="2" name="SubjectToExpiration"
+          sourcelabels="Yes,No"	 source="True,False" default="False" edit="true" required="true" />
+      </row>
+      <!-- IVA taxable -->
+      <row>
+        <control type="label" label="Taxable By"	 span="2"/>
+        <control type="buttongroup" name="TaxableItemIndicator" span="3"
+        sourcelabels="Item,Category"	 source="True,False" default="False" edit="true" required="true"/> 
+        <control type="label" span="4" label="Rate"	/>        
+        <control type="text" span="1" name="TaxRate" edit="true" format="0.00"/>
+      </row>
+      <!-- Bar codes can be used to find items for POs and other documents -->
+      <!-- There are issues with scanning bar codes since some types include leading and trailing numbers -->
+      <row>
+        <control type="label" span="2" label="Bar Code"	/>        
+        <control type="text" span="2" name="EAN13Barcode" edit="true"/>
+        <!-- Open the webcam and read the item's bar code -->
+        <control type="button" name="ScanBarcode" span="1" 
+          action="scan" 
+          icon="barcode"
+          label=""
+          inject="value=[EAN13Barcode],format=[UPCCode]"/>
+        <!-- Bar code types are detected by the camera scanner -->
+        <control type="label" span="3" label="Code Format"	/>        
+        <control type="select" name="UPCCode" span="3"
+          source="Code128,Code93,Code39,EAN-13,Standard 2 of 5,Interleaved 2 of 5,Codabar,QR,QR-Harmoni"
+          edit="true"/> 
+      </row>
+      <row> 
+        <!-- Related units of measure define the purchase units -->
+        <control type="label" span="2" label="Purchase Unit"	/>
+        <control type="select" span="3" name="AquiredUOMGuid"
+          source="RelatedUnitName,RelatedUnitGuid"
+          namefield="AquiredUOM"
+          datasource="GetItemMasterRelatedUnitsOfMeasure"
+          acctsvc="true" explicit="true"
+          filter="Active=true"
+          edit="true" 
+          set="hid_NumberOfEaches=[[NumberOfEaches]]"/>
+        
+        <!-- Consumed units of measure define the use of an item -->
+        <control type="label" span="3" label="Use Unit"	/>
+        <control type="select" span="3" name="ConsumedUOMGuid"
+          namefield="ConsumedUOM"
+          source="UnitOfMeasure,UOMGuid"
+          datasource="GetUnitsOfMeasure"
+          filter="Active=true"
+          sort="UnitOfMeasure=asc"
+          required="true"
+          acctsvc="true"
+          edit="true" />
+      </row>
+      <row>
+        <!-- Note field -->
+        <control type="label" label="Note"	 span="2" />       
+        <control type="textarea" name="Notes" span="9" rows="2" edit="true"  />
+      </row>
+    </group>
+
+    <!-- Group holding the location bin,minimum,maximum and Restocking location -->
+    <!-- The quantity on hand is displayed but can't be changed (this is done through an inventory adjustment) -->
+    <group name="grpStockGrid" reveal="Inventory=true">
+      <row name="rowgrdInventoryStock" reveal="ItemMasterGuid!">
+       <control type="datagrid" name="grdInventoryStock" label="Location Stock"	
+          span="12" rows="5"
+          action="redirect"
+          target="mdlStockItemsByItem"
+          searchable="true"
+          acctsvcreq="true"
+          rowcolor="RowColor|red=red;yellow=yellow"
+          datarequest="GetInventoryStockItemsForLocationByItem"
+          appendrequest="LocationId=(faciltyData.LocationId),itemGuid=[ItemMasterGuid]"
+          source="Active,LocationName,Bin,MinimumStock,MaximumStock,QuantityOnHand"
+          sourcelabels="Active,Location,Bin,Minimum,Maximum,Stock"	
+          align="|left|left|right|right|right"
+          format="boolean|||0|0|0"
+          total="|||+|+|+"
+          sort="LocationName=asc"
+          key="InventoryGuid"
+          onselectset="InventoryGuid2=[[InventoryGuid]]"
+          onselect="InventoryGuid2">
+          <!-- Display screen to enter a new stock location record -->
+          <control type="button" name="btnNewStockItemByItem"
+            label="Add New"	 icon="plus"
+            action="redirect" target="mdlStockItemsByItem"/>
+        </control>
+      </row>
+    </group>
+  </section>
+
+  <!-- tabmodal to display inventory tranactions for time frame -->
+  <section type="tabmodal" name="mdlItemHistory" title="Item History"	 badge="none" size="small">
+    <group>
+      <row>
+        <control type="date" name="dteStartDate" span="3" default="now-30" trigger="grdItemHistory"/>
+        <control type="date" name="dteEndDate" span="3" default="now+1" trigger="grdItemHistory"/>
+      </row>
+      <row>
+        <control type="datagrid" name="grdItemHistory" label="Stock History by Item"	
+          rows="20" span="12"
+          searchable="true"
+          acctsvcreq="true"
+          datarequest="GetInventoryTransactionsByDateRangeAndItemGuid"
+          appendrequest="LocationId=(facilityData.LocationId),startDate=[dteStartDate],endDate=[dteEndDate],itemGuid=[ItemMasterGuid]"
+          source="DateTimeEntered,TransactionType,LocationName,BinName,EnteredByFullName,Quantity"
+          sourcelabels="Date,Type,Location,Bin,Person,Quantity"	
+          translate="TransactionType"
+          align="|left|left|left|left|right"
+          format="datetime_short|||||0"
+          total="|||||+"
+          sort="DateTimeEntered=desc"
+          key="InventoryTransactionGuid"/>
+      </row>
+    </group>
+  </section>
+
+  <!-- Modal to print native HarmoniMD QR label -->
+  <section type="tabmodal" badge="none" name="mdlPrintHarmoniQR" title="Print HarmoniQR"	 size="small">
+    <group>
+      <!-- Enter a lot number (optional) -->
+      <row name="rowPrintLot" reveal="SubjectToExpiration=true">
+        <control type="label" label="Lot"	 span="4"/>
+        <control type="text" name="PrintLotNumber" span="4"/>
+      </row>
+      <!-- Enter an expiration date -->
+      <row name="rowPrintExpiraion" reveal="SubjectToExpiration=true">
+        <control type="label" label="Expiration Date"	 span="4"/>
+        <control type="date" name="PrintExpirationDate" span="4"/>
+      </row>
+      <!-- Enter a serial number -->
+      <row name="rowPrintSerial" reveal="IsSerialized=true">
+        <control type="label" label="Serial Number"	 span="4"/>
+        <control type="text" name="PrintSerialNumber" span="4"/>
+      </row>
+      <row>
+        <control type="label" label=""	 span="1"/>
+      </row>
+      <row>
+        <!-- Print label -->
+        <control type="label" label=""	 span="3"/>
+        <control type="button" name="PrintHarmoniQRWithLot"
+          size="large" span="4"
+          icon="print"
+          label="With Lots"	
+          action="print"
+          mode="report" 
+          append="id=f1eb57a0343,ItemMasterGuid=[ItemMasterGuid],Lot=[PrintLotNumber],Expiration=[PrintExpirationDate],Serial=[PrintSerialNumber]"/> 
+        <control type="button" name="PrintHarmoniQRNoLot"
+          size="large" span="4"
+          icon="print"
+          label="No Lot"	
+          action="print"
+          mode="report" 
+          append="id=7d3ec14ff46,ItemMasterGuid=[ItemMasterGuid]"/> 
+      </row>
+    </group>
+  </section>
+
+  <!--Related Units of Measure (Acquire d units of measure)-->
+  <section type="tab" title="Units of Measurement and Purchase"	>
+    <group>
+     <row>
+     <control type="datagrid" label="Purchase Units"	 name="PurchaseUnitsOfMeasure"
+          modalname="NewRelatedUnitsOfMeasure" span="6"
+          rows="20"
+          persist="true"
+          datasource="GetItemMasterRelatedUnitsOfMeasure"
+          datarequest="GetItemMasterRelatedUnitsOfMeasure"
+          datainsert="InsertItemMasterRelatedUnitsOfMeasure"
+          dataupdate="UpdateItemMasterRelatedUnitsOfMeasure"
+          acctsvc="true"
+          acctsvcreq="true"
+          source="Active,Type,RelatedUnitName,NumberOfEaches"
+          sourcelabels="Active,Type,Purchase Unit,Count"	
+          align="|left|left|Left"
+          format="boolean|||0,0"
+          sort="RelatedUnitName=asc"
+          key="RelatedUnitGuid" />
+      <!-- Consumed units of measure -->
+      <control type="datagrid" label="Units of Measure"	 name="UnitsOfMeasure"
+          modalname="NewUnitsOfMeasure" span="6"
+          rows="20"
+          persist="true"
+          datasource="GetUnitsOfMeasure"
+          datarequest="GetUnitsOfMeasure"
+          datainsert="InsertItemMasterUnitsOfMeasure"
+          dataupdate="UpdateItemMasterUnitsOfMeasure"
+          acctsvc="true"
+          acctsvcreq="true"
+          source="Active,UOMType,UnitOfMeasure,UOMAbbreviation"
+          sourcelabels="Active,Type,Unit of Measure,Abbreviation"	
+          align="|left|left|left"
+          format="boolean|||"
+          sort="UnitOfMeasure=asc"
+          key="UOMGuid" />
+     </row>
+    </group>
+  </section>
+  <!-- Modal for Consumed Units of Measure -->
+  <section type="modal" name="NewUnitsOfMeasure" title="Unit of Measure"	 size="small" provoke="ConsumedUOMGuid"> 
+    <group name="NewUnitsOfMeasureGroup">
+      <row>
+        <control type="label" label="Active"	 span="5"/>
+        <control type="buttongroup" name="UOM_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Type"			 span="5"/>
+        <control type="text" name="UOM_UOMType" span="2" max="30" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Unit of Measure"	 span="5"/>
+        <control type="text" name="UOM_UnitOfMeasure" max="50" span="2" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Abbreviation"	 span="5"/>
+        <control type="text" name="UOM_UOMAbbreviation" max="10" span="2" required="true" edit="true" />
+      </row>
+      <row>
+        <!-- Button to update existing record -->
+        <control type="modalbutton" 
+          showif="edit"
+          name="UOM_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <!-- Button to save a new record -->
+        <control type="modalbutton" 
+          showif="add"
+          name="UOM_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+
+  <!--Modal Window for Related Units of Measure-->
+  <!--Added by Dan 4/10/2018-->
+  <section type="modal" name="NewRelatedUnitsOfMeasure" title="Purchase Unit"	 size="small" provoke="AquiredUOMGuid"> 
+    <group name="NewRelatedUnitsOfMeasureGroup">
+      <row>
+        <control type="label" label="Active"	 span="5"/>
+        <control type="buttongroup" name="Rlu_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Type"			 span="5"/>
+        <control type="select" name="Rlu_Type" span="2" required="true"
+          source="Count,Weight,Time,Volume"
+          sourcelabels="Count,Weight,Time,Volume"
+          default="Count"/>
+      </row>
+      <row>
+        <control type="label" label="Item Count"	 span="5"/>
+        <control type="integer" name="Rlu_NumberOfEaches" span="2" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Description"	 span="5"/>
+        <control type="text" name="Rlu_RelatedUnitName" max="50" span="5" required="true" edit="true" />
+      </row>
+      
+      <row>
+        <!-- Update and next -->
+        <control type="modalbutton" 
+          showif="edit"
+          name="Rlu_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <!-- Insert and next -->
+        <control type="modalbutton" 
+          showif="add"
+          name="Rlu_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+  <!-- Modal to enter/edit inventory stock records -->
+  <section  type="tabmodal" badge="none" name="mdlStockItemsByItem" title="Stock Item"	 size="small">
+    <group showif="never">
+        <!-- Store the inventory guid -->
+        <row >
+          <control type="hidden" name="InventoryGuid2"
+            acctsvcreq="true"
+            datarequest="GetInventoryStockItemsForLocationByInventoryGuid"
+            appendrequest="inventoryGuid=[InventoryGuid2]"
+            inject="grpStockItemInfo2"/>
+        </row>
+      </group>
+      <group name="grpStockItemInfo2">
+        <row>
+          <!-- Select the location for stock record -->
+          <control type="label" label="Location"		 span="3"/>
+          <control type="select" name="Itm2_LocationGuid"
+            span="7"
+            filter="Active=true"
+            acctsvc="true"
+            explicit="true"
+            edit="true"
+            default="Pharmacy"
+            required="true"
+            datasource="GetInventoryLocationsForThisFacility"
+            source="LocationName,LocationGuid"/>
+        </row>
+        <!-- Set active and Bin for the location-->
+        <row>
+          <control type="label" label="Active"	 span="3"/>
+          <control type="buttongroup" name="Itm2_Active"
+          span="2" source="True,False" sourcelabels="Yes,No"	
+          default="True" required="true" edit="true"/>
+          <control type="label" label="Bin"		 span="4"/>
+          <control type="text" name="Itm2_Bin" edit="true" span="2"/>
+        </row>
+        <!-- Set minimum and Maximum stock for the location -->
+        <row>
+          <control type="label" label="Minimum"	 span="3"/>
+          <control type="integer" name="Itm2_MinimumStock" 
+          required="true" edit="true" span="2" min="0"/>
+          <control type="label" label="Maximum"	 span="4"/>
+          <control type="integer" name="Itm2_MaximumStock" 
+          required="true" edit="true" span="2" format="0"/>
+        </row>
+        <!-- Set the location that normally Restocks the item -->
+        <row>
+          <control type="label" label="Supplied From"	 span="3"/>
+          <control type="select" name="Itm2_SupplyFrom"
+            span="7"
+            filter="Active=true,ReceivingLocation=true"
+            acctsvc="true"
+            explicit="true"
+            edit="true"
+            datasource="GetInventoryLocationsForThisFacility"
+            source="LocationName,LocationGuid"/>
+        </row>
+      <row>
+        <!-- Button to close the screen -->
+        <control type="label" label=""	 span="3"/>
+        <control type="button" name="bntCloseItm2"
+          size="large" label="Close"	 span="3"
+          color="grey" action="close"/>
+        <!-- Button to save a new location stock record -->
+        <!-- This option checks to see that no record exists for this item in this location -->
+        <control type="button" name="btnSaveItemStock2"
+          size="large" icon="cloud-upload" label="Save"	
+          showif="add" span="4"
+          action="save|close|new"
+          color="grey"
+          affector="none"
+          capture="grpStockItemInfo2"
+          confirmsvc="true"
+          confirmrequest="GetInventoryStockItemsForLocationByItemActive"
+          appendconfirm="itemGuid=[ItemMasterGuid],locationGuid=[Itm2_LocationGuid]"
+          confirmresponse="length=0|This stock location already exists."
+          acctsvc="true"
+          datainsert="InsertInventoryStockItemsForLocation"
+          appendinsert="itemGuid=[ItemMasterGuid]"
+          provoke="grdInventoryStock"/>
+          <!-- Update an existing item -->
+          <!-- Note: QuantityOnHand is not available to edit-->
+          <control type="button" name="btnUpdateItemStock2"
+          size="large" icon="cloud-upload" label="Update"	
+          showif="edit" span="4"
+          action="save|close|new"
+          color="grey"
+          affector="none"
+          capture="grpStockItemInfo2"
+          acctsvc="true"
+          datainsert="UpdateInventoryStockItemsForLocation"
+          appendinsert="inventoryGuid=[InventoryGuid2]"
+          provoke="grdInventoryStock"/>
+      </row>
+    </group>
+  </section>
+</module>

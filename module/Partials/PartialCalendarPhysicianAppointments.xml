@@ -1,0 +1,141 @@
+﻿<partial>
+  <!-- Partial to manage physician appointments (across more than one calendar) -->
+	<!-- A calendar view is shown and the user can select the physician (ProviderId) and view -->
+  <section type="tab" name="tabPhysicianAppointments" title="Appointments by Physician"	>
+    <group showif="never">
+      <row>
+        <control type="text" name="Drop2_Source"/>
+        <control type="text" name="Drop2_AppointmentGuid"/>
+        <control type="text" name="Drop2_StartTime"/>
+        <control type="text" name="Drop2_EndTime"/>
+        <control type="text" name="Drop2_PatientFirstMiddleLast"/>
+      </row>
+      <row>
+        <control type="button" name="btnUpdateDrop2"
+          action="save"
+          affector="none" 
+          dataupdate="UpdateSchedulerAppointments"
+				  appendupdate="appointmentGuid=[Drop2_AppointmentGuid],start=[Drop2_StartTime],end=[Drop2_EndTime],calculateDuration=true,txtMessage=[MoveTextMessage]"/>
+
+        <control type="button" name="btnUpdateResize2"
+          action="save"
+          affector="none" 
+          dataupdate="UpdateSchedulerAppointments"
+				  appendupdate="appointmentGuid=[Drop2_AppointmentGuid],start=[Drop2_StartTime],end=[Drop2_EndTime],calculateDuration=true"/>
+      </row>
+    </group>
+    <group>
+      <row>
+        <control type="buttongroup" name="btngrpProviderStatus"
+          span="4" default="Active"
+          source="Active,Completed,No Show,Canceled"
+          sourcelabels="Active,Completed,No Show,Canceled"	
+          trigger="AppointmentTimes2"/>
+        <!-- Select control for provider (physician) to view appointments only for this provider -->
+        <control type="label" label="Physician"			 span="1" />
+				<control type="select" name="ProviderId2" span="4" 
+					acctsvc="true" datasource="GetUsersByAttributes" append="LocationId=(facilityData.LocationId),role=Physician|MedWave" 
+					source="UserFirstMiddleLast,UserId" 
+					searchable="true"
+          default="true"
+					edit="true"
+				  provoke="AppointmentTimes2"/>
+        <!-- Templates are used to format the data shown in each calendar view -->
+        <!-- This allows each view to have an appropriate data set -->
+        <!-- A green checkmark is shown if the appointment is confirmed -->
+        <!-- A facetime-video icon is shown if IsTelemedicine is set to true -->
+        <!-- Template for month and week views that shows only the patient name-->
+        <template name="dayGridMonthTemplate3" type="markup">
+            [span size=12 color=darkgrey] 
+            [IF ${[[Reschedule]]}=true][icon color=red]refresh[/icon][/IF]
+            [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+              ${[[MedicalSpecialtyName]]}[br]
+             ${[[PatientFirstMiddleLast]]}[/span]
+        </template>
+        <!-- Template for day view that shows the provider,description,and location-->
+        <template name="timeGridDayTemplate3" type="markup">
+            [span size=12 color=darkgrey] 
+            [IF ${[[Reschedule]]}=true][icon color=red]refresh[/icon][/IF]
+            [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+            ${[[MedicalSpecialtyName]]}[br] 
+            ${[[CalendarName]]} 
+            ${[[Subject]]} 
+						${[[PatientFirstMiddleLast]]} [/span]
+        </template>
+        <!-- Template for day view that shows the provider,description,and location-->
+        <template name="timeGridWeekTemplate3" type="markup">
+            [span size=12 color=darkgrey] 
+            [IF ${[[Reschedule]]}=true][icon color=red]refresh[/icon][/IF]
+            [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+            ${[[MedicalSpecialtyName]]}[br]  
+						${[[PatientFirstMiddleLast]]} [/span]
+        </template>
+        <!-- Template for agenda (list) view that shows the provider,description,and location-->
+        <template name="listMonthTemplate3" type="markup">
+            [span size=12 color=darkgrey] 
+            [IF ${[[Reschedule]]}=true][icon color=red]refresh[/icon][/IF]
+            [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+            ${[[MedicalSpecialtyName]]}  
+            ${[[CalendarName]]}  
+            ${[[Subject]]}  
+						${[[PatientFirstMiddleLast]]}   
+             [/span]
+        </template>
+        <template name="PhysicianBackgroundTemplate" type="markup">
+            [span size=12 color=darkred] 
+            ${[[Reason]]}[br]
+            ${[[ProviderFirstMiddleLast]]}[/span]
+        </template>
+      </row>
+			<row>
+        <!-- Calendar control is configured to accept click on an appointment in all views-->
+        <!-- GetSchedulerTimesByDateRange returns time slots and appointments -->
+        <!-- Includes extraordinary appointments (that have no SchedulerTimeGuid) -->
+        <!-- ondrop="[btngrpProviderStatus]=Active;btnUpdateDrop^AppointmentTimes" -->
+          <control type="calendar" 
+            span="12"
+            aspect="10/7"
+            name="AppointmentTimes2"
+            headerleft="prev,next today"
+            headercenter="title"
+            headerright="dayGridMonth,timeGridWeek,timeGridDay,listDay"
+            navlinking="true"
+            slotduration="00:15"
+            duration="00:30"
+            businesshours="1,2,3,4,5=06:00-20:00"
+            eventcolor="Status|Background=lightblue;Scheduled=yellowgreen;Confirmed=green;Completed=yellow;No Show=orange;Canceled=red"
+            source="dayGridMonth=dayGridMonthTemplate3,timeGridWeek=timeGridWeekTemplate3,timeGridDay=timeGridDayTemplate3,listDay=timeGridDayTemplate3"
+            idle="[ProviderId2]="
+            bgsource="dayGridMonth=PhysicianBackgroundTemplate,timeGridWeek=PhysicianBackgroundTemplate,timeGridDay=PhysicianBackgroundTemplate,listDay=PhysicianBackgroundTemplate"
+            acctsvcreq="true"
+            edit="true"
+            bgevent="Type|Background=true"
+            editable="AppointmentGuid!"
+            editduration="AppointmentGuid!"
+            datarequest="GetSchedulerExceptionsByDateRange"
+            appendrequest="status=[btngrpProviderStatus],ProviderId=[ProviderId2]"
+            map="start=StartDateTime,end=EndDateTime,title=rowguid"
+          	daterange="start=start,end=end"
+            key="key"
+            action="redirect"
+            target="NewAppointmentModal"
+            selectable="true"
+            selectabletarget="[btngrpProviderStatus]=Active;NewAppointmentModal"
+            onselectableset="NewApt_Source=2,NewApt_AppointmentTypeGuid=[[CalendarGuid]],NewApt_Start=[[start]],NewApt_End=[[end]],NewApt_Duration=[[duration]],NewApt_MedicalSpecialtyGuid=[[MedicalSpecialty]],NewApt_ProviderId=[[ProviderId]]"
+            onselectset="NewApt_Source=2,NewApt_AppointmentGuid=[[AppointmentGuid]],NewApt_AppointmentTypeGuid=[[CalendarGuid]],NewApt_Start=[[start]]"
+            onselect="[NewApt_AppointmentGuid]!;NewApt_AppointmentGuid"
+            droptarget="none"
+            ondropset="Drop2_Source=2,Drop2_AppointmentTypeGuid=[[CalendarGuid]],Drop2_AppointmentGuid=[[AppointmentGuid]],Drop2_StartTime=[[StartDateTime]],Drop2_EndTime=[[EndDateTime]],Drop2_PatientFirstMiddleLast=[[PatientFirstMiddleLast]]"
+            ondrop="[btngrpProviderStatus]=Active;btnUpdateDrop2^AppointmentTimes2"
+            resizetarget="none"
+            onresize="[btngrpProviderStatus]=Active;btnUpdateResize2^AppointmentTimes2"
+            onresizeset="Drop2_Source=2,Drop2_AppointmentTypeGuid=[[CalendarGuid]],Drop2_AppointmentGuid=[[AppointmentGuid]],Drop2_StartTime=[[StartDateTime]],Drop2_EndTime=[[EndDateTime]],Drop2_PatientFirstMiddleLast=[[PatientFirstMiddleLast]]">
+            <!-- Button to refresh the calendar -->
+            <control type="button" name="btnRefreshCalendar2"
+              icon="refresh" label="Refresh"	 action="trigger" trigger="AppointmentTimes2"/>
+            <!-- Button for new unscheduled appointments (allows appointments outside of scheduled times) -->
+          </control>
+      </row>
+		</group>
+  </section>
+</partial>

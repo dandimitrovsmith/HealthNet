@@ -1,0 +1,367 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Last edit by Dan 4/14/2018-->
+<module name="Laboratories">
+   <section type="tab" title="External Laboratories"	>
+    <group>
+      <row>
+        <control type="datagrid" label="External Laboratories"	 name="LaboratoriesGrid"
+          rows="20"
+          modalname="NewLaboratory" span="12"
+          datasource="GetLaboratoriesByFacility"
+          datarequest="GetLaboratoriesByFacility"
+          datainsert="InsertLaboratories"
+          dataupdate="UpdateLaboratories"
+          source="Active,LabId,LabName,PathologistName,LabPhoneNumber,LabFaxNumber,LabEmailAddress"
+          sourcelabels="Active,Code,Laboratory,Pathologist,Phone,Fax,Email"	
+          align="|left|left|left|left|left|left"
+          format="boolean"
+          sort="LabName=asc"
+          key="LabGuid"/>
+      </row>
+    </group>
+  </section>
+  
+  <!--New Laboratory Modal-->
+  <section type="modal" name="NewLaboratory" title="External Laboratory"	 size="small"
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">
+    <group name="NewLaboratoryGroup">      
+      <row>
+        <control type="label" label="Active"	 span="3"/>
+        <control type="buttongroup" name="NewLaboratoryGroup_Active"
+          sourcelabels="Yes,No"	 source="True,False" span="2" edit="true" default="True" />
+          <control type="label" label="Code"	 span="1"/>
+        <control type="text" name="LabId" span="2" edit="true"  tooltip=""/>
+      </row>
+      <row>
+        <control type="label" label="Laboratory"	 span="3"/>
+        <control type="text" name="LabName" required="true"
+          span="5" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Pathologist"	 span="3"/>
+        <control type="text" name="PathologistName"
+          span="5" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Phone"	 span="3"/>
+        <control type="text" name="LabPhoneNumber"
+          span="2" edit="true" />
+          <control type="label" label="Fax"		 span="1"/>
+        <control type="text" name="LabFaxNumber"
+          span="2" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Email"				 span="3"/>
+        <control type="text" name="LabEmailAddress"
+          span="5" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Address"	 span="3"/>
+        <control type="text" name="LabStreetAddress" 
+          span="5" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Apartment"	 span="3"/>
+        <control type="text" name="LabStreetAddress2" 
+          span="5" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="City"	 span="3"/>
+        <control type="text" name="LabCity"
+          span="5" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="State"	 span="3"/>
+        <control type="text" name="LabState"
+          span="3" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Postal Code"	 span="3"/>
+        <control type="text" name="Zip"
+          span="2" edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="NewLaboratoryGroup_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="NewLaboratoryGroup_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+    </row>
+    </group>
+  </section>
+
+  <section type="tab" title="Laboratory Panels"	>
+    <group>
+     <row>      
+        <control type="datagrid" label="Lab Panels"	 name="LaboratoryPanelsGrid"
+          rows="20"
+          modalname="NewLaboratoryPanel" span="12"
+          searchable="true"
+          datasource="GetLabPanelsByFacility"
+          datarequest="GetLabPanelsByFacility"
+          datainsert="InsertLabPanelsByFacility"
+          dataupdate="UpdateLabPanelsByFacility"
+          source="Active,InHouse,LabPanelCode,LabPanelName,CptCode,RevCode,BasePrice"
+          sourcelabels="Active,Internal Laboratory,Panel Code,Panel Name,CPT Code,Revenue Code,Price"	
+          align="||left|left|left|left|left|right"
+          format="boolean|boolean||||||0,0.00"
+          sort="LabPanelName=asc"
+          key="LabPanelGuid"/>
+      </row>
+    </group>
+  </section>
+
+  <!--New Laboratory Panel Modal-->
+  <section type="modal" name="NewLaboratoryPanel" title="Laboratory Panel"	 provoke="LabPanelGuid" size="small"
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">
+    <group name="NewLaboratoryPanelGroup">      
+      <row>
+        <control type="label" label="Active"	 span="3"/>
+        <control type="buttongroup" name="LabPanel_Active"
+          sourcelabels="Yes,No"	 source="True,False" span="2" edit="true" default="True" />
+        <control type="label" label="Department"			 span="2"/>
+        <control type="select" span="4" 
+          name="DepartmentName,DepartmentGuid"
+          acctsvc="true" edit="true"
+          datasource="GetDepartmentsActive"
+          source="DepartmentName,DepartmentGuid"
+          explicit="true"
+          />
+      </row>
+      <row>
+        <control type="label" label="Internal Laboratory"	 span="3"/>
+        <control type="buttongroup" name="InHouse"
+          sourcelabels="Yes,No"	 source="True,False" 
+          span="2" edit="true" default="True" />
+        <control type="label" span="2" label="Revenue Code"	/>  
+        <control type="select" span="4" name="RevenueCodeName,RevCode"
+          datasource="GetRevenueCodesForThisFacility" 
+          filter="Active=true"
+          acctsvc="true" 
+          edit="true"
+          source="RevenueCode|RevenueCodeDescription,RevenueCode" 
+           />
+      </row>
+      <row>
+        <control type="label" label="Patient Chargeable"	 span="3"/>
+        <control type="buttongroup" name="PatientChargeable"
+          sourcelabels="Yes,No"	 source="True,False" span="2" edit="true" default="True" />
+        <!-- <control type="label" label="Bill Inpatient" span="3"/>
+        <control type="buttongroup" name="BillInPatient"
+          sourcelabels="Yes,No" source="True,False" span="2" edit="true" default="True" />
+        <control type="label" label="Bill Outpatient" span="4"/>
+        <control type="buttongroup" name="BillOutPatientBit"
+          sourcelabels="Yes,No" source="True,False" span="2" edit="true" default="True" /> -->
+      </row>
+      <row>
+        <control type="label" label="Panel Code"	 span="3"/>
+        <control type="text" name="LabPanelCode" span="3" edit="true" />
+        
+      </row>
+      <row>
+        <control type="label" label="Panel Name"	 span="3"/>
+        <control type="text" name="LabPanelName" required="true"
+          span="8" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Base Price"	 span="3"/>
+        <control type="text" name="BasePrice" span="2" format="0,0.00" default="0.00" edit="true" />
+        <control type="label" label="Cost"	 span="3"/>
+        <control type="text" name="Cost" span="2" format="0,0.00" default="0.00" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="CPT Code"	 span="3"/>
+        <control type="text" name="CptCode" span="3" edit="true" />
+        <control type="label" label="External ID"		 span="2"/>
+        <control type="text" name="ExternalId" span="3" edit="true"  tooltip=""/>
+      </row>
+      <row>
+        <control type="label" label="Panel Footnote"	 span="3"/>
+        <control type="textarea" name="LabReportFootNote" span="8" rows="3" edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="LabPanel_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="LabPanel_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+
+  <section type="tab" title="Laboratory Tests"	>
+    <group>
+      <row>      
+        <control type="datagrid" label="Laboratory Tests"	 name="LaboratoryTestsGrid"
+          rows="20"
+          searchable="true"
+          modalname="NewLaboratoryTest" span="12"
+          datasource="GetLabPanelsAndTestsByGroupId"
+          datarequest="GetLabPanelsAndTestsByGroupId"
+          datainsert="InsertLabPanelsAndTestsByGroupId"
+          dataupdate="UpdateLabPanelsAndTestsByGroupId"           
+          source="Active,LabPanelCode,LabPanelName,LabTestCode,LabTestName,UnitOfMeasure,NormalRange"
+          sourcelabels="Active,Panel Code,Panel,Test Code,Test,Unit,Normal Range"	
+          align="|left|left|left|left|left|left"
+          format="boolean||||||"
+          sort="LabTestName=asc"
+          key="LabTestGuid"
+          onselectset="new_LabPanelCode=[[LabPanelCode]],new_LabPanelName=[[LabPanelName]]"/>
+      </row>
+    </group>
+  </section>
+
+  <section type="modal" name="NewLaboratoryTest" title="Laboratory Test"	 
+    enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+    dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">
+    <group name="NewLaboratoryTestGroup">
+      <row>
+        <control type="label" label="Active"	 span="3"/>
+        <control type="buttongroup" name="LabTest_Active"
+          sourcelabels="Yes,No"	 source="True,False" span="2" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Lab Panel"	 span="3"/>
+        <control type="select"
+          name="LabPanelGuid"
+          required="true"
+          span="8"
+          source="LabPanelCode|LabPanelName,LabPanelGuid"
+          datasource="GetLabPanelsByFacility"
+          set="new_LabPanelCode=[[LabPanelCode]],new_LabPanelName=[[LabPanelName]]"
+          inject="rowHiddenFields"/>
+      </row>
+     <row name="rowHiddenFields" showif="never">    
+        <control type="hidden" name="new_LabPanelCode"/>
+        <control type="hidden" name="new_LabPanelName"/>
+      </row>
+      <row>
+        <control type="label" label="Test"	 span="3"/>
+        <control type="text" name="LabTestName"  required="true"
+          span="8" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Test Code"	 span="3"/>
+        <control type="text" name="LabTestCode" 
+          span="2" edit="true" /> 
+        <control type="label" label="Unit of Measure"	 span="3"/>
+        <control type="text" name="UnitOfMeasure" span="2" edit="true" />         
+      </row>
+      <row name="NormalRangeDetails" reveal="CustomRangeGender=False+CustomRangeAge=False">         
+        <control type="label" label="Normal Range"	 span="3"/>
+        <!-- Normal Range Textfield -->
+        <control type="text" name="NormalRange"
+          span="2" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Gender Range"	 span="3"/>
+        <control type="buttongroup" name="CustomRangeGender"
+          sourcelabels="Yes,No"	 source="True,False" span="2" edit="true" default="False" />        
+      </row>       
+      <row name="MaleRangeDetails" reveal="CustomRangeGender=True+CustomRangeAge=False">
+        <control type="label" label="Male Range"	 span="3"/>
+        <!-- Normal Range Male Textfield -->
+        <control type="text" name="MaleOnlyNormalRange"
+          span="2" edit="true" />
+      </row>
+      <row name="FemaleRangeDetails" reveal="CustomRangeGender=True+CustomRangeAge=False">
+        <control type="label" label="Female Range"	 span="3"/>
+        <!-- Normal Range Femail Textfield -->
+        <control type="text" name="FemaleOnlyNormalRange"
+          span="2" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Age Range"	 span="3"/>
+        <control type="buttongroup" name="CustomRangeAge"
+          sourcelabels="Yes,No"	 source="True,False" span="2" edit="true" default="False" />
+      </row>
+      <row name="PediatricRangeDetails" reveal="CustomRangeAge=True+CustomRangeGender=False">         
+        <control type="label" label="Pediatric Range"	 span="3"/>
+        <!-- Normal Range Kid Textfield -->
+        <control type="text" name="PediatricOnlyNormalRange"
+          span="2" edit="true" />
+      </row>
+      <row name="AdultRangeDetails" reveal="CustomRangeAge=True+CustomRangeGender=False">
+        <control type="label" label="Adult Range"	 span="3"/>
+        <!-- Normal Range Adult -->
+        <control type="text" name="AdultOnlyNormalRange"
+          span="2" edit="true" />
+        <control type="label" label="Age of Adult Start"	 span="3"/>
+        <!-- Age Range Start Adult -->
+        <control type="text" name="AdultOnlyAgeRangeStart" format="int"
+          span="1" edit="true" />
+      </row>
+
+      <row name="MalePediatricRangeDetails" reveal="CustomRangeAge=True+CustomRangeGender=True">         
+        <control type="label" label="Pediatric Male Range"	 span="3"/>
+        <control type="text" name="PediatricMaleNormalRange"
+          span="2" edit="true" />        
+      </row>
+      <row name="MaleAdultRangeDetails" reveal="CustomRangeAge=True+CustomRangeGender=True">
+        <control type="label" label="Adult Male Range"	 span="3"/>
+        <control type="text" name="AdultMaleNormalRange"
+          span="2" edit="true" /> 
+        <control type="label" label="Age of Adult Start"	 span="3"/>
+        <control type="text" name="AdultMaleAgeRangeStart" format="int"
+          span="1" edit="true" />      
+      </row>
+
+      <row divider="true" name="FemalePediatricRangeDetails" reveal="CustomRangeAge=True+CustomRangeGender=True">         
+        <control type="label" label="Pediatric Female Range"	 span="3"/>
+        <!-- Normal Range Female Pediatric -->
+        <control type="text" name="PediatricFemaleNormalRange"
+          span="2" edit="true" />        
+      </row>
+      <row name="FemaleAdultRangeDetails" reveal="CustomRangeAge=True+CustomRangeGender=True">
+        <control type="label" label="Adult Female Range"	 span="3"/>
+        <control type="text" name="AdultFemaleNormalRange"
+          span="2" edit="true" /> 
+        <control type="label" label="Age of Adult Start"	 span="3"/>
+        <control type="text" name="AdultFemaleAgeRangeStart" format="int"
+          span="1" edit="true" />      
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="LabTest_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="LabTest_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+</module>

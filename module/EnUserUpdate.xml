@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<module name="My User Account" type="onload" trigger="UserIdButton">
+<facet name="FileName" value="UserUpdate"/>
+<section type="tab" title="My User Account"	>
+    <group name="UserTabInfo" title="My User Account"	>
+      <control type="hidden" 
+          name="UserIdButton"
+          datarequest="GetUserProfileFromUserId"
+          inject="UserTabInfo,UpdatePIN,SaveMyInformation,SaveMyPasswordGroup,SaveMyPIN,GetUserButton,UserIDGroup"/>
+      <row>
+        <control type="hidden" name="UserType" span="2" />
+        <control type="hidden" name="Department" span="2" />
+      </row>
+      <row>
+        <control type="label" span="2" label="User Identification"	/>
+        <control type="text" span="3" name="UserId" readonly="true" />
+      </row>
+      <row>
+      	<control type="label" span="2" label=""/>
+        <control type="label" label="Name"	 align="left" span="3"/>
+        <control type="label" label="Parent"	 align="left" span="3"/>
+        <control type="label" label="Maternal"	 align="left" span="3"/>
+      </row>
+      <row>
+      	<control type="label" span="2" label=""/>
+        <control type="text" name="FirstName" span="3" required="true" edit="true" />
+        <control type="text" name="MiddleName" span="3" required="true" edit="true"  />
+        <control type="text" name="LastName" span="3" required="true" edit="true" />
+      </row>	
+      <row>
+        <control type="label" span="2" label="My Title"	/>
+        <control type="text" span="3" name="Title" edit="true" />
+      </row>
+      <row>
+      	<control type="label" span="2" label="Specialty License"	 />
+        <control  type="text" span="3" name="StateLicense" edit="true" />
+      	<control type="label" span="2" label="Email"		 />
+        <control  type="text" span="4" name="EmailAddress" verify=
+          "email" edit="true" required="true" />
+      </row>
+      <row>
+        <control type="label" span="2" label="University"	 />
+        <control  type="text" span="3" name="Credentials" edit="true" />
+        <control type="label" span="2" label="Specialty License"	 />
+        <control  type="text" span="4" name="NPI"  edit="true"/>
+      </row>
+      <row>
+        <control type="label" span="2" label="Account"		 />
+        <control type="text" span="2" name="ApplicationId" required="true" edit="true" />
+      	<control type="label" span="3" label="PIN"	 />
+        <control  type="password" span="2" name="SignaturePin" required="true" 
+          regex="^\d{4,7}$"  edit="true"/>
+      </row>
+      <row>
+        <control type="label" span="2" label="Office Phone"	 />
+        <control type="text" span="2" name="OfficePhoneNumber" edit="true" />
+        <control type="label" span="3" label="Confirm PIN"	 />
+        <control  type="password" span="2" name="ConfirmSignaturePin" required="true"  equHigh="SignaturePin" edit="true"/>
+      </row>
+      <row>
+        <control type="label" span="2" label="Cell Phone"	 />
+        <control  type="text" span="2" name="CellPhoneNumber" required="true" edit="true" />
+      </row>
+  </group>
+
+  <group name="SaveMyInformation" showif="edit">
+      <row>
+      	<control type="label" span="4" label=""/>
+         <control type="button" 
+      		span="3"
+      		name="SaveUserButton" 
+      		label="Update"	
+          icon="cloud-upload"
+      		affector="none"
+      		capture="UserTabInfo"
+      		action="save|new"
+      		datainsert="UpdateUserAccountProfiles"
+          confirm="Please confirm you want to update your information"	/>
+       </row>
+    </group>
+
+    <group name="OldPasswordGroup">
+      <row showif="never">
+        <control type="text" name="CurrentPassword" span="2" default="(password)" />
+      </row>
+    </group>
+    <group name="ChangePasswordGroup" title="Reset My Password"	>
+      <row>
+        <control type="label" align="left" span="6" label="Important: Passwords must be between 7 and 50 characters long and have at least one uppercase letter, one lowercase letter, a number and one of the following special characters: @ $%!?*"/>
+      </row>
+      <row>
+        <control type="label" span="4" label="Current Password"	 />
+        <control type="password" span="2" name="OldPassword" required="true" equHigh="CurrentPassword" edit="true"  />
+      </row>
+      <row>
+        <control type="label" span="4" label="New Password"	 />
+        <control type="password" span="2" name="NewPassword" required="true" edit="true" regex="^((?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d$@$!%*?]{7,50})$" />
+      </row>
+      <row>
+        <control type="label" span="4" label="Confirm New Password"	 />
+        <control type="password" span="2" name="ConfirmPassword" required="true" edit="true"    equHigh="NewPassword"/>
+      </row>
+    </group>
+
+    <group name="SaveMyPasswordGroup" showif="edit">
+      <row>
+        <control type="label" span="4" label=""/>
+         <control type="button" 
+          span="3"
+          name="SavePasswordButton" 
+          label="Reset My Password"	
+          icon="cloud-upload"
+          affector="none"
+          capture="ChangePasswordGroup"
+          action="save|new"
+          datainsert="ChangePassword"
+          confirm="Once you reset your password, you will be logged out. Please log in again with your new password."
+          provoke="(logout)"/>
+       </row>
+    </group>
+  </section>
+</module>

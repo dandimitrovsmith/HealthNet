@@ -1,0 +1,52 @@
+﻿<partial>  
+  <!-- Tabmodal to transfer patient to another department and cancel any bed assignment -->
+   <section type="tabmodal" badge="none" name="mdlTransferPatient" title="Transfer"	 size="small">
+      <group showif="never">
+        <row>
+          <control type="hidden" name="GetCurrentBedAssignment"
+            datarequest="GetPatientAllFields"
+            appendrequest="PatientId=[PatientId]"
+            inject="grpGetBedAssignment"/>
+          <control type="hidden" name="Transfer_BedAssignmentGuid"/>
+        </row>
+        <row>
+          <!--  Cancel an existing patent bed assignment -->
+          <control type="button"
+            name="btnCloseBedAssignment"
+            action="save"
+            acctsvc="true"
+            affector="none"
+            dataupdate="UpdatePatientBedAssignment"
+            appendupdate="bedAssignmentGuid=[Transfer_BedAssignmentGuid],dateTimeCheckedOut=(dateTimeNow),status=Closed"/>
+        </row>
+      </group>
+      <group name="grpTransferInfo">
+      <row>
+        <control type="label" label="Transfer to Department"	 span="4"/>
+        <control type="select" name="Transfer_DepartmentGuid" span="5"
+          required="true"
+          acctsvc="true"
+          datasource="GetDepartmentsActive" 
+          source="DepartmentName,DepartmentGuid"/>
+      </row>
+    </group>
+    <group>
+      <row>
+        <control type="label" label=""	 span="5"/>
+        <control type="button" name="btnCloseTransferButton"
+          span="3" color="grey" size="large" label="Close"	
+          action="close|new"/>
+        <control type="button" name="btnTransferButtonWithBedCancel"
+          span="3" color="orange" icon="move" size="large"
+          affector="none" 
+          action="save|close|new"
+          capture="grpTransferInfo"
+          label="Transfer"	 
+          confirm="Please confirm you want to transfer this patient."
+          dataupdate="UpdatePatientVisitAllFields"
+          appendupdate="patientId=[PatientId],patientVisitUniqueId=[PatientVisitGuid],hospitalService=Waiting"
+          provoke="btnCloseBedAssignment,ClosePatientTabModal,PatientList"/>
+      </row>
+    </group>
+  </section>
+</partial>

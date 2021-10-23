@@ -1,0 +1,450 @@
+﻿<partial>
+<!-- Partial NewAppointmentModal -->
+<!-- Enter and edit patient appointments -->
+	<section type="tabmodal" badge="none" name="NewAppointmentModal" title="Appointment"	 size="small">
+		<group showif="never">
+      <row>
+        <control type="hidden" name="NewApt_Source" persist="true"/>
+        <!-- Get the appointment information from the appointment record (existing appointment) -->
+        <control type="hidden"
+          name="NewApt_AppointmentGuid"
+          datarequest="GetSchedulerAppointmentsByAppointmentGuid"
+          appendrequest="AppointmentGuid=[NewApt_AppointmentGuid]"
+          inject="rowNewAptGetPatient,NewApt_AppointmentInfo"
+          provoke="NewApt_PatientId"/>
+      </row>
+			<row name="rowNewAptGetPatient">
+        <!-- Get the patient information and insert into the form -->
+        <control type="hidden" name="NewApt_Reschedule"/>
+				<control type="hidden" name="NewApt_PatientId"
+					datarequest="GetPatientAllFields"
+					appendrequest="PatientId=[NewApt_PatientId]"
+					inject="NewApt_PatientInfo,rowPatientId"/>
+	  	</row>
+		</group>
+		<group name="NewApt_PatientInfo">	
+			<row>
+				<control type="label" label=""	 span="1"/>
+				<control type="label" label="Name / File#"	 span="3" align="left"/>
+				<control type="label" label="Parent"	 span="3" align="left"/>
+				<control type="label" label="Maternal"	 span="3" align="left"/>
+			</row>
+			<row>
+				<control type="label" label=""	 span="1"/>
+				<control type="text" name="NewApt_PatientFirstName" span="3" edit="[NewApt_PatientId]="
+					action="trigger" trigger="btnNewAptPatientSearch"/>
+				<control type="text" name="NewApt_PatientMiddleName" span="3" edit="[NewApt_PatientId]="
+					action="trigger" trigger="btnNewAptPatientSearch"/>
+				<control type="text" name="NewApt_PatientLastName" span="3" edit="[NewApt_PatientId]="
+					action="trigger" trigger="btnNewAptPatientSearch"/> 
+				
+				<control type="button" name="btnNewAptPatientSearch"
+          label="Search"	 span="2" icon="search" color="grey"
+					reveal="[NewApt_PatientId]="
+          preset="PatientSearchSource=10,Search_PatientFirstName=[NewApt_PatientFirstName],Search_PatientMiddleName=[NewApt_PatientMiddleName],Search_PatientLastName=[NewApt_PatientLastName]"
+					trigger="Search_FindPatient"
+          action="redirect" target="mdlFindPatients"/>
+
+				<control type="button" name="btnDisplayPatientChart2"
+					reveal="NewApt_PatientId!"
+					span="2" label="Patient"			 icon="search"
+					preset="PatientId=[NewApt_PatientId],TelemedicineConferenceUrl=[NewApt_ConferenceUrl]"
+					trigger="PatientId"
+					action="redirect" target="PatientTabModal"/>
+		</row>
+		<row showif="never">
+			<control type="button" name="NewAptPatientSearch"
+				action="trigger"
+				set="NewApt_PatientId=[PatientSearchResults]"
+				provoke="NewApt_PatientId"/>
+    </row>
+		<row>
+			<control type="label" label="Account"		 span="2"/>
+			<control type="text" name="NewApt_AccountNumber" span="3" readonly="true"/>
+			<control type="label" label="Birth"	 span="2"/>
+			<control type="date" name="NewApt_PatientDOB" span="3" readonly="true"/>
+      <!-- Button to complete and appointment (shown only in edit mode)-->
+      <control type="button" name="btnCompleteAppointment"
+          reveal="NewApt_AppointmentGuid!"
+          span="2" action="save|close|new" color="yellow"
+          icon="cloud-upload" label="Complete"	
+          confirm="Please confirm you want to complete this appointment."
+          affector="none"
+          dataupdate="UpdateSchedulerAppointments"
+          appendupdate="appointmentGuid=[NewApt_AppointmentGuid],Status=Completed"
+          provoke="[NewApt_Source]=1;AppointmentTimes,[NewApt_Source]=2;AppointmentTimes2,[NewApt_Source]=3;Appointments"/>
+		</row>
+		<row>
+			<control type="label" label="Phone"	 span="2" />
+			<control type="text" name="NewApt__PtPhoneNumber" span="3" readonly="true" />
+			<control type="label" label="Cell Phone"	 span="2" />
+			<control type="text" name="NewApt__PatientCellPhone" span="3" readonly="true"/>
+      <!-- Button to set an appointment to No Show (shown only in edit mode) -->
+      <control type="button" name="btnNoShowAppointment"
+          reveal="NewApt_AppointmentGuid!"
+          span="2" action="save|close|new" color="orange"
+          icon="cloud-upload" label="No Show"	
+          confirm="Please confirm you want to set this appointment as No Show."
+          affector="none"
+          dataupdate="UpdateSchedulerAppointments"
+          appendupdate="appointmentGuid=[NewApt_AppointmentGuid],Status=No Show"
+          provoke="[NewApt_Source]=1;AppointmentTimes,[NewApt_Source]=2;AppointmentTimes2,[NewApt_Source]=3;Appointments"/>
+		</row>
+		<row>
+			<control type="label" label="Address"	 span="2"/>
+			<control type="text" name="NewApt_PrimaryPayorAddLineOne" span="3" readonly="true"/>
+			<control type="label" label="City"	 span="2"/>
+			<control type="text" name="NewApt_PrimaryPayorCity" span="3" readonly="true"/>
+      <!-- Button to cancel an appointment (shown only in edit mode) -->
+			<!-- Add: ,providerTxtMessage=[ProviderCancelTextMessage] -->
+      <control type="button" name="btnCancelAppointment"
+          reveal="NewApt_AppointmentGuid!"
+          span="2" action="save|close|new" color="red"
+          icon="cloud-upload" label="Cancel"	
+          confirm="Please confirm you want to cancel this appointment."
+          affector="none"
+          dataupdate="UpdateSchedulerAppointments"
+          appendupdate="appointmentGuid=[NewApt_AppointmentGuid],status=Canceled,txtMessage=[CancelTextMessage]"
+          provoke="[NewApt_Source]=1;AppointmentTimes,[NewApt_Source]=2;AppointmentTimes2,[NewApt_Source]=3;Appointments"/>
+		</row>
+		<row>
+			<control type="label" label="Province"	 span="2"/>
+			<control type="text" name="NewApt_PrimaryPayorAddLineTwo" span="3" readonly="true"/>
+			<control type="label" label="Country"	 span="2"/>
+			<control type="text" name="NewApt_PrimaryPayorState" span="3" readonly="true"/>
+      <!-- Flag to reschedule the appointment -->
+			<!-- Add: ,providerTxtMessage=[ProviderRescheduleTextMessage] -->
+      <control type="button" name="btnNewAptReschedule"
+        reveal="[NewApt_Reschedule]=false"
+        span="2" action="save|close|new" color="red"
+        label="Reschedule"	
+        confirm="Please confirm you want to set this appointment to be rescheduled."	
+        affector="none"
+        dataupdate="UpdateSchedulerAppointments"
+        appendupdate="appointmentGuid=[NewApt_AppointmentGuid],reschedule=true,txtMessage=[RescheduleTextMessage]"
+        provoke="[NewApt_Source]=1;AppointmentTimes,[NewApt_Source]=2;AppointmentTimes2,[NewApt_Source]=3;Appointments"/>
+			<!-- Add: ,providerTxtMessage=[ProviderRescheduleTextMessage] -->
+      <control type="button" name="btnNewAptCancelReschedule"
+        reveal="[NewApt_Reschedule]=true"
+        span="2" action="save|close|new" color="green"
+        label="Cancel"	 icon="refresh"
+        confirm="Please confirm you want to cancel this appointment."	
+        affector="none"
+        capture="NewApt_AppointmentInfo"
+        dataupdate="UpdateSchedulerAppointments"
+        appendupdate="appointmentGuid=[NewApt_AppointmentGuid],reschedule=false,txtMessage=[RescheduleTextMessage]"
+        provoke="[NewApt_Source]=1;AppointmentTimes,[NewApt_Source]=2;AppointmentTimes2,[NewApt_Source]=3;Appointments"/>
+		</row>
+		<row>
+			<control type="label" label="Email"		 span="2"/>
+			<control type="text" name="NewApt_PatientEmail" span="3" readonly="true"/>
+			<control type="label" label="Nationality"	 span="2" />
+			<control type="select" name="NewApt_Nationality" span="3"
+				source="Country,Code" datasource="GetCountries" 
+				readonly="true" />
+		</row>
+	</group>
+	<group name="NewApt_AppointmentInfo">
+		<row name="rowPatientId">
+      <!-- Store the patientid -->
+			<control type="hidden" name="NewAptInfo_PatientId"/>
+      <control type="hidden" name="NewApt_OrderGuid"/>
+			<control type="hidden" name="NewApt_ConferenceUrl"/>
+		</row>
+		<row>
+      <!-- Select the calendar for the appointment (editable directly only for extraordinary appointments) -->
+      <!-- (Other appointmens are scheduled by selecting a time from a calndar view.) -->
+			<control type="label" label="Calendar"		 span="2" />
+			<control type="select" 
+        name="NewApt_AppointmentTypeGuid"
+        namefield="NewAptCalendarName"
+        span="8"
+        datasource="GetSchedulerAppointmentTypesByFacility" 
+        source="CalendarName,CalendarGuid" 
+        required="true"
+        readonly="true"/>
+    </row>
+		<row>
+			<control type="label" label="Specialty"	 span="2"/>
+			<control type="select" span="8"
+				name="NewApt_MedicalSpecialtyGuid"
+        explicit="true"
+				edit="true" 
+				acctsvc="true"
+				required="true"
+				datasource="GetMedicalSpecialties" 
+				source="Specialty,MedicalSpecialtyGuid"/>
+    </row>
+    <row>
+      <!-- The datetime of the appointment (editable directly only for extraordinary appointments) -->
+			<control type="label" label="Scheduled"	 span="2" />
+			<control type="datetime" name="NewApt_Start" 
+				span="4" edit="true" required="true" when="«01:00;08:00"/>
+      <control type="label" label="Duration"	 badge="min" span="3" persist="true"/>
+			<control type="integer" name="NewApt_Duration" when="=1440;15" span="2" edit="true" required="true"/>
+		</row>
+		
+		<row name="rowProviderId">
+      <!-- The provider for the appointment -->
+			<control type="label" label="Physician"			 span="2" />
+			<control type="select" name="NewApt_ProviderId" span="4" 
+        namefield="NewAptProvider"
+				acctsvc="true" datasource="GetUsersByAttributes" append="LocationId=(facilityData.LocationId),role=Physician|MedWave" 
+				source="UserFirstMiddleLast,UserId" 
+				edit="true"/>
+      <control type="label" label="Status"	 span="2"/>
+      <control type="select" name="NewApt_Status" span="3"
+        source="Scheduled,Confirmed,No Show,Completed,Canceled"
+        sourcelabels="Scheduled,Confirmed,No Show,Completed,Canceled"	
+        readonly="true" default="Scheduled"/>
+		</row>
+		<row>
+      <!-- Reason for the appointment -->
+			<control type="label" label="Reason"	 span="2"/>
+			<control type="text" name="NewApt_Subject" edit="true" required="true" span="9" 
+				tooltip="Enter the reason for the visit."	/>
+		</row>
+    <row name="rowNewAptTelemedicine" reveal="[NewApt_PatientEmail]!">
+      <control type="label" label="Telemedicine"	 span="2"/>
+      <control type="buttongroup" name="NewApt_IsTelemedicine"
+        span="3" source="True,False" sourcelabels="Yes,No"	 default="False" edit="true"/>
+    </row>
+	</group>	
+  <!-- Save telemedicine appointments -->
+  <group name="grpSaveTelemedicineAppointmentButtons" reveal="[NewApt_IsTelemedicine]=True">
+		<row name="rowSaveNewTelemedicineAppointment" reveal="[NewApt_ColorFlag]!Gray">
+		  <control type="label" label=""	 align="left" span="2" />
+      <!-- Close the appointment modal without saving -->
+		  <control type="button" name="CancelNewTelemedicineAppointment"
+			  span="3" size="large"
+			  action="close|new"
+			  color="grey"
+			  icon="cancel"
+			  label="Close"	/>
+      <!-- Save a newappointment -->
+		  <control type="button" name="SaveNewTelemedicineAppointment"
+        reveal="[NewApt_AppointmentGuid]="
+			  span="5" size="large"
+			  action="save|close|new"
+			  color="grey"
+			  affector="NewApt_AppointmentGuid"
+				setaffector="AppointmentGuid"
+			  icon="cloud-upload"
+			  label="Save Telemedicine Appointment"	
+        confirmsvc="true"
+        confirmrequest="ConfirmAppointmentTime"
+        appendconfirm="CalendarGuid=[NewApt_AppointmentTypeGuid],SchedulerTimesGuid=[NewApt_SchedulerTimesGuid],StartDateTime=[NewApt_Start]"
+        confirmresponse="length=0|This appointment time has been taken by another user"
+			  capture="NewApt_AppointmentInfo"
+			  datainsert="InsertSchedulerAppointments"
+				compare="[NewAptInfo_PatientId]!|Por favor seleccione un paciente para esta cita."
+			  appendinsert="Active=true,txtMessage=[NewTelemedicineTextMessage],reschedule=false"
+			  provoke="[NewApt_Source]=1;AppointmentTimes,[NewApt_Source]=2;AppointmentTimes2,[NewApt_Source]=3;Appointments,[NewApt_Source]=4;Appointments,[NewApt_Source]=4;NCAAppointmentTimes"/>
+			<!-- Update appointment -->
+			<control type="button" name="btnUpdateTelemedicineAppointment"
+        reveal="[NewApt_AppointmentGuid]!"
+				span="5" size="large" color="grey"
+				action="save|close|new" 
+				confirm="Please confirm you want to update this appointment"	
+				affector="none"
+				capture="NewApt_AppointmentInfo"
+				label="Update Telemedicine Appointment"	 
+				icon="cloud-upload"
+				dataupdate="UpdateSchedulerAppointments"
+				appendupdate="appointmentGuid=[NewApt_AppointmentGuid],txtMessage=[UpdateTelemedicineTextMessage]"
+				provoke="[NewApt_Source]=1;AppointmentTimes,[NewApt_Source]=2;AppointmentTimes2,[NewApt_Source]=3;Appointments,[NewApt_Source]=4;Appointments,[NewApt_Source]=4;NCAAppointmentTimes"/>
+      </row>
+		</group>
+  <!-- Save regular appointments -->
+	<group name="grpSaveNewAppointmentButtons" reveal="[NewApt_IsTelemedicine]=False">
+		<row name="rowSaveNewAppointment" reveal="[NewApt_ColorFlag]!Gray">
+		  <control type="label" label=""	 align="left" span="2" />
+      <!-- Close the appointment modal without saving -->
+		  <control type="button" name="CancelNewAppointment"
+			  span="3" size="large"
+			  action="close|new"
+			  color="grey"
+			  icon="cancel"
+			  label="Close"	/>
+      <!-- Save a newappointment -->
+		  <control type="button" name="SaveNewAppointment"
+        reveal="[NewApt_AppointmentGuid]=+[SurgeryRequestOption]!WaitList"
+			  span="3" size="large"
+			  action="save|close|new"
+			  color="grey"
+			  affector="NewApt_AppointmentGuid"
+				setaffector="AppointmentGuid"
+			  icon="cloud-upload"
+			  label="Save"	
+        confirmsvc="true"
+        confirmrequest="ConfirmAppointmentTime"
+        appendconfirm="CalendarGuid=[NewApt_AppointmentTypeGuid],SchedulerTimesGuid=[NewApt_SchedulerTimesGuid],StartDateTime=[NewApt_Start]"
+        confirmresponse="length=0|This appointment time has been taken by another user"
+			  capture="NewApt_AppointmentInfo"
+			  datainsert="InsertSchedulerAppointments"
+				compare="[NewAptInfo_PatientId]!|Por favor seleccione un paciente para esta cita."
+			  appendinsert="Active=true,txtMessage=[NewTextMessage],reschedule=false"
+			  provoke="[NewApt_Source]=1;AppointmentTimes,[NewApt_Source]=2;AppointmentTimes2,[NewApt_Source]=3;Appointments,[NewApt_Source]=4;Appointments,[NewApt_Source]=4;NCAAppointmentTimes"/>
+			<!-- Update appointment -->
+			<control type="button" name="btnUpdateAppointment"
+        reveal="[NewApt_AppointmentGuid]!+[SurgeryRequestOption]!WaitList"
+				span="3" size="large" color="grey"
+				action="save|close|new" 
+				confirm="Please confirm you want to update this appointment"	
+				affector="none"
+				capture="NewApt_AppointmentInfo"
+				label="Update"	 
+				icon="cloud-upload"
+				dataupdate="UpdateSchedulerAppointments"
+				appendupdate="appointmentGuid=[NewApt_AppointmentGuid],txtMessage=[UpdateTextMessage]"
+				provoke="[NewApt_Source]=1;AppointmentTimes,[NewApt_Source]=2;AppointmentTimes2,[NewApt_Source]=3;Appointments,[NewApt_Source]=4;Appointments,[NewApt_Source]=4;NCAAppointmentTimes"/>
+
+			<!-- Only show these buttons if you are currently on the Surgery Waitlist page,these buttons will create a surgery from request and create schedule -->
+			<control type="button" name="SaveNewAppointmentSurgery"
+        reveal="[NewApt_AppointmentGuid]=+[SurgeryRequestOption]=WaitList"
+			  span="4" size="large"
+				acctsvc="true"
+			  action="save|close|new"
+			  color="grey"
+			  affector="NewApt_AppointmentGuid"
+				setaffector="AppointmentGuid"
+			  icon="cloud-upload"
+			  label="Save Surgery"	
+        confirmsvc="true"
+        confirmrequest="ConfirmAppointmentTime"
+        appendconfirm="CalendarGuid=[NewApt_AppointmentTypeGuid],SchedulerTimesGuid=[NewApt_SchedulerTimesGuid],StartDateTime=[NewApt_Start]"
+        confirmresponse="length=0|This appointment time has been taken by another user"
+			  capture="NewApt_AppointmentInfo"
+			  datainsert="InsertScheduledSurgeryFromConsultRequest"
+				compare="[NewAptInfo_PatientId]!|Por favor seleccione un paciente para esta cita."
+			  appendinsert="consultRequestGuid=[SurgeryRequest_PatientConsultGuid],description=[NewApt_Subject],dateTimeScheduled=[NewApt_Start],schedulerTimeGuid=[NewApt_SchedulerTimesGuid]"
+			  provoke="[NewApt_Source]=1;AppointmentTimes,[NewApt_Source]=2;AppointmentTimes2,[NewApt_Source]=3;Appointments,[NewApt_Source]=4;Appointments,[NewApt_Source]=4;NCAAppointmentTimes,btnCloseTabModalNewAppointments,btnCloseNewSurgeryRequestModal,SurgeryRequestList"/>
+      </row>
+		</group>
+  </section>
+
+  <!-- View completed or no show patient appointments -->
+	<section type="tabmodal" badge="none" name="CompletedAppointmentModal" title="Completed Appointment"	 size="small">
+		<group showif="never">
+      <row>
+        <!-- Get the appointment information from the appointment record (existing appointment) -->
+         <control type="text"
+          name="Complete_AppointmentGuid"
+          datarequest="GetSchedulerAppointmentsByAppointmentGuid"
+          appendrequest="AppointmentGuid=[Complete_AppointmentGuid]"
+          inject="rowCompleteGetPatient"
+          provoke="Complete_PatientId"/>
+      </row>
+			<row name="rowCompleteGetPatient">
+        <!-- Get the patient information and insert into the form -->
+				<control type="text" name="Complete_PatientId"
+					datarequest="GetPatientAllFields"
+					appendrequest="PatientId=[Complete_PatientId]"
+          inject="CompletedPatientInfo"/>
+	  	</row>
+		</group>
+		<group name="CompletedPatientInfo">	
+			<row>
+				<control type="label" label=""	 span="1"/>
+				<control type="text" name="Complete_PatientFirstName" span="3" readonly="true" required="true"/>
+				<control type="text" name="Complete_PatientMiddleName" span="3" readonly="true"  required="true"/>
+				<control type="text" name="Complete_PatientLastName" span="3" readonly="true"/> 
+		</row>
+		<row>
+			<control type="label" label="Account"		 span="2"/>
+			<control type="text" name="Complete_AccountNumber" span="3" readonly="true"/>
+			<control type="label" label="Birth"	 span="2"/>
+			<control type="date" name="Complete_PatientDOB" span="3" readonly="true"/>
+		</row>
+		<row>
+			<control type="label" label="Phone"	 span="2" />
+			<control type="text" name="Complete__PtPhoneNumber" span="3" readonly="true" />
+			<control type="label" label="Cell Phone"	 span="2" />
+			<control type="text" name="Complete__PatientCellPhone" span="3" readonly="true"/>
+		</row>
+		<row>
+			<control type="label" label="Address"	 span="2"/>
+			<control type="text" name="Complete_PrimaryPayorAddLineOne" span="3" readonly="true"/>
+			<control type="label" label="City"	 span="2"/>
+			<control type="text" name="Complete_PrimaryPayorCity" span="3" readonly="true"/>
+		</row>
+		<row>
+			<control type="label" label="Province"	 span="2"/>
+			<control type="text" name="Complete_PrimaryPayorAddLineTwo"  span="3" readonly="true"/>
+			<control type="label" label="Country"	 span="2"/>
+			<control type="text" name="Complete_PrimaryPayorState" span="3" readonly="true"/>
+		</row>
+		<row>
+			<control type="label" label="Email"		 span="2"/>
+			<control type="text" name="Complete_PatientEmail" span="3" readonly="true"/>
+			<control type="label" label="Nationality"	 span="2" />
+			<control type="select" name="Complete_Nationality" span="3"
+				source="Country,Code" datasource="GetCountries" 
+				readonly="true" />
+		</row>
+	</group>
+	<group name="Complete_AppointmentInfo">
+		<row name="rowCompletePatientId">
+      <!-- Store the patientid -->
+			<control type="hidden" name="CompleteInfo_PatientId"/>
+		</row>
+    <row>
+      <!-- Store the schedulertimesguid -->
+      <control type="hidden" name="Complete_SchedulerTimesGuid"/>
+    </row>
+		<row>
+      <!-- Select the calendar for the appointment (editable directly only for extraordinary appointments) -->
+      <!-- (Other appointmens are scheduled by selecting a time from a calndar view.) -->
+			<control type="label" label="Calendar"		 span="2" />
+			<control type="select" 
+        name="Complete_AppointmentTypeGuid"
+        span="8"
+        datasource="GetSchedulerAppointmentTypesByFacility" 
+        source="CalendarName,CalendarGuid" 
+        filter="Active=true"
+        required="true"
+        readonly="true"/>
+    </row>
+    <row>
+      <!-- The datetime of the appointment (editable directly only for extraordinary appointments) -->
+			<control type="label" label="Scheduled"	 span="2" />
+			<control type="datetime" name="Complete_Start" 
+				span="4" persist="true" readonly="true"/>
+			<control type="hidden" name="Complete_SchedulerTimeGuid"/>
+
+      <!-- The status of the appointment (readonly) -->
+      <control type="label" label="Status"	 span="1"/>
+      <control type="select" name="Complete_Status" span="4"
+        source="Scheduled,Confirmed,Completed,No Show,Canceled"
+        sourcelabels="Scheduled,Confirmed,Completed,No Show,Canceled"	
+        readonly="true" default="Scheduled"/>
+		</row>
+		<row>
+      <!-- The provider for the appointment -->
+			<control type="label" label="Physician"			 span="2" />
+			<control type="select" name="Complete_ProviderId" span="4" 
+				acctsvc="true" datasource="GetUsersByAttributes" append="LocationId=(facilityData.LocationId),role=Physician|MedWave" 
+				source="UserFirstMiddleLast,UserId" 
+				readonly="true"/>
+		</row>
+		<row>
+      <!-- Reason for the appointment -->
+			<control type="label" label="Reason"	 span="2"/>
+			<control type="text" name="Complete_Subject" readonly="true" span="9" 
+				tooltip="Enter the reason for the visit."	/>
+		</row>
+	</group>	
+	<group>
+		<row>
+		  <control type="label" label=""	 align="left" span="8" />
+      <!-- Close the appointment modal without saving -->
+		  <control type="button" name="CancelCompletedAppointment"
+			  span="3" size="large"
+			  action="close|new"
+			  color="grey"
+			  icon="cancel"
+			  label="Close"	/>
+    </row>
+	</group>
+  </section>
+</partial>

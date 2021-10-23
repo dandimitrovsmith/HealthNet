@@ -1,0 +1,111 @@
+﻿<partial>
+  <!-- Display list of consult requests by the selected criteria -->
+  <section type="tab" name="tabConsultList" title="Admin Rejected Interconsults"	>
+    <group>
+      <row>
+      <!-- Button group to select the report criteria -->
+        <control type="select" name="SearchCriteria"
+          span="3" 
+          source="All,Specialty,Patient,DateRange,FromHospital,ToHospital,AssignedTo"
+          sourcelabels="Assets,Specialty,Patient,Dates,Origin,Destination,Physician"	
+          default="All"
+          provoke="ConsultList"/>
+        <control type="hidden" name="ConsultAdminResults"
+          datarequest="GetPatientAllFields"
+          appendrequest="PatientId=[PatientSearchResults]"
+          set="Admin_PatientFullName=[[PatientFullName]],GetConsult_PatientId=[PatientSearchResults]"
+          provoke="ConsultList"/>
+        <control type="hidden" name="GetConsult_PatientId"/>
+        <control type="button" name="btnSearchConsultAdmin"
+          reveal="SearchCriteria=Patient"
+          label="Search for Patient"	 span="3" icon="search" color="grey"
+          preset="PatientSearchSource=6"
+          action="redirect" target="mdlFindPatients"/>
+        <control type="text" name="Admin_PatientFullName" readonly="true" span="4"
+          reveal="SearchCriteria=Patient"/>
+        <!-- Date controls to search by a range of dates (DateTimeEntered) -->
+        <control type="date" span="2" name="SearchStartDate" default="now"    reveal="SearchCriteria=DateRange" trigger="ConsultList"/>
+        <control type="date" span="2" name="SearchEndDate" default="now" reveal="SearchCriteria=DateRange" trigger="ConsultList"/>
+        <!-- Select control to search for a Medical Specialty -->
+        <control type="select" span="4"
+          reveal="SearchCriteria=Specialty"
+          name="SearchSpecialty"
+          explicit="true"
+          filter="ParentSpecialty=null"
+          default="true"
+          acctsvc="true"
+          datasource="GetMedicalSpecialties" 
+          source="Specialty,MedicalSpecialtyGuid"
+          provoke="ConsultList"/>
+        <!-- Select Control to search by the Fromhospital (Origen) -->
+        <control type="select" 
+          reveal="SearchCriteria=FromHospital"
+          span="4"
+          acctsvc="true" 
+          name="SearchFromHospital"  
+          default="(facilityData.HospitalName)"
+          datasource="GetTransferHospitalsActive" 
+          source="HospitalName,HospitalGuid"
+          provoke="ConsultList"/>
+        <!-- Select Control to search by the ToHospital (Destino)-->
+        <control type="select"
+          reveal="SearchCriteria=ToHospital" 
+          span="4"
+          acctsvc="true" 
+          name="SearchToHospital"  
+          default="(facilityData.HospitalName)"
+          datasource="GetTransferHospitalsActive" 
+          source="HospitalName,HospitalGuid"
+          provoke="ConsultList"/>
+        <!-- Select control to search by the AssignedTo physician (originating) -->
+        <control type="select" span="4"
+          reveal="SearchCriteria=AssignedTo" 
+          name="SearchAssignedToId"          
+          source="UserFirstMiddleLast,UserId"
+          acctsvc="true" datasource="GetUsersByAttributes" append="LocationId=(facilityData.LocationId),role=Physician|MedWave"
+          searchable="true"
+          provoke="ConsultList"/>
+      </row>
+      <row>
+        <!-- Consult Request list -->
+        <control type="datagrid" label="Interconsults"	
+          name="ConsultList" 
+          span="12" rows="20"
+          searchable="true"
+          fitrows="true"
+          action="redirect"
+          target="NewConsultModal"
+          rowcolor="ConsultRequestPriority|Emergency=red;Medium=yellow;Normal=white"
+          acctsvcreq="true"
+          datarequest="GetConsultRequestsByCriteria"
+          appendrequest="mode=[ListMode],fromHospital=[SearchFromHospital],toHospital=[SearchToHospital],specialty=[SearchSpecialty],patientId=[GetConsult_PatientId],assignedToId=[SearchAssignedToId],startDate=[SearchStartDate],endDate=[SearchEndDate],searchCriteria=[SearchCriteria]"
+          source="DateTimeEntered,ConsultNumber,ConsultRequestType,PatientAccountNumber,PatientFullName,ConsultReason,RequestingHospitalName,RequestToHospitalName"
+          sourcelabels="Request,Number,Type,Account,Name,Reason,Origin,Destination"	
+          translate="ConsultRequestPriority"
+          align="|left|left|left|left|left|left|left"
+          format="datetime"
+          sort="DateTimeEntered=asc"
+          key="ConsultRequestGuid"
+          onselectset="InterConsult_PatientId=[[PatientId]],PatientConsultGuid=[[ConsultRequestGuid]]"
+          onselect="InterConsult_PatientId,PatientConsultGuid">
+          
+          <!-- Enter a new consult request -->
+          <control type="button" 
+            reveal="[ListMode]=admin"
+            name="NewConsultButton"
+            label="New Request"	
+            icon="plus"
+            action="redirect"
+            target="NewConsultModal"/>
+          <!-- Refresh the consult list -->
+          <control type="button" 
+            name="RefreshConsultList"
+            label="Refresh"	
+            icon="refresh"
+            action="trigger"
+            trigger="ConsultList"/>
+        </control>
+      </row>
+    </group>
+  </section>
+</partial>

@@ -1,0 +1,181 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<module name="Reports">
+  <section type="tab" name="CloneReportSetup" title="Cloning Reports"	>
+    <group>
+      <row>
+        <control type="datagrid"          
+          searchable="true"
+          name="CloneReports"
+          label="Reports for Cloning"	
+          rows="20"
+          span="12"
+          modalname="templateReportModal"
+          acctsvc="true"
+          acctsvcreq="true"
+          datasource="GetLookupReportItemTemplates"
+          datarequest="GetLookupReportItemTemplates"
+          datainsert="InsertLookupReportItems"
+          dataupdate="UpdateLookupReportItems"
+          source="Active,ReportFileName,ReportName,ReportDescription,ReportDescriptionSpanish"
+          sourcelabels="Active,Report#,Report,Description,Description Spanish"	          
+          align="left|left|left|left"
+          format="boolean"
+          sort="ReportName=asc"
+          translate="ReportType"
+          key="ReportItemGuid"
+          onselectset="ReportType=[[ReportType]],ReportName=[[ReportName]],ReportId=[[ReportFileName]],StartDateParameter=[[StartParameter]],EndDateParameter=[[EndParameter]],StartDateTimeParameter=[[StartTimeParameter]],EndDateTimeParameter=[[EndTimeParameter]],PatientParameter=[[PatientParameter]],VisitParameter=[[VisitParameter]],DepartmentParameter=[[DepartmentParameter]],PhysicianParameter=[[PhysicianParameter]],UserParameter=[[UserParameter]],MedsGuidParameter=[[MedsGuidParameter]]">
+        <control type="button" name="btnRefreshReportList"
+          icon="refresh" label="Update"	 
+          action="trigger" provoke="CloneReports"/>
+        </control>
+      </row>     
+    </group>
+  </section>
+  <!-- Enter/edit report templates -->
+  <section type="modal" name="templateReportModal" title="Cloning Report"	 size="small"
+          enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+          dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">
+    <group>
+      <row>
+        <control type="label" label="Active"	 span="4"/>
+        <control type="buttongroup" name="Active" span="4" edit="true" 
+          required="true" source="True,False" sourcelabels="Yes,No"	 default="True"/>
+      </row>
+      <row>
+        <control type="label" label="Type"			 span="4"/>
+        <control type="select" name="ReportType" span="7" edit="true" 
+          readonly="true"
+          required="true" 
+          default="true"
+          source="CloneTemplate"
+          sourcelabels="Clone Template"	/>
+      </row>
+      <row>
+        <control type="label" label="Name"	 span="4"/>
+        <control type="text" name="ReportName" span="7" edit="true"  required="true"/>
+      </row>
+      <row>
+        <control type="label" label="Description"	 span="4"/>
+        <control type="textarea" name="ReportDescription" span="7" rows="2" edit="true" />
+      </row>   
+      <row>
+        <control type="label" label="Spanish Description"	 span="4"/>
+        <control type="textarea" name="ReportDescriptionSpanish" span="7" rows="2" edit="true" />
+      </row>     
+      <row divider="true">
+        <control type="label" label="Report ID"	 span="4"/>
+        <control type="text" name="ReportFileName" span="4" required="true" edit="true"/>
+      </row>
+    </group>
+    <group name="grpReportParameters">
+      <columns>
+        <column span="6">
+      <row>
+        <control type="label" label="Start Date"	 span="6"/>
+        <control type="buttongroup" name="StartParameter" span="4"
+          source="True,False" sourcelabels="Yes,No"	 edit="true" default="False" required="true"
+          />
+      </row>
+      <row>
+        <control type="label" label="End Date"	 span="6"/>
+        <control type="buttongroup" name="EndParameter" span="4" 
+          source="True,False" sourcelabels="Yes,No"	 edit="true" default="False" required="true" 
+          />
+      </row>
+      <row>
+        <control type="label" label="Start Date/Time"	 span="6"/>
+        <control type="buttongroup" name="StartTimeParameter" span="4"
+          source="True,False" sourcelabels="Yes,No"	 edit="true" default="False" required="true"
+          />
+      </row>
+      <row>
+        <control type="label" label="End Date/Time"	 span="6"/>
+        <control type="buttongroup" name="EndTimeParameter" span="4" 
+          source="True,False" sourcelabels="Yes,No"	 edit="true" default="False" required="true"
+          />
+      </row>
+      <row>
+        <control type="label" label="Patient"			 span="6"/>
+        <control type="buttongroup" name="PatientParameter" span="4"
+          source="True,False" sourcelabels="Yes,No"	 edit="true" default="False" required="true"
+          />
+      </row>
+      <row>
+        <control type="label" label="Visit"	 span="6"/>
+        <control type="buttongroup" name="VisitParameter" span="4" 
+          source="True,False" sourcelabels="Yes,No"	 edit="true" default="False" required="true"
+          />
+      </row>
+      <row>
+        <control type="label" label="Department"		 span="6"/>
+        <control type="buttongroup" name="DepartmentParameter" span="4"
+          source="True,False" sourcelabels="Yes,No"	 edit="true" default="False" required="true"
+          />
+      </row>
+      <row>
+        <control type="label" label="Physician"			 span="6"/>
+        <control type="buttongroup" name="PhysicianParameter" span="4" 
+          source="True,False" sourcelabels="Yes,No"	 edit="true" default="False" required="true"
+          />
+      </row>
+    </column>
+    <column span="6">
+      <row>
+        <control type="label" label="User"		 span="6"/>
+        <control type="buttongroup" name="UserParameter" span="4" 
+          source="True,False" sourcelabels="Yes,No"	 edit="true" default="False" required="true"
+          />
+      </row>
+      <row>
+        <control type="label" label="Provider"	 span="6"/>
+        <control type="buttongroup" name="SupplierParameter" span="4" 
+          source="True,False" sourcelabels="Yes,No"	 edit="true" default="False" required="true"
+          />
+      </row>
+      <row>
+        <control type="label" label="Item"	 span="6"/>
+        <control type="buttongroup" name="ItemParameter" span="4" 
+          source="True,False" sourcelabels="Yes,No"	 edit="true" default="False" required="true"
+          />
+      </row>
+      <row>
+        <control type="label" label="Calendar"		 span="6"/>
+        <control type="buttongroup" name="CalendarParameter" span="4" 
+          source="True,False" sourcelabels="Yes,No"	 edit="true" default="False" required="true"
+          />
+      </row>
+      <row>
+        <control type="label" label="General Ledger"	 span="6"/>
+        <control type="buttongroup" name="LedgerParameter" span="4" 
+          source="True,False" sourcelabels="Yes,No"	 edit="true" default="False" required="true"
+          />
+      </row>
+      <row>
+        <control type="label" label="Ledger Account"	 span="6"/>
+        <control type="buttongroup" name="LedgerAccountParameter" span="4" 
+          source="True,False" sourcelabels="Yes,No"	 edit="true" default="False" required="true"
+          />
+      </row>
+      <row>
+        <control type="label" label="Start Period"	 span="6"/>
+        <control type="buttongroup" name="StartPeriodParameter" span="4" 
+          source="True,False" sourcelabels="Yes,No"	 edit="true" default="False" required="true"
+          />
+      </row>
+      <row>
+        <control type="label" label="Final Period"	 span="6"/>
+        <control type="buttongroup" name="EndPeriodParameter" span="4" 
+          source="True,False" sourcelabels="Yes,No"	 edit="true" default="False" required="true"
+          />
+      </row>
+      <row>
+        <control type="label" label="Medications"	 span="6"/>
+        <control type="buttongroup" name="MedsGuidParameter" span="4" 
+          source="True,False" sourcelabels="Yes,No"	 edit="true" default="False" required="true"
+          />
+      </row>
+      </column>
+    </columns>
+    </group>
+  </section>
+</module>

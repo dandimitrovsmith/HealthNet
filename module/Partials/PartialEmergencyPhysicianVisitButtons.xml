@@ -1,0 +1,101 @@
+﻿<partial>
+  <!-- Emergency Physician Buttons -->
+  <row name="rowESIButtons" reveal="HasOpenVisit=true">
+    <control type="button" name="btnTriageLevel0"
+      reveal="TriageLevel=0"
+      span="12" icon="check-empty" color="white"
+      label="ESI Protocol"	 trigger="GetESIFields" action="redirect" target="mdlESI"/>
+    <control type="button" name="btnTriageLevel1"
+      reveal="TriageLevel=1"
+      span="12" icon="warning-sign" color="red"
+      label="ESI-1"		 trigger="GetESIFields" action="redirect" target="mdlESI"/>
+    <control type="button" name="btnTriageLevel2"
+      reveal="TriageLevel=2"
+      span="12" icon="exclamation" color="orange"
+      label="ESI-2"		 trigger="GetESIFields" action="redirect" target="mdlESI"/>
+    <control type="button" name="btnTriageLevel13"
+      reveal="TriageLevel=3"
+      span="12" icon="exclamation" color="yellow"
+      label="ESI-3"		 trigger="GetESIFields" action="redirect" target="mdlESI"/>
+    <control type="button" name="btnTriageLevel14"
+      reveal="TriageLevel=4"
+      span="12" icon="exclamation" color="yellowgreen"
+      label="ESI-4"		 trigger="GetESIFields" action="redirect" target="mdlESI"/>
+    <control type="button" name="btnTriageLevel5"
+      reveal="TriageLevel=5"
+      span="12" icon="thumbs-up-alt" color="green"
+      label="ESI-5"		 trigger="GetESIFields" action="redirect" target="mdlESI"/>
+  </row>
+  <row>
+    <control type="button" name="btnConsultRequest"
+      span="12"
+      icon="plus" label="Interconsult"	
+      color="orange"
+      action="redirect"
+      target="NewConsultModal"
+      preset="InterConsult_PatientId=[PatientId]"
+      trigger="InterConsult_PatientId"/>
+  </row>
+  <row>
+    <control type="button" 
+      name="NewSurgeryRequestButton"
+      label="Surgery"	
+      span="12" icon="plus" color="orange"
+      action="redirect"
+      target="NewSurgeryRequestModal"
+      preset="SurgeryRequest_PatientId=[PatientId]"
+      trigger="SurgeryRequest_PatientId"/>
+  </row>
+  <row>
+    <control type="button" name="btnChartRequest"
+      span="12" icon="plus" label="Physical Record"	
+      color="orange"
+      action="redirect"
+      target="mdlDocumentRequest"
+      preset="DocumentPatientId=[PatientId],Document_PatientVisit=[PatientVisitGuid],Document_DepartmentGuid=[DepartmentGuidLookup]"
+      trigger="DocumentPatientId,Document_PatientVisit"/>
+  </row>
+  <row>
+    <control type="button" name="btnBedRequest"
+      span="12" icon="calendar" 
+      label="Bed Request "	
+      color="orange"
+      action="redirect"
+      trigger="GetPatientForBed,Nrq_PrimaryDiagnosis"
+      target="mdlBedRequest"/>
+  </row>
+  <row>
+    <control type="button"
+      reveal="HasOpenVisit=true" 
+      name="btnAssignPhysician"
+      span="12" icon="user-md" 
+      label="Assign Physician"	
+      color="orange"
+      action="redirect"
+      preset="mdlAssign_PatientId=[PatientId],mdlAssign_PatientVisitGuid=[PatientVisitGuid]"
+      target="mdlAssignPhysician"/>        
+  </row>
+  <row>
+    <control type="button" name="btnMovePatient"
+      span="12" icon="move" label="Move"	
+      color="orange" action="redirect"
+      target="mdlMovePatient"/>
+  </row>
+  <row>
+    <control type="button" name="btnAltaMedica"
+      reveal="ReadyForDischarge=true"
+      span="12" icon="cloud-upload" label="Medical Discharge"	
+      color="green" action="redirect"
+      trigger="GetReadyForDischarge"
+      preset="Ready_PatientId=[PatientId],Ready_PatientVisitGuid=[PatientVisitGuid]"
+      target="mdlReadyForDischarge"/>
+    <control type="button" name="btnNoAltaMedica"
+      reveal="ReadyForDischarge=false"
+      span="12" icon="cloud-upload" label="Medical Discharge"	
+      color="grey" action="redirect"
+      trigger="GetReadyForDischarge"
+      preset="Ready_PatientId=[PatientId],Ready_PatientVisitGuid=[PatientVisitGuid]"
+      target="mdlReadyForDischarge"/>
+  </row>
+
+</partial>

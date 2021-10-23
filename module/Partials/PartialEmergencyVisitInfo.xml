@@ -1,0 +1,84 @@
+﻿<partial>
+  <!-- Partial patient visit information -->
+  <row>
+    <control type="hidden" name="TriageLevel"/>
+    <control type="hidden" name="CurrentDepartment"/>
+    <control type="hidden" name="CurrentService"/>
+    <control type="hidden" name="ReadyForDischarge"/>
+  </row>
+  <row divider="true">
+    <control type="label" label="Treating Physician"	 span="2"/>
+    <control type="select" name="AttendingDoctor"
+      acctsvc="true" datasource="GetUsersByAttributes" append="LocationId=(facilityData.LocationId),role=Physician|MedWave"
+      source="UserFirstMiddleLast,UserId"
+      span="5" explicit="true" readonly="true"/>
+    <control type="label" label="Weeks Pregnant"	 span="3"/>
+    <control type="text" name="WeeksPregnant" span="2" edit="true"/>
+  </row>
+  <row>
+    <!-- Needs to include DAU -->,
+    <control type="label" label="Admission Type"	 span="2"/>
+    <control type="select" name="mdlAdmit_AdmissionType" span="4" 
+      datasource="GetLookupAdmissionTypes" 
+      source="AdmissionType,AdmissionTypeGuid" 
+      edit="true" 
+      required="true" 
+      explicit="true"
+      filter="Active=true"/>
+    <control type="label" label="Origin"	 span="2"/>
+    <control type="select" span="4"
+      acctsvc="true" edit="true"
+      name="mdlAdmit_FacilityTransferredFrom"  
+      datasource="GetTransferHospitalsActive" 
+      source="HospitalName,HospitalGuid"/>
+  </row>
+  <row name="rowRoomFullName">
+    <control type="label" label="Reason"	 span="2"/>
+    <control type="textarea" name="mdlAdmit_EdChiefComplaint" 
+      span="5" rows="1" edit="true" />
+    <control type="label" label="Bed"	 span="1"/>
+    <control type="textarea" name="mdlAdmit_RoomFullName" span="4" rows="1" readonly="true"/>
+  </row>
+  <row>
+    <!-- Admit sources -->
+    <control type="label" label="Origin"	 span="2"/>
+    <control type="select" name="mdlAdmit_AdmitSource" span="4" 
+      datasource="GetLookupAdmitSourcesByFacility" 
+      source="AdmitSource,AdmitSource"
+      edit="true" 
+      default="true"
+      required="true" 
+      explicit="true"
+      filter="Active=true"/>
+    <control type="label" label="Transportation"	 span="2"/>
+    <control type="text" name="mdlAdmit_AmbulanceID" 
+      span="4" edit="true"/>
+  </row>
+  <row>
+    <control type="label" label="Accident"	 span="2"/>
+    <control type="buttongroup" name="mdlAdmit_OtherInjury" 
+      span="4" edit="true" source="True,False" sourcelabels="Yes,No"	
+      required="true"/>
+    <control type="label" label="Date/Time"	 span="2"/>
+    <control type="datetime" name="mdlAdmit_AccidentDateTime" 
+      span="4" edit="true"/>
+  </row>
+  <row name="rowAccidentType2" reveal="[mdlAdmit_OtherInjury]=true">
+    <control type="label" label="Accident Type"	 span="3"/>
+    <control type="text" name="mdlAdmit_OtherInjuryDescription" 
+      reveal="[mdlAdmit_OtherInjury]=true" required="true"
+      span="9" edit="true" max="100"/>
+  </row>
+  <row>
+    <control type="label" label="Place of Accident"	 span="3"/>
+    <control type="textarea" name="mdlAdmit_AdmitNote" span="9" rows="1" edit="true"/>
+  </row>
+  <row>
+    <!-- Admit sources -->
+    <control type="label" label="Insurance / Financial Class"	 span="3"/>
+    <control type="select" name="mdlAdmit_LawEnforcement" span="9"
+      searchable="true"
+      source="Ley 18.490: accidentes de transporte,Ley 16.744: accidentes del trabajo y enfermedades profesionales,Ley 16.744: accidentes escolar,Ley 19.650/99: de urgencia,Ley 19.992: PRAIS"
+      edit="true"/>
+  </row>
+</partial>

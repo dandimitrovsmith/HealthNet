@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<module name="Bed Management" type="onload" trigger="MapBedList">
+<facet name="PatientId"/>
+<facet name="PatientVisitGuid"/>
+<facet name="AllowBedReservatons" value="true"/>
+<facet name="FileName" value="BedManagement"/>
+<partial link="./EnPartial/Beds/PartialBedMapSupervisor.xml"/> 
+<partial link="./EnPartial/Admin/PartialPatientChartForReviewOnly.xml"/>
+<partial link="./EnPartial/Admin/PartialMedicationDetailModal.xml"/>
+<partial link="./EnPartial/Admin/PartialReadyForDischarge.xml"/>
+<partial link="./EnPartial/Admin/PartialReportModals.xml"/>
+</module>

@@ -1,0 +1,78 @@
+﻿<partial>
+  <!-- Partial emergency admitting patient list -->
+  <!--This window displays a list of currently admitted patients for the entire department (no queues)-->
+  <section type="tab" title="Admitted Patients"	>
+    <group showif="never">
+      <row> 
+        <control type="hidden" name="GetLastDepartment"
+          datarequest="GetUserProfileFromUserId2"
+          appendrequest="UserIdToGet=(userName)"
+          inject="SetDepartmentGroup"
+          provoke="PatientList"/>
+        <control type="button" 
+          name="SaveLastDepartment"
+          action="save"
+      		affector="none"
+      		datainsert="UpdateUserProfileSetDepartment"
+          appendinsert="UserId=(userName),departmentGuid=[DepartmentGuidLookup]"/>
+        <control type="select"
+          acctsvc="true" 
+          name="LookupTransferFacility" 
+          datasource="GetTransferHospitalsActive" 
+          source="HospitalName,HospitalGuid"
+          default="(facilityData.HospitalName)"/>
+      </row>
+    </group>
+    <group name="SetDepartmentGroup">
+      <row>
+        <!-- Select the department -->
+        <control type="select" 
+          span="4"
+          name="DepartmentGuidLookup"
+          injectname="Department" 
+          acctsvc="true"
+          explicit="true"
+          filter="Emergency=true"
+          edit="true" default="true"
+          datasource="GetDepartmentsActive" 
+          source="DepartmentName,DepartmentGuid"
+          provoke="SaveLastDepartment,PatientList"/>
+      </row>
+      <row>
+        <control type="datagrid" label="Admitted Patients"	 
+          name="PatientList"
+          action="redirect" 
+          target="PatientTabModal"
+          searchable="true"
+          span="12"
+          rows="25"
+          fitrows="true"
+          rowcolor="TriageLevel|1=red;2=orange;3=yellow;4=yellowgreen;5=green"
+          datarequest="GetPatientListWithOpenVisitsByFacility"
+          appendrequest="excludephoto=true,DepartmentGuid=[DepartmentGuidLookup]" 
+          datasource="GetPatientListWithOpenVisitsByFacility"
+          append="excludephoto=true,DepartmentGuid=[DepartmentGuidLookup]"
+          source="ReadyForDischarge,AdmitDateTime,AccountNumber,PatientFullName,PatientDOB,PatientSex,HospitalService,OpenRoom,AttendingDoctorFullName"
+          sourcelabels="Discharge,Admitted,Account,Name,Birth,Sex,Service,Bed,Doctor"	
+          translate="PatientSex"
+          align="||left|left|left|left|left|left|left|left"
+          format="boolean|datetime_short|||date"
+          sort="PatientFullName=asc"
+          key="RecordUniqueId"
+          onselectset="PatientId=[[RecordUniqueId]],PatientVisitGuid=[[PatientVisitId]],Admit_DepartmentGuid=[[DepartmentGuid]]"
+          onselect="PatientId,PatientVisitGuid"> 
+        <control type="button" name="btnQuickAdmit"
+          action="redirect" target="mdlQuickAdmit"
+          color="red" icon="ambulance" label="Enter Unconscious"	/>
+        <control type="button" name="btnAdmitPatients"
+          action="redirect" icon="folder-open" label="Enter Patients"	
+          target="PatientTabModal"/>
+        <control type="button" name="btnMergePatients"
+          action="redirect" icon="group" label="Merge"	 target="mdlMergePatients"/>
+        <control type="button" name="RefreshAppointments2" label="Refresh"	
+            icon="refresh" action="trigger" trigger="PatientList"/>
+        </control>
+        </row>
+      </group>
+    </section>
+</partial>

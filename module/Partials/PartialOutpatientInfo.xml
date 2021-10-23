@@ -1,0 +1,96 @@
+﻿<partial>
+  <!-- Partial outpatient patient demographic information -->
+  <!-- Used in clinic nurse and clinic physician modules -->
+  <row>
+    <control type="hidden" name="HasOpenVisit"/>
+    <control type="hidden" name="PatientVisit"/>
+  </row>
+  <row>
+      <control type="label" label="First Name" align="left" span="4"/>
+      <control type="label" label="Middle Name"	 align="left" span="4"/>
+      <control type="label" label="Last Last"	 align="left" span="4"/>
+  </row>
+  <row>
+    <control type="text" name="Consult_PatientFirstName" span="4" required="true" edit="[FieldEdit]=1"
+      regex="^[A-ZÑ\s]+$"/>
+    <control type="text" name="Consult_PatientMiddleName" span="4" edit="[FieldEdit]=1" 
+      regex="^[A-ZÑ\s]+$"/>
+    <control type="text" name="Consult_PatientLastName" span="4" required="true" edit="[FieldEdit]=1" 
+      regex="^[A-ZÑ\s]+$"/>
+  </row>
+  <row>
+    <control type="label" label="Birth Date"	 span="2" />
+    <control type="date" name="Consult_PatientDOB" span="3" required="true" edit="true" compare="≤now"/>
+    <control type="text" name="Consult_PatientAge" span="3" readonly="true"/>
+    <control type="label" label="Sex"	 span="1" />
+    <control type="select" 
+      name="Consult_PatientSex" span="3" 
+      required="true" 
+      source="Male,Female,Indeterminate,Unknown"  
+      edit="true" 
+      default="female"
+      sourcelabels="Male,Female,Undefined,Unknown"	/>
+  </row>
+  <row>
+    <control type="label" label="Account"	 span="2" />
+    <control type="text" name="Consult_AccountNumber" span="3" edit="true"/>
+    <control type="text" name="Consult_MedicalRecordNumber" span="2" readonly="true"/> 
+    <control type="label" label="Marital Status"	 span="2" />
+    <control type="select" name="Consult_PtMaritalStatus" span="3"
+      datasource="GetLookupMaritalStatus"
+      source="MaritalStatus,MaritalStatus"
+      explicit="true" 
+      edit="true"/>
+  </row>
+  <row>
+    <control type="label" label="SSN"	 span="2" />
+    <control type="text" name="Consult_PtSSN" span="2" edit="true"/>
+    <control type="label" label="Home Phone"	 span="2" />
+    <control type="text" name="Consult_PtPhoneNumber" span="2" edit="true" />
+    <control type="label" label="Cell Phone"	 span="2" />
+    <control type="text" name="Consult_PatientCellPhone" span="2" edit="true"/>
+  </row>
+  <row>
+    <control type="label" label="Address"	 span="2"/>
+    <control type="text" name="Consult_PrimaryPayorAddLineOne" span="4" edit="true"/>
+     <control type="label" label="Apartment#"	 span="2"/>
+    <control type="text" name="Consult_PrimaryPayorAddLineTwo" span="4" edit="true"/>
+  </row>
+  <row> 
+    <control type="label" label="City"	 span="2"/>
+    <control type="text" name="Consult_PrimaryPayorCity" span="4"  edit="true"/>
+    <control type="label" label="State"	 span="2"/>
+    <control type="text" name="Consult_PrimaryPayorState"  span="4" edit="true"/>
+  </row>
+  <row>
+    <control type="label" label="Zip Code"	 span="2"/>
+    <control type="text" name="Consult_PrimaryPayorZipCode" span="2" edit="true"/>
+    <control type="label" label="Email"		 span="2"/>
+    <control type="text" name="Consult_PatientEmail" verify="email" span="6" edit="true"/>
+  </row>
+  <row>
+    <control type="label" label="Primary Physician" span="2"/>
+    <control type="select" name="Consult_ReferredBy"
+        span="4" explicit="true" edit="[FieldEdit]=1" sort="MdFirstName=asc"
+        acctsvc="true"
+        datasource="GetReferringMds" 
+        append="LocationId=(facilityData.LocationId)" 
+        source="MdFirstName|MdMiddleName|MdLastName,ReferringMdGuid"/>
+    <control type="button" name="btnNewReferringMdFromPatient"
+        reveal="[FieldEdit]=1|2|4"
+        icon="plus" label="" action="redirect" span="1"
+        target="mdlReferringMd"/>
+    <control type="label" label="Assigned" span="2"/>
+    <control type="select" name="Consult_AttendingPhysician" span="3" 
+        namefield="NewAptProvider" explicit="true" sort="UserFirstMiddleLast"
+        searchable="true"
+				acctsvc="true" datasource="GetUsersByAttributes" 
+        append="LocationId=(facilityData.LocationId),role=Physician" 
+				source="UserFirstMiddleLast,UserId" 
+				edit="true" required="true"/>
+  </row>
+  <row>
+    <control type="label" label="Remarks" span="2"/>
+    <control type="textarea" name="Consult_Remarks" span="10" edit="true" rows="2"/>
+  </row>   
+</partial>

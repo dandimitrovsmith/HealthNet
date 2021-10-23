@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<module name="Rejected Interconsults" type="onload" trigger="ConsultListAdmin,ConsultListDoctor">
+  <facet name="CalendarOption" value="Admitting"/>
+  <facet name="FileName" value="ConsultRequestsRejected"/>
+  <!-- Display list of consult requests by the selected criteria -->
+  <section type="tab" name="tabConsultList" title="Interconsults Rejected by Admin">
+    <group>
+      <row>
+        <!-- Consult Request list -->
+        <control type="datagrid" label="Interconsults Rejected by Admin"
+          name="ConsultListAdmin" 
+          span="12" rows="20"
+          searchable="true"
+          fitrows="true"
+          action="redirect"
+          target="NewConsultModal"
+          rowcolor="ConsultRequestPriority|Emergency=red;Medium=yellow;Normal=white"
+          acctsvcreq="true"
+          datarequest="GetConsultRequestsByCriteria"
+          appendrequest="mode=Admindenied"
+          source="DateTimeEntered,ConsultNumber,ConsultRequestType,PatientAccountNumber,PatientFullName,AdminReason,RequestingHospitalName,RequestToHospitalName"
+          sourcelabels="Request,Number,Type,Account,Name,Reason,Origin,Destination"	
+          translate="ConsultRequestPriority"
+          align="|left|left|left|left|left|left|left"
+          format="datetime"
+          sort="DateTimeEntered=asc"
+          key="ConsultRequestGuid"
+          onselectset="InterConsult_PatientId=[[PatientId]],PatientConsultGuid=[[ConsultRequestGuid]]"
+          onselect="InterConsult_PatientId,PatientConsultGuid">
+          <!-- Refresh the consult list -->
+          <control type="button" 
+            name="RefreshConsultList"
+            label="Refresh"	
+            icon="refresh"
+            action="trigger"
+            trigger="ConsultListAdmin"/>
+        </control>
+      </row>
+    </group>
+  </section>
+
+  <section type="tab" name="tabConsultListDoctor" title="Interconsults Rejected by Doctor">
+    <group>
+      <row>
+        <!-- Consult Request list -->
+        <control type="datagrid" label="Interconsults Rejected by Physician"
+          name="ConsultListDoctor" 
+          span="12" rows="20"
+          searchable="true"
+          fitrows="true"
+          action="redirect"
+          filter="PhysicianApproval=Denied"
+          target="NewConsultModal"
+          rowcolor="ConsultRequestPriority|Emergency=red;Medium=yellow;Normal=white"
+          acctsvcreq="true"
+          datarequest="GetConsultRequestsByCriteria"
+          appendrequest="mode=Doctordenied"
+          source="DateTimeEntered,ConsultNumber,ConsultRequestType,PatientAccountNumber,PatientFullName,PhysicianReason,RequestingHospitalName,RequestToHospitalName"
+          sourcelabels="Request,Number,Type,Account,Name,Reason,Origin,Destination"	
+          translate="ConsultRequestPriority"
+          align="|left|left|left|left|left|left|left"
+          format="datetime"
+          sort="DateTimeEntered=asc"
+          key="ConsultRequestGuid"
+          onselectset="InterConsult_PatientId=[[PatientId]],PatientConsultGuid=[[ConsultRequestGuid]]"
+          onselect="InterConsult_PatientId,PatientConsultGuid">
+          <!-- Refresh the consult list -->
+          <control type="button" 
+            name="RefreshConsultList2"
+            label="Refresh"	
+            icon="refresh"
+            action="trigger"
+            trigger="ConsultListDoctor"/>
+        </control>
+      </row>
+    </group>
+  </section>
+  <partial link="Partials/PartialInterconsultRequest.xml"/>
+  <partial link="./EnPartial/Admin/PartialPatientChartForReviewOnly.xml"/>
+  <partial link="./EnPartial/Admin/PartialMedicationDetailModal.xml"/>
+  <partial link="./EnPartial/Admin/PartialReportModals.xml"/>
+</module>

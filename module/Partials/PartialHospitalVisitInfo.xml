@@ -1,0 +1,69 @@
+﻿<partial>
+  <!-- Partial Hospital Patient Visit information -->
+    <row>
+      <control type="hidden" name="ReadyForDischarge"/>
+      <control type="hidden" name="CurrentService"/>
+    </row>
+    <row>
+      <control type="label" label="Admit Date" span="3"/>
+      <control type="datetime" name="mdlAdmit_AdmitDateTime" span="3" readonly="true"/>
+      <control type="label" label="Visit#" span="3"/>
+      <control type="text" name="mdlAdmit_InvoiceNumber" span="3" readonly="true"/>
+    </row>
+    <row>
+      <control type="label" label="Case Type" span="3"/>
+      <control type="select" name="mdlAdmit_CaseType" span="3" 
+        explicit="true" edit="true" required="true"
+        acctsvc="true"
+        datasource="GetCaseTypesActive" 
+        source="CaseTypeName,CaseTypeGuid"/>
+      <control type="label" label="Transfer Hospital" span="3"/>
+      <control type="select" name="Consult_FacilityTransferredFrom" span="3" edit="true" explicit="true"
+        acctsvc="true"
+        datasource="GetTransferHospitalsActive" 
+        append="LocationId=(facilityData.LocationId)" 
+        source="HospitalName,HospitalGuid"/>
+    </row>
+    <row>
+      <control type="label" label="Service Type" span="3"/>
+      <control type="select" name="mdlAdmit_AdmitType" span="3" 
+        datasource="GetLookupAdmissionTypes" 
+        source="AdmissionType,AdmissionTypeGuid" 
+        edit="true" required="true" explicit="true"
+        filter="Active=true"/>
+      <control type="label" label="Admit Source" span="3"/>
+      <control type="select" name="mdlAdmit_AdmitSource" span="3" 
+        datasource="GetLookupAdmitSourcesByFacility" 
+        source="AdmitSource,AdmitSource"
+        edit="true" required="true" explicit="true" filter="Active=true"/>
+    </row>
+    <row name="rowPregnancy" reveal="[Consult_PatientSex]=Female">
+      <control type="label" label="Is Pregnant" span="3"/>
+      <control type="buttongroup" name="IsPregnant" span="3" edit="true"
+        source="True,False" sourcelabels="Yes,No"/>
+      <control type="label" label="Weeks Pregnant" span="3"/>
+      <control type="text" name="WeeksPregnant" span="1" edit="[IsPregnant]=True"/>
+    </row>
+    <row>
+      <control type="label" label="Informant" span="2"/>
+      <control type="text" name="mdlAdmit_InformantName" span="4" edit="true"/>
+      <control type="label" label="Informant Phone" span="3"/>
+      <control type="text" name="mdlAdmit_InformantContactNumber" span="3" edit="true"/>
+    </row>
+      <row>
+        <control type="label" label="Triage" span="3"/>
+        <control type="select" name="TriageLevel" span="3" edit="true"
+          source="1,2,3" sourcelabels="Low,Medium,Critical"	
+          required="true" explicit="true"/>
+        <control type="label" label="Treating Physician" span="3"/>
+        <control type="select" name="AttendingDoctor"
+          acctsvc="true" datasource="GetUsersByAttributes" 
+          append="LocationId=(facilityData.LocationId),role=Physician|MedWave"
+          source="UserFirstMiddleLast,UserId"
+          span="4" explicit="true" edit="true"/>
+      </row>
+      <row>
+        <control type="label" label="Admit Notes"	 span="3"/>
+        <control type="textarea" name="AdmitNote" span="9" rows="1" edit="true"/>
+      </row>
+</partial>

@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<module name="Schedule Interconsults" type="onload" trigger="ConsultList">
+  <facet name="CalendarOption" value="Admitting"/>
+  <facet name="FileName" value="ConsultRequestsAdmin"/>
+  <facet name="ListMode" value="schedule"/>
+  <facet name="DefaultPatientId"/>
+  <partial link="Partials/PartialConsultRequestList.xml"/>
+  <partial link="Partials/PartialInterconsultRequest.xml"/>
+  <partial link="./EnPartial/Admin/PartialPatientSearchModal.xml"/>
+  <!-- Partial to insert a new patient -->
+  <partial link="./EnPartial/Admin/PartialInsertNewPatientTabModal.xml"/>
+  <!-- Partial to create a new document request -->
+  <partial link="Partials/PartialDocumentRequest.xml"/>
+  <!-- Partial for patient chart review only -->
+  <partial link="./EnPartial/Admin/PartialPatientChartForReviewOnly.xml"/>
+  <partial link="Partials/PartialCalendarNewPatientAppointments.xml"/>
+  <partial link="Partials/PartialCalendarNewAppointmentModal.xml"/>
+  <partial link="./EnPartial/Admin/PartialMedicationDetailModal.xml"/>
+  <partial link="./EnPartial/Admin/PartialReportModals.xml"/>
+</module>

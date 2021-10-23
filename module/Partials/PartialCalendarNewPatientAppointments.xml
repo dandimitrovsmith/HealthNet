@@ -1,0 +1,172 @@
+﻿<partial>
+  <!-- Partial to manage new patient appointments -->
+  <!-- A calendar view is shown and the user can select the calendar,view,and physician (ProviderId) -->
+  <section type="tabmodal" badge="none" name="tabModalNewAppointments" title="New Appointment"	>
+    <group showif="never">
+      <row>
+        <control type="text" name="NCADrop_AppointmentGuid"/>
+        <control type="text" name="NCADrop_StartTime"/>
+        <control type="text" name="NCADrop_EndTime"/>
+        <control type="text" name="NCADrop_PatientFirstMiddleLast"/>
+        <control type="text" name="NCASearchCalendarGuid"/>
+        <control type="text" name="NCA_PatientId" persist="true"/>
+      </row>
+      <row>
+        <control type="button" name="NCAbtnUpdateDrop"
+          action="save"
+          affector="none" 
+          dataupdate="UpdateSchedulerAppointments"
+				  appendupdate="appointmentGuid=[NCADrop_AppointmentGuid],start=[NCADrop_StartTime],end=[NCADrop_EndTime],calculateDuration=true"/>
+        <control type="button" name="NCAbtnUpdateResize"
+          action="save"
+          affector="none" 
+          dataupdate="UpdateSchedulerAppointments"
+				  appendupdate="appointmentGuid=[NCADrop_AppointmentGuid],start=[NCADrop_StartTime],end=[NCADrop_EndTime],calculateDuration=true"/>
+        <control type="button" name="btnCloseTabModalNewAppointments"
+          action="close"/>
+      </row>
+    </group>
+    <group showif="never">
+      <!-- Templates for text messages -->
+      <row>
+        <!-- Templates are used to format the data shown in each calendar view -->
+        <!-- This allows each view to have an appropriate data set -->
+        <!-- A green checkmark is shown if the appointment is confirmed -->
+        <!-- A facetime-video icon is shown if IsTelemedicine is set to true -->
+        <!-- Template for month and week views that shows only the patient name-->
+        <template name="NCAdayGridMonthTemplate" type="markup">
+            [span size=12 color=darkgrey] 
+            [IF ${[[Reschedule]]}=true][icon color=red]refresh[/icon][/IF]
+            [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+            [IF ${[[IsTelemedicine]]}=true][icon color=blue]facetime-video[/icon][/IF]
+            ${[[PatientFirstMiddleLast]]}[/span] 
+        </template>
+         <!-- Template for day view that shows the provider,description,and location-->
+        <template name="NCAtimeGridWeekTemplate" type="markup">
+            [span size=12 color=darkgrey] 
+            [IF ${[[Reschedule]]}=true][icon color=red]refresh[/icon][/IF]
+            [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+            [IF ${[[IsTelemedicine]]}=true][icon color=blue]facetime-video[/icon][/IF]
+            ${[[PatientFirstMiddleLast]]}[br]
+            [icon color=blue]user-md[/icon] 
+            ${[[ProviderFirstMiddleLast]]} 
+            [/span]
+        </template>
+        <!-- Template for day view that shows the provider,description,and location-->
+        <template name="NCAtimeGridDayTemplate" type="markup">
+            [span size=12 color=darkgrey] 
+            [IF ${[[Reschedule]]}=true][icon color=red]refresh[/icon][/IF]
+            [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+            [IF ${[[IsTelemedicine]]}=true][icon color=blue]facetime-video[/icon][/IF]
+            ${[[PatientFirstMiddleLast]]} 
+            [icon color=blue]user-md[/icon] 
+            ${[[ProviderFirstMiddleLast]]}[br] 
+            [/span]
+        </template>
+        <!-- Template for agenda (list) view that shows the provider,description,and location-->
+        <template name="NCAlistMonthTemplate" type="markup">
+            [span size=12 color=darkgrey] 
+            [IF ${[[Reschedule]]}=true][icon color=red]refresh[/icon][/IF]
+            [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+            [IF ${[[IsTelemedicine]]}=true][icon color=blue]facetime-video[/icon][/IF]
+            ${[[PatientFirstMiddleLast]]} 
+            [icon color=blue]user-md[/icon] 
+            ${[[ProviderFirstMiddleLast]]}[/span]
+        </template>
+        <!-- Template for bacground scheduler times records-->
+        <template name="NCABackgroundTemplate" type="markup">
+            [span size=12 color=darkred] 
+            ${[[Reason]]}[br]
+            ${[[ProviderFirstMiddleLast]]}[/span]
+        </template>
+      </row>
+    </group>
+    <group>
+      <row name="NCArowCalendarSelection">
+        <!-- Select the calendar to view -->
+        <control type="select" 
+				  name="NCAAppointmentTypeGuid1" span="3"
+          reveal="[CalendarOption]=Surgery"
+				  datasource="GetSchedulerAppointmentTypesByFacility" 
+				  source="CalendarName,CalendarGuid" 
+					filter="CalendarType=Surgery"
+          explicit="true"
+          persist="true"
+				  edit="true" 
+					sort="CalendarName=asc"
+          set="NCASearchCalendarGuid=[[CalendarGuid]]"
+				  provoke="NCACalendarProviderId,NCAAppointmentTimes"/>
+        <control type="select" 
+				  name="NCAAppointmentTypeGuid2" span="3"
+          reveal="[CalendarOption]!Surgery"
+				  datasource="GetSchedulerAppointmentTypesByFacility" 
+				  source="CalendarName,CalendarGuid" 
+					filter="CalendarType!Surgery"
+          explicit="true"
+          persist="true"
+				  edit="true" 
+					sort="CalendarName=asc"
+          set="NCASearchCalendarGuid=[[CalendarGuid]]"
+				  provoke="NCACalendarProviderId,NCAAppointmentTimes"/>
+        <!-- Select control for provider (physician) to view appointments only for this provider -->
+        <control type="label" label="Physician"			 span="1"/>
+			  <control type="select" name="NCACalendarProviderId" span="3" 
+          acctsvcreq="true"
+					datarequest="GetSchedulerExceptionsProvidersByCalendarGuid" 
+          appendrequest="CalendarGuid=[NCASearchCalendarGuid]"
+					source="ProviderName,ProviderId" 
+          default="true"
+					edit="true"
+				  provoke="NCAAppointmentTimes"/>
+        <control type="button" name="NCAbtnClearCalendarProviderId"
+          icon="remove" label=""
+          action="trigger" set="NCACalendarProviderId="
+          provoke="NCAAppointmentTimes"/>
+      </row>
+			<row>
+          <!-- -->
+          <control type="calendar" 
+            span="12"
+            aspect="2/1.2"
+            name="NCAAppointmentTimes"
+            headerleft="prev,next today"
+            headercenter="title"
+            headerright="dayGridMonth,timeGridWeek,timeGridDay,listDay"
+            navlinking="true"
+            slotduration="00:15"
+            duration="00:30"
+            businesshours="1,2,3,4,5=06:00-20:00"
+            eventcolor="Status|Background=lightblue;Block=grey;Scheduled=yellowgreen;Confirmed=green;Completed=yellow;No Show=orange;Canceled=red"
+            source="dayGridMonth=NCAdayGridMonthTemplate,timeGridWeek=NCAtimeGridWeekTemplate,timeGridDay=NCAtimeGridDayTemplate,listDay=NCAlistMonthTemplate"
+            bgsource="dayGridMonth=NCABackgroundTemplate,timeGridWeek=NCABackgroundTemplate,timeGridDay=NCABackgroundTemplate,listDay=NCABackgroundTemplate"
+            acctsvcreq="true"
+            edit="true"
+            bgevent="Type|Background=true"
+            idle="[NCASearchCalendarGuid]="
+            datarequest="GetSchedulerExceptionsByDateRange"
+            appendrequest="calendarGuid=[NCASearchCalendarGuid],status=Active,ProviderId=[NCACalendarProviderId]"
+            map="start=StartDateTime,end=EndDateTime,title=rowguid"
+          	daterange="start=start,end=end"
+            key="key"
+            action="redirect"
+            target="NewAppointmentModal"
+            selectable="true"
+            selectabletarget="[NCASearchCalendarGuid]!;NewAppointmentModal"
+            onselectableset="NewApt_PatientId=[NCA_PatientId],NewApt_Source=4,NewApt_AppointmentTypeGuid=[NCASearchCalendarGuid],NewApt_Start=[[start]],NewApt_End=[[end]],NewApt_Duration=[[duration]],NewApt_MedicalSpecialtyGuid=[[MedicalSpecialty]],[CalendarOption]=Surgery;NewApt_ProviderId=^NewApt_ProviderId=[[ProviderId]],NewApt_Status=Scheduled"
+            onselectable="NewApt_PatientId"
+            onselectset="NewApt_Source=4,NewApt_AppointmentGuid=[[AppointmentGuid]],NewApt_AppointmentTypeGuid=[NCASearchCalendarGuid],NewApt_Start=[[start]]"
+            onselect="[NewApt_AppointmentGuid]!;NewApt_AppointmentGuid"
+            droptarget="none"
+            ondropset="NCADrop_AppointmentTypeGuid=[[CalendarGuid]],NCADrop_AppointmentGuid=[[AppointmentGuid]],NCADrop_StartTime=[[StartDateTime]],NCADrop_EndTime=[[EndDateTime]],NCADrop_PatientFirstMiddleLast=[[PatientFirstMiddleLast]]"
+            ondrop="NCAbtnUpdateDrop"
+            resizetarget="none"
+            onresize="NCAbtnUpdateResize"
+            onresizeset="NCADrop_AppointmentTypeGuid=[[CalendarGuid]],NCADrop_AppointmentGuid=[[AppointmentGuid]],NCADrop_StartTime=[[StartDateTime]],NCADrop_EndTime=[[EndDateTime]],NCADrop_PatientFirstMiddleLast=[[PatientFirstMiddleLast]]">
+            <!-- Button to refresh the calendar -->
+            <control type="button" name="NCAbtnRefreshCalendar"
+              icon="refresh" label="Refresh"	 action="trigger" trigger="NCAAppointmentTimes"/>
+          </control>
+      </row>
+		</group>
+  </section>
+</partial>

@@ -1,0 +1,447 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+  <!--Last Edit by Dan 4/14/2018-->
+<module name="Medications">
+  <section type="tab" title="Medication Frequencies"	>     
+    <group>     
+      <row showif="never">
+        <control type="text" name="UserRoles" edit="true" span="4" value="(user.UserRoles)"/>
+        <control type="text" name="UserId" edit="true" span="4" value="(user.UserId)"/>
+        <control type="text" name="AllowEdit" edit="true" span="4" />
+        <control type="button" name="btnAllowEdit" edit="true" span="4"  action="set" set="AllowEdit=yes"/> 
+      </row>
+      <!-- reveal="[UserId]=kimberly.diaz@ehrinternational.com,[UserId]=ballitorob@yahoo.com" -->
+      <row name="MedicationFrequenciesEhriUser" reveal="[UserId]=kimberly.diaz@ehrinternational.com,[UserId]=ballitorob@yahoo.com">
+        <control type="datagrid" label="Medication Frequencies (Only available to kimberly.diaz@ehrinternational.com and ballitorob@yahoo.com)"	
+          name="MedicationFrequencies1"
+          modalname="NewMedicationFrequency1"
+          span="12"
+          searchable="true"
+          rows="20"
+          datasource="GetDrugFrequenciesByFacilityAll"
+          datarequest="GetDrugFrequenciesByFacilityAll"       
+          acctsvcinsert="true"
+          acctsvcupdate="true"
+          datainsert="InsertDrugFrequencies"
+          dataupdate="UpdateDrugFrequencies"
+          source="Active,FrequencyCode,FrequencyName,Scheduled,ScheduledTimes"
+          sourcelabels="Active,Code,Name,Scheduled,Scheduled Time"	
+          align="|left|left||left"
+          format="boolean|||boolean|"
+          sort="FrequencyName=asc"
+          key="FrequencyGuid"
+          provoke="FrequencyCode"/>
+      </row>
+
+      <!-- reveal="[UserId]!kimberly.diaz@ehrinternational.com+[UserId]!ballitorob@yahoo.com" -->
+      <row name="MedicationFrequenciesNormalUser" reveal="[UserId]!kimberly.diaz@ehrinternational.com+[UserId]!ballitorob@yahoo.com">
+        <control type="datagrid" label="Medication Frequencies"	
+          name="MedicationFrequencies2"
+          modalname="NewMedicationFrequency2"
+          span="12"
+          searchable="true"
+          rows="20"
+          datasource="GetDrugFrequenciesByFacilityAll"
+          datarequest="GetDrugFrequenciesByFacilityAll"
+          edit="only"         
+          acctsvcupdate="true"          
+          dataupdate="UpdateDrugFrequencies"
+          source="Active,FrequencyCode,FrequencyName,Scheduled,ScheduledTimes"
+          sourcelabels="Active,Code,Name,Scheduled,Scheduled Time"	
+          align="|left|left||left"
+          format="boolean|||boolean|"
+          sort="FrequencyName=asc"
+          key="FrequencyGuid"
+          provoke="FrequencyCode">
+           
+        </control> 
+      </row>
+    </group>
+  </section>
+
+  <section type="modal" name="NewMedicationFrequency1" title="Medication Frequencies"	 size="small"
+       enteredby="EnteredByFullName" updatedby="UpdatedByFullName"
+       dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">
+    <group name="NewMedicationFrequencyGroup1">
+      <row>
+        <control type="label" label="Active"	 span="4"/>
+        <control type="buttongroup" name="NewMedicationFrequencyGroup1_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>  
+      <row>
+        <control type="label" label="Frequency Name"	 span="4"/>
+        <control type="text" name="NewMedicationFrequencyGroup1_FrequencyName" span="6" required="true" edit="true" />
+      </row>  
+      <row>
+        <control type="label" label="Frequency Code"	 span="4"/>
+        <control type="select" name="NewMedicationFrequencyGroup1_FrequencyCode" span="6"  edit="true"   required="true"
+          datasource="GetLookupDrugFrequencies" source="FrequencyCode|FrequencyDescription,FrequencyCode" sort="FrequencyCode=asc"/>
+      </row>  
+      <row>
+        <control type="label" label="Scheduled"	 span="4"/>
+        <control type="buttongroup" name="NewMedicationFrequencyGroup1_Scheduled" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row name="NewMedicationFrequencyGroup1_rowScheduledTimes" reveal="NewMedicationFrequencyGroup1_Scheduled=True">
+        <control type="label" label="Hours"	 span="4" />
+        <control type="textarea" name="NewMedicationFrequencyGroup1_ScheduledTimes" span="6" edit="true"  rows="1" required="NewMedicationFrequencyGroup1_Scheduled=True"/>
+        
+      </row>
+    </group>
+  </section>
+
+  <section type="modal" name="NewMedicationFrequency2" title="Medication Frequencies"	 size="small"
+    enteredby="EnteredByFullName" updatedby="UpdatedByFullName"
+    dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">
+    <group name="NewMedicationFrequencyGroup2">
+      <row>
+        <control type="label" label="Active"	 span="4"/>
+        <control type="buttongroup" name="NewMedicationFrequencyGroup2_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>     
+      <row>
+        <control type="label" label="Frequency Name"	 span="4"/>
+        <control type="text" name="NewMedicationFrequencyGroup2_FrequencyName" span="6" required="true" edit="true" />
+      </row>     
+      <row>
+        <control type="label" label="Frequency Code"	 span="4"/>
+        <control type="select" name="NewMedicationFrequencyGroup2_FrequencyCode" span="6"  edit="false" 
+          datasource="GetLookupDrugFrequencies" source="FrequencyCode|FrequencyDescription,FrequencyCode" sort="FrequencyCode=asc"/>
+      </row>      
+      <row>
+        <control type="label" label="Scheduled"	 span="4"/>
+        <control type="buttongroup" name="NewMedicationFrequencyGroup2_Scheduled" span="2" sourcelabels="Yes,No"	 source="True,False" edit="false" default="True" />
+      </row>
+      <row name="NewMedicationFrequencyGroup2_rowScheduledTimes" reveal="NewMedicationFrequencyGroup2_Scheduled=True">
+        <control type="label" label="Hours"	 span="4" />
+        <control type="textarea" name="NewMedicationFrequencyGroup2_ScheduledTimes" span="6" edit="false"  rows="1"/>
+        
+      </row>
+    </group>
+  </section>
+
+  <!-- Medication Formulary -->
+  <section type="tab" title="Medications"	>
+    <group>
+      <row>
+        <control type="datagrid" label="Medications"	 name="PharmacyFormulary"
+          searchable="true"
+          modalname="NewFormularyItem" 
+          span="12" rows="20"
+          datasource="GetDrugFormularyByFacility"
+          datarequest="GetDrugFormularyByFacility"
+          append="getAll=true"
+          appendrequest="getAll=true"
+          datainsert="InsertDrugFormularyItem"
+          appendinsert="Inventory=true"
+          dataupdate="UpdateDrugFormularyItem"
+          acctsvc="true"
+          acctsvcreq="true"
+          source="Active,ItemNumber,DrugTradeName,GenericName,DrugStrength,BasePrice"
+          sourcelabels="Active,Item Number,Trade Name,Generic Name,Dose,Base Price"	
+          key="FormularyItemGuid"
+          align="|left|left|left|left|right"
+          format="boolean|||||0,0.00"
+          sort="OrderType=asc"
+          onselectset="DrugRoute=[[DrugRoute]],iv_DrugRoute=[[DrugRoute]],NewFormularyItem_FormularyItemGuid=[[FormularyItemGuid]]"
+          onselect="DrugRoute,iv_DrugRoute,NewFormularyItem_FormularyItemGuid"
+          provoke="dgFormularyCustomRanges" />
+      </row>
+    </group>
+  </section>
+
+  <section type="modal" name="NewFormularyItem" title="Medications"	
+    enteredby="EnteredBy" updatedby="UpdatedBy" 
+    dtentered="DateTimeEntered" dtupdated="DateTimeLastUpdated">
+    <group name="NewFormularyItemGroup">
+      <columns>
+      <column span="8">
+      <row showif="never">
+        <control type="hidden" name="NewFormularyItem_FormularyItemGuid" span="4" />
+      </row>
+      <row>
+        <control type="label" label="Brand Name"	 span="3"/>
+        <control type="text" name="DrugTradeName" span="8" edit="true"  required="true"/>
+      </row>
+      <row>
+        <control type="label" label="Generic Name"	 span="3"/>
+        <control type="text" name="GenericName" span="8" required="true" edit="true" />
+      </row>
+      <row name="rvlRoute" reveal="Intravenous=False">
+        <control type="label" label="Default Route"	 span="3"/>
+        <control type="select" name="DrugRoute" span="6" edit="true"  required="true" translate="true"
+          datasource="GetNciDrugRoutes" source="RouteText,RouteCode"/>
+        <control type="label" label="Lock Route"	 span="2" align="left"/>
+        <control type="buttongroup" sourcelabels="Yes,No"	 source="True,False" name="LockRoute" span="1" edit="true" default="False" align="left" />
+      </row>
+      <row name="rvlIVRoute" reveal="Intravenous=True">
+        <control type="label" label="Route"	 span="3"/>
+        <control type="select" name="iv_DrugRoute" span="6" edit="true"  
+          datasource="GetNciDrugRoutes" source="RouteText,RouteCode"/>
+        <control type="select" name="IVMod" span="3" edit="true"  datasource="" 
+          default="IVPR" sourcelabels="Primary,Piggyback,Push"		 source="IVPR,IVPB,IVP"/>
+      </row>
+      <row>
+        <control type="label" label="Default Frequency"	 span="3"/>
+        <control type="select" name="DefaultFrequency" span="8" edit="true"  
+          datasource="GetDrugFrequenciesByFacility" source="FrequencyName,FrequencyGuid"/>
+      </row>
+      <row>
+        <control type="label" label="Required Tests"	 span="3"/>
+        <control type="select" name="MandatoryLabs" span="8" edit="true"  
+          datasource="GetLabPanelsByFacility" source="LabPanelName,LabPanelGuid"/>        
+      </row>
+      <row>
+        <control type="label" label="Order Notes"	 span="3"/>
+        <control type="textarea" name="Note" rows="2" span="8" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Pharmacy Notes"	 span="3"/>
+        <control type="textarea" name="PharmacyNote" rows="2" span="8" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Drug Form"	 span="3"/>
+        <control type="checkbox" name="Fluid" label="Fluid"	 align="left" source="True,False" default="False" span="2" edit="true" />
+        <!-- <control type="label" label="Fluid"	 align="left" span="1"/> -->
+        <control type="checkbox" name="Intravenous" label="Intravenous"	 align="left" source="True,False" default="False" span="3" edit="true" />
+        <!-- <control type="label" label="Intravenous"	 align="left" span="2"/> -->
+
+        <!-- <control type="buttongroup" name="WeightDose" sourcelabels="Yes,No"	 source="True,False" default="False" span="1" edit="true" />
+        <control type="label" label="Dose by Weight"	 align="left" span="3"/> -->
+      </row>
+      <row name="rvlIVInfo" reveal="Intravenous=True">
+        <control type="label" label="Intravenous Information"	 span="3"/>
+        <control type="checkbox" name="PremixedFluid" label="Premixed"	 align="left" source="True,False" span="1" default="False" edit="true" />
+        <!-- <control type="label" label="Premixed"	 align="left" span="2"/> -->
+      </row>
+      <row name="rvlIVInfusion" reveal="Intravenous=True">
+        <control type="label" label="Infusion Rate"	 span="3"/>
+        <control type="text" name="InfusionRate" span="8" edit="true"  />
+      </row>
+      <row name="rvlIVDiluent" reveal="Intravenous=True,PremixedFluid!True">
+        <control type="label" label="Diluent Solution"	 span="3"/>
+        <control type="text" name="DiluentSolution" span="8" edit="true"  />
+      </row>
+      
+      <row showif="never">
+        <control type="text" name="hdnRangeType" span="4" />
+      </row>
+      <row>
+        <control type="checkbox" name="WeightDose" label="Dose by Weight"	 align="left" source="True,False" default="False" offset="3" span="3" edit="true" 
+          set="{[WeightDose]!True,[BSADose]!True};DoseRatioCustomRanges=False,[WeightDose]=True;hdnRangeType=Weight"/>
+          
+        <control type="checkbox" name="BSADose" label="BSA Dose"	 align="left" source="True,False" default="False" span="3" edit="true" 
+          set="{[WeightDose]!True,[BSADose]!True};DoseRatioCustomRanges=False,[BSADose]=True;hdnRangeType=BSA"/>
+
+        <control type="checkbox" name="DoseRatioCustomRanges" label="Dose Range"	 align="left" source="True,False"
+          default="False" span="3" edit="true"  reveal="WeightDose=True,BSADose=True" />
+      </row>
+      <row name="rvlWeightDose" reveal="WeightDose=True+DoseRatioCustomRanges!True">
+        <control type="label" label="Dose / Weight Ratio"	 span="3"/>
+        <!-- <control type="text" name="DoseRatio" span="2" edit="true"   format="0.00" required="true" /> -->
+        <control type="text" name="DoseRatio" span="2" edit="true"   format="0,0.00" />
+        <control type="label" label="/ kg"	 align="left" span="3"/>
+      </row>
+      <row name="rvlBSADose" reveal="BSADose=True+DoseRatioCustomRanges!True">
+        <control type="label" label="Dose / BSA Ratio"	 span="3"/>
+        <!-- <control type="text" name="DoseRatio" span="2" edit="true"   format="0.00" required="true" /> -->
+        <control type="text" name="BSADoseRatio" span="2" edit="true"   format="0,0.00" />
+        <control type="label" label="/ m²"	 align="left" span="3"/>
+      </row>
+      <row name="rvlDoseRatioCustomRangesUpdate" reveal="DoseRatioCustomRanges=True+NewFormularyItem_FormularyItemGuid!">
+        <control type="datagrid" label="Formulary Custom Ranges"		
+          name="dgFormularyCustomRanges"
+          modalname="mdlFormularyCustomRanges"
+          span="12"
+          searchable="true"
+          rows="5"
+          acctsvc="true"
+          acctsvcreq="true"
+          datasource="GetFormularyCustomRangesByFormularyItemGuid"
+          datarequest="GetFormularyCustomRangesByFormularyItemGuid"
+          append="formularyItemGuid=[NewFormularyItem_FormularyItemGuid]"
+          appendrequest="formularyItemGuid=[NewFormularyItem_FormularyItemGuid]"
+          acctsvcinsert="true"
+          acctsvcupdate="true"
+          datainsert="InsertFormularyCustomRanges"
+          dataupdate="UpdateFormularyCustomRanges"
+          appendinsert="formularyItemGuid=[NewFormularyItem_FormularyItemGuid]"
+          appendupdate="formularyItemGuid=[NewFormularyItem_FormularyItemGuid]"
+          source="Active,RangeType,Preemie,Gender,RatioMin,RatioMax,AgeRangeStart,AgeRangeEnd"
+          sourcelabels="Active,Type,Name,Scheduled,Scheduled Time"	
+          align="|left|left||left"
+          format="boolean||boolean|"
+          sort="AgeRangeStart=asc"
+          key="FormularyCustomRangeGuid"/>
+      </row>
+      <row name="rvlDoseRatioCustomRangesInsert" reveal="DoseRatioCustomRanges=True+NewFormularyItem_FormularyItemGuid=">
+        <control type="label" label="You must save the Formulary item before adding custom ranges"		 align="left" offset="3" span="9"/>
+      </row>
+
+      <row>
+        <control type="label" label="Min / Max Dose"	 span="3"/>
+        <!-- <control type="integer" name="MinDose" span="2" edit="true"  compare="[MinDose]«[MaxDose]|Dose Min must be less than Dose Max" />
+        <control type="integer" name="MaxDose" span="2" edit="true"  compare="[MaxDose]»[MinDose]|Dose Max must be greater than Dose Min" /> -->
+        <control type="text" name="MinDose" span="2" edit="true" format="0,00.00" default="0.00" value=""/>
+        <control type="text" name="MaxDose" span="2" edit="true" format="0,00.00" default="0.00" value=""/>
+      </row>
+      <row>
+        <control type="label" label="Max 24 Hr Dosage"	 span="3"/>
+        <control type="integer" name="MaxDose24Hr" span="4" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Dose on Hand"	 span="3"/>
+        <!-- <control type="integer" name="DoseOnHandStrength" span="2" edit="true" /> -->
+        <control type="text" name="DoseOnHandStrength" span="2" edit="true"  format="0,0.00" />
+        <control type="select" name="DoseOnHandUOM" span="2" edit="true"  datasource="" 
+          default="none" source="mg,mcg,gm,kg,meq,%,unit,ea,none"/>
+      </row>
+      <row>
+        <control type="label" label="Dose Unit"	 span="3"/>
+        <!-- <control type="integer" name="DosageStrength" span="2" edit="true"  required="true" /> -->
+        <control type="text" name="DosageStrength" span="2" edit="true"  format="0,0.00" />
+        <control type="select" name="DosageUOM" span="2" edit="true"  datasource="" 
+          default="ml" source="ml,mcL,microL,L,mol,mmol,mcmol,drop,vial,gm,unit,ea,tablet,capsule,cartridge,container,lozenge,packet,sachet,hr,min,sec"/>
+      </row>
+      <row>
+        <control type="label" label="Pharmacology Group"	 span="3" />
+        <control type="select" name="PharmacologyGroup" span="8" edit="true" translate="true" 
+          acctsvc="true" 
+          datasource="GetLookupPharmacologyGroup" 
+          source="GroupName,GroupName" />
+      </row>
+      </column>
+      <column span="4">
+        <row>
+        <control type="label" label="Active"	 span="6" />
+        <control type="buttongroup" name="Active" span="6" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+        </row>
+        <row>
+          <control type="label" label="Vidal Code"	 span="6" />
+          <control type="integer" name="VidalCommonNameGroupId" span="6" edit="true" />
+        </row>
+        <row>
+          <control type="label" label="NDC Code"	 span="6" />
+          <control type="text" name="DrugNDC" span="6" edit="true" />
+        </row>
+        <row>
+          <control type="label" label="External NDC"	 span="6" />
+          <control type="text" name="ExternalNDC" span="6" edit="true" />
+        </row>
+        <row>
+          <control type="label" label="Item Number"	 span="6" />
+          <control type="text" name="ItemNumber" span="6" edit="true" />        
+        </row>
+        <row>
+          <control type="label" label="RxNorm"		 span="6" />
+          <control type="text" name="RxCui" span="6" edit="true" />
+        </row>
+        <row>
+          <control type="label" label="Cost"	 span="6" />
+          <control type="text" name="Cost" span="6" edit="true"  format="0,000.00"/>        
+        </row>
+        <row>
+          <control type="label" label="Base Price"	 span="6" />
+          <control type="text" name="BasePrice" span="6" edit="true"  format="0,000.00"/>        
+        </row>
+        <row>
+          <control type="label" label="C Level"	 span="6" />
+          <control type="select" name="CLevel" span="6" edit="true" default="0"  source="0,1,2,3,4,5,6"/>        
+        </row>
+        <row>
+          <control type="label" label="Soft Stop Days"	 span="6" />
+          <control type="integer" name="SoftStopLength" span="3" edit="true" />
+        </row>
+        <row>
+          <control type="label" label="External Identification"	 span="6" />
+          <control type="integer" name="ExternalID" span="6" edit="true" />
+        </row>
+        <row>
+          <control type="label" label="External Identification 2"	 span="6" />
+          <control type="integer" name="ExternalId2" span="6" edit="true" />
+        </row>
+        <row>
+          <control type="label" label="CGI"		 span="6" />
+          <control type="integer" name="CompositeGenericIndex" span="6" edit="true" />
+        </row>  
+        <row>
+          <control type="label" span="5" label="Revenue Code"	/>  
+          <control type="select" span="7" name="RevenueCodeName,RevenueCode"
+            datasource="GetRevenueCodesForThisFacility"
+            filter="Active=true"
+            acctsvc="true" 
+            edit="true"
+            source="RevenueCode|RevenueCodeDescription,RevenueCode" 
+             />
+        </row>
+      </column>
+      </columns>
+      <row divider="true">
+        <!-- <control type="label" label="Scan Med at Admin"	 span="3"/> -->
+        <control type="checkbox" name="ScanMedMAR" label="Scan Med at Admin"	 align="right" source="True,False" span="4" default="False" edit="true" />  
+        <!-- <control type="label" label="Scan Patient at Admin"	 span="3"/> -->
+        <control type="checkbox" name="ScanPatientMAR" label="Scan Patient at Admin"	 align="right" source="True,False" span="4" default="False" edit="true" />
+        <!-- <control type="label" label="Pharmacy Protocol"	 span="3" /> -->
+        <control type="checkbox" name="PerPharmacyProtocol" label="Pharmacy Protocol"	 align="right" source="True,False" span="4" default="False" edit="true" />
+      </row>
+      <row>
+        <!-- <control type="label" label="Black Box"	 span="3" /> -->
+        <control type="checkbox" name="BlackBox" label="Black Box"	 align="right" source="True,False" span="4" default="False" edit="true" />
+        <!-- <control type="label" label="Maximum Alert"	 span="3" /> -->
+        <control type="checkbox" name="HighAlert" label="Maximum Alert"	 align="right" source="True,False" span="4" default="False" edit="true" />
+        <!-- <control type="label" label="Fall Risk"	 span="3" /> -->
+        <control type="checkbox" name="FallRisk" label="Fall Risk"	 align="right" source="True,False" span="4" default="False" edit="true" />
+      </row>
+      <row>
+        <!-- <control type="label" label="Multiple Signatories"	 span="3" /> -->
+        <control type="checkbox" name="RequiresMultipleSigners" label="Multiple Signatories"	 align="right" source="True,False" span="4" default="False" edit="true" />
+        <!-- <control type="label" label="Charge on Admin"	 span="3" /> -->
+        <control type="checkbox" name="ChargeOnMedAdmin" label="Charge on Administration"	 align="right" source="True,False" span="4" default="True" edit="true" />
+        <!-- <control type="label" label="Late Admin Email"	 span="3" /> -->
+        <control type="checkbox" name="NotifyOnLateAdmin" label="Late Admin Email"	 align="right" source="True,False" span="4" default="False" edit="true" />
+      </row>
+      <row>
+        <!-- <control type="label" label="Multi-Ingredient"	 span="3" /> -->
+        <control type="checkbox" name="MultiComponentNonComplex" label="Multi-Ingredient"	 align="right" source="True,False" span="4" default="False" edit="true" />
+        <!-- <control type="label" label="Patient Chargeable"	 span="3" /> -->
+        <control type="checkbox" name="PatientChargeable" label="Patient Chargeable"	 align="right" source="True,False" span="4" default="True" edit="true" />
+      </row>
+    </group>
+  </section>
+
+  <section type="modal" name="mdlFormularyCustomRanges" title="Formulary Custom Ranges"		 size="small"
+       enteredby="EnteredByFullName" updatedby="UpdatedByFullName"
+       dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">
+    <group name="FormularyCustomRangesGroup1">
+      <row>
+        <control type="label" label="Active"	 span="4"/>
+        <control type="checkbox" name="mdlFormularyCustomRanges_Active" span="2" sourcelabels="Yes,No"	 source="True,False" default="True" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Premature"		 span="4"/>
+        <control type="checkbox" name="mdlFormularyCustomRanges_Preemie" span="2" sourcelabels="Yes,No"	 source="True,False" default="False" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Range Type"		 span="4"/>
+        <control type="buttongroup" name="mdlFormularyCustomRanges_RangeType" span="6" source="Weight,BSA" default="[hdnRangeType]" required="true" edit="true" />
+      </row>  
+      <row>
+        <control type="label" label="Gender"		 span="4"/>
+        <control type="buttongroup" name="mdlFormularyCustomRanges_Gender" span="6" source="Male,Female,Indeterminate" required="true" edit="true" />
+      </row>  
+      <row>
+        <control type="label" label="Ratio Min"	 span="4"/>
+        <control type="text" name="mdlFormularyCustomRanges_RatioMin" span="2" edit="true" required="true"  format="0,0.00" />
+        <control type="label" label="Ratio Max"	 span="2"/>
+        <control type="text" name="mdlFormularyCustomRanges_RatioMax" span="2" edit="true" required="true"  format="0,0.00" />
+      </row>
+      <row>
+        <control type="label" label="Age Unit"		 span="4"/>
+        <control type="buttongroup" name="mdlFormularyCustomRanges_AgeRangeUnit" span="2" source="Month,Year" default="Year" required="true" edit="true" />
+        <control type="label" label="Start"		 span="1"/>
+        <control type="text" name="mdlFormularyCustomRanges_AgeRangeStart" span="1" edit="true"   
+          format="0,0" compare="≥0+«[mdlFormularyCustomRanges_AgeRangeEnd]" required="true" />
+        <control type="label" label="End"		 span="1"/>
+        <control type="text" name="mdlFormularyCustomRanges_AgeRangeEnd" span="1" edit="true"   
+          format="0,0" compare="≥0+»[mdlFormularyCustomRanges_AgeRangeStart]" required="true" />
+      </row>
+    </group>
+  </section>  
+  
+</module>

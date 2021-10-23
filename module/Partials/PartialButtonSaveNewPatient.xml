@@ -1,0 +1,20 @@
+﻿<partial>
+  <!-- Parital button to save a new patient -->
+  <group name="grpSaveNewPatient" reveal="[PatientId]=">
+    <row>
+      <control type="label" label=""	 span="7" align="left"/>
+      <control type="button"   
+        name="SaveNewPatientButton"
+        span="4" size="large"
+        label="Generate New Patient"	
+        affector="PatientId"
+        setaffector="RecordUniqueId"
+        capture="PatientInfo" 
+        icon="cloud-upload"
+        action="save"
+        confirm="Please confirm you want to generate this new patient."	
+        datainsert="InsertPatient"
+        provoke="PatientId"/>
+    </row>
+  </group>
+</partial>

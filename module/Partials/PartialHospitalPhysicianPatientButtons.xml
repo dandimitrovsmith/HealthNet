@@ -1,0 +1,73 @@
+﻿<partial>
+  <!-- Partial Hospital Physician Patient Buttons -->
+  <row>
+    <control type="buttongroup" name="btngrpShow"
+      span="12" edit="true"
+      source="Open,Close"
+      color="grey,grey"
+      sourcelabels="Open,Close"	
+      default="Close"/>
+  </row>
+  <row>
+    <control type="button" 
+      name="Consult_PatientUpdate"
+      reveal="PatientId!" 
+      span="12" 
+      label="Update"	
+      affector="none"
+      capture="PatientInfo" 
+      icon="cloud-upload"
+      action="save"
+      confirm="Please confirm you want to update this patient."	
+      appendconfirm="runinput=[Consult_AccountNumber]"
+      confirmresponse="CheckDigitResult=true|Invalid National ID!"
+      datainsert="UpdatePatient"
+      appendinsert="PatientId=[PatientId]"
+      provoke="btnUpdatePatientVisit"/>
+  </row>
+  <row>
+    <control type="button" name="btnReports"
+       reveal="[PatientId]!"
+      span="12"
+      icon="print" label="Reports"	
+      preset="Report_PatientId=[PatientId],Report_Type=Patient,Report_PatientFirstName=[Consult_PatientFirstName],Report_PatientMiddleName=[Consult_PatientMiddleName],Report_PatientLastName=[Consult_PatientLastName]"
+      trigger="ReportList,Report_VisitId"
+      action="redirect" target="mdlReports"/>
+  </row>
+  <row>
+    <control type="button" name="btnTimeline"
+      reveal="HasOpenVisit=true"
+      span="12"
+      color="yellow" icon="time" 
+      label="Timeline"	
+      action="redirect|view"
+      target="timeline"
+      append="patientid=[PatientId],patientvisit=[PatientVisitGuid],distinct=true"/>
+  </row>
+  <row>
+    <control type="button"
+      name="Consult_btnDocumentRequest"
+      label="Physical Record"	 color="orange"
+      span="12" icon="plus"
+      preset="DocumentPatientId=[PatientId],Document_PatientVisit=[PatientVisitGuid]"
+      trigger="DocumentPatientId,Document_PatientVisit"
+      action="redirect"
+      target="mdlDocumentRequest"/>
+  </row>
+   <row name="rowSendText" reveal="btngrpShow=Open">
+    <control type="button" name="btnSendTextMessage2"  
+      reveal="[Consult_PatientCellPhone]!"
+      span="12" icon="envelope" label="Text"	
+      preset="phoneNumber=[Consult_PatientCellPhone]"
+      trigger="grdPhysicianMessages2"
+      action="redirect" target="mdlSendTextMessage"/>
+  </row>
+  <row name="rowSendEmail" reveal="btngrpShow=Open">
+    <control type="button" name="btnSendEmailMessage2"
+      reveal="[Consult_PatientEmail]!"
+      span="12" icon="envelope" label="Email"			
+      preset="Send_EmailAddress=[Consult_PatientEmail],Send_PatientId=[PatientId]"
+      trigger="grdPhysicianMessages2"
+      action="redirect" target="mdlSendEmailMessage"/>
+  </row>
+</partial>

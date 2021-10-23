@@ -1,0 +1,71 @@
+﻿<partial>  
+  <section type="tab" title="Patients in Hospitalization"	>
+    <group showif="never">
+      <row> 
+        <control type="hidden" name="GetLastDepartment"
+          datarequest="GetUserProfileFromUserId2"
+          appendrequest="UserIdToGet=(userName)"
+          inject="SetDepartmentGroup"
+          provoke="PatientList"/>
+        <control type="button" 
+          name="SaveLastDepartment"
+          action="save"
+          affector="none"
+          datainsert="UpdateUserProfileSetDepartment"
+          appendinsert="UserId=(userName),departmentGuid=[DepartmentGuidLookup]"/>
+        <control type="select"
+          acctsvc="true" 
+          name="LookupTransferFacility" 
+          datasource="GetTransferHospitalsActive" 
+          source="HospitalName,HospitalGuid"
+          default="(facilityData.HospitalName)"/>
+      </row>
+    </group>
+    <group name="SetDepartmentGroup">
+      <row>
+        <!-- Select the department -->
+        <control type="select" 
+          span="4"
+          name="DepartmentGuidLookup"
+          injectname="Department" 
+          acctsvc="true"
+          explicit="true"
+          edit="true" 
+          datasource="GetDepartmentsActive" 
+          source="DepartmentName,DepartmentGuid"
+          provoke="SaveLastDepartment,PatientList"/>
+        <control type="buttongroup" name="ListFilter" span="6" 
+          source="Waiting,Hospitalization"
+          default="Waiting"
+          value="Waiting"
+          action="trigger"
+          trigger="PatientList"/>
+      </row>
+      <row>
+          <control type="datagrid" label="Patients in Hospitalization"	 name="PatientList"
+            action="redirect" 
+            target="PatientTabModal"
+            searchable="true"
+            rows="25"
+            fitrows="true"
+            gridfilter="ListFilter|HospitalService"
+            rowcolor="TriageLevel|1=green;2=yellow;3=red"
+            datarequest="GetPatientListWithOpenVisitsByFacility"
+            appendrequest="DepartmentGuid=[DepartmentGuidLookup],excludePhoto=true"
+            source="ReadyForDischarge,AdmitDateTime,OpenRoom,AccountNumber,PatientFullName,PatientAge,PatientSex,HospitalService,AttendingDoctorFullName"
+            sourcelabels="Discharge,Admitted,Bed,Account,Name,Age,Sex,Service,Doctor"	
+            translate="PatientSex"
+            align="||left|left|left|left|left|left|left"
+            format="boolean|datetime"
+            sort="AdmitDateTime=asc"
+            key="RecordUniqueId"
+            onselectset="PatientId=[[RecordUniqueId]],PatientVisitGuid=[[PatientVisitId]]"
+            onselect="PatientId,PatientVisitGuid,ButtonGroupSelect">
+            <control type="button" name="RefreshPatientList"
+              label="Update"	 icon="refresh" 
+              action="trigger" trigger="PatientList"/>
+          </control>
+        </row>
+      </group>
+    </section>
+</partial>

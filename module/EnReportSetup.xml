@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<module name="Report Setup">
+  <section type="tab" name="ReportSetup" title="Reports"	>
+    <group>
+      <row>
+        <control type="datagrid"
+          searchable="true"
+          name="ReportList"
+          label="Reports"	
+          rows="20" span="12"
+          action="redirect"
+          target="mdlReportModal"
+          acctsvc="true" acctsvcreq="true"
+          datasource="GetLookupReportItems"
+          datarequest="GetLookupReportItems"
+          source="Active,ReportType,ReportName,ReportDescriptionSpanish,ReportDescription"
+          sourcelabels="Active,Type,Report,Spanish Description,English Description"	
+          align="left|left|left|left|left"
+          format="boolean"
+          sort="ReportName=asc"
+          translate="ReportType"
+          key="ReportItemGuid"
+          onselectset="ReportItemGuid=[[ReportItemGuid]]"
+          onselect="ReportItemGuid">
+        <control type="button" name="btnNewReport"
+          icon="plus" action="redirect" label="Add New"	 target="mdlReportModal"/>
+        <control type="button" name="btnRefreshReportList"
+          icon="refresh" label="Update"	 
+          action="trigger" provoke="ReportList"/>
+        </control>
+      </row>     
+    </group>
+  </section>
+  <!-- Tabmodal for inserting/editing reports  -->
+  <section type="tabmodal" name="mdlReportModal" title="Report"	 size="small" badge="none">
+    <group>
+      <row>
+        <control type="hidden" name="ReportItemGuid"
+          acctsvcreq="true"
+          datarequest="GetLookupReportItemByReportItemGuid"
+          appendrequest="reportItemGuid=[ReportItemGuid]"
+          inject="grpReportInfo"/>
+        <control type="hidden" name="GetReportTemplate"
+          acctsvcreq="true"
+          datarequest="GetLookupReportItemByReportItemGuid"
+          appendrequest="reportItemGuid=[ReportFileGuid]"
+          inject="grpReportInfo"/>
+      </row>
+    </group>
+    <group name="grpReportLookup" reveal="[ReportItemGuid]=">
+      <row>
+        <control type="label" label="Search Reports"	 span="3"/>
+        <control type="select" name="ReportFileGuid"
+          filter="Active=true"
+          source="ReportName,ReportItemGuid" edit="true" span="8"
+          datasource="GetLookupReportItemTemplates" acctsvc="true" searchable="true"
+          sort="ReportName=asc"
+          provoke="GetReportTemplate"/>
+      </row>
+    </group>
+    <group name="grpReportInfo">
+      <row>
+        <control type="label" label="Code"	 span="3"/>
+        <control type="text" name="ReportFileName" span="2" edit="true"/>
+      </row>
+      <row>
+        <control type="label" label="Active"	 span="3"/>
+        <control type="buttongroup" name="Active" span="4" edit="true" 
+          required="true" source="True,False" sourcelabels="Yes,No"	 default="True"/>
+      </row>
+      <row>
+        <control type="label" label="Category"			 span="3"/>
+        <control type="select" name="ReportType" span="8" edit="true" 
+          required="true" explicit="true"
+          source="Administration,Admitting,Cashier,Surgery,Purchasing,Consulting,Director,Emergency,Nurse,Nutrition,Accounting,Pharmacy,Hospital,Imaging,Lab,Maintenance,Physician,Patient,Pathology,Insurance,Social Worker,Users"
+          sourcelabels="Administration,Admission,Cashier,Surgery,Purchases,Consultation,Director,Emergency,Nurse,Nutrition,Accounting,Pharmacy,Hospital,Imaging,Laboratory,Maintenance,Physician,Patient,Pathology,Insurance,Social Work,Users"	/>
+      </row>
+      <row>
+        <control type="label" label="Name"	 span="3"/>
+        <control type="text" name="ReportName" span="8" edit="true" required="true"/>
+      </row>
+      <row>
+        <control type="label" label="Spanish Description"	 span="3"/>
+        <control type="textarea" name="ReportDescriptionSpanish" span="8" edit="true" rows="true"/>
+      </row>   
+      <row>
+        <control type="label" label="English Description"	 span="3"/>
+        <control type="textarea" name="ReportDescription" span="8" edit="true" rows="true"/>
+      </row>    
+      <row name="rowParameters" reveal="(userName)=kimberly.diaz@ehrinternational.com|dansmith@sonic.net|andrewmpatrick@yahoo.com">
+        <control type="label" label="Start / EndDate"	 span="4"/>
+        <control type="buttongroup" name="StartParameter" source="True,False" span="2" edit="true"/>
+        <control type="buttongroup" name="EndParameter" source="True,False" span="2" edit="true"/>
+      </row>
+      <row name="rowParameters2" reveal="(userName)=kimberly.diaz@ehrinternational.com|dansmith@sonic.net|andrewmpatrick@yahoo.com">>
+        <control type="label" label="Start / EndDateTime"	 span="4"/>
+        <control type="buttongroup" name="StartTimeParameter" source="True,False" span="2" edit="true"/>
+        <control type="buttongroup" name="EndTimeParameter" source="True,False" span="2" edit="true"/>
+      </row>
+      <row name="rowParameters3" reveal="(userName)=kimberly.diaz@ehrinternational.com|dansmith@sonic.net|andrewmpatrick@yahoo.com">>
+        <control type="label" label="Patient"		 span="4"/>
+        <control type="buttongroup" name="PatientParameter" source="True,False" span="4" edit="true"/>
+      </row>
+      <row name="rowParameters4" reveal="(userName)=kimberly.diaz@ehrinternational.com|dansmith@sonic.net|andrewmpatrick@yahoo.com">>
+        <control type="label" label="Patient Visit"	 span="4"/>
+        <control type="buttongroup" name="VisitParameter" source="True,False" span="4" edit="true"/>
+      </row>
+      <row name="rowParameters5" reveal="(userName)=kimberly.diaz@ehrinternational.com|dansmith@sonic.net|andrewmpatrick@yahoo.com">>
+        <control type="label" label="Department"		 span="4"/>
+        <control type="buttongroup" name="DepartmentParameter" source="True,False" span="4" edit="true"/>
+      </row>
+      <row name="rowParameters6" reveal="(userName)=kimberly.diaz@ehrinternational.com|dansmith@sonic.net|andrewmpatrick@yahoo.com">>
+        <control type="label" label="Physician"		 span="4"/>
+        <control type="buttongroup" name="PhysicianParameter" source="True,False" span="4" edit="true"/>
+      </row>
+      <row name="rowParameters7" reveal="(userName)=kimberly.diaz@ehrinternational.com|dansmith@sonic.net|andrewmpatrick@yahoo.com">>
+        <control type="label" label="User"		 span="4"/>
+        <control type="buttongroup" name="UserParameter" source="True,False" span="4" edit="true"/>
+      </row>
+      <row name="rowParameters8" reveal="(userName)=kimberly.diaz@ehrinternational.com|dansmith@sonic.net|andrewmpatrick@yahoo.com">> 
+        <control type="label" label="Start / EndPeriod"	 span="4"/>
+        <control type="buttongroup" name="StartPeriodParameter" source="True,False" span="2" edit="true"/>
+        <control type="buttongroup" name="EndPeriodParameter" source="True,False" span="2" edit="true"/>
+      </row>
+      <row name="rowParameters9" reveal="(userName)=kimberly.diaz@ehrinternational.com|dansmith@sonic.net|andrewmpatrick@yahoo.com">>
+        <control type="label" label="Ledger Account"	 span="4"/>
+        <control type="buttongroup" name="LedgerAccountParameter" source="True,False" span="4" edit="true"/>
+      </row>
+      <row name="rowParameters10" reveal="(userName)=kimberly.diaz@ehrinternational.com|dansmith@sonic.net|andrewmpatrick@yahoo.com">> 
+        <control type="label" label="Provider"	 span="4"/>
+        <control type="buttongroup" name="SupplierParameter" source="True,False" span="4" edit="true"/>
+      </row>
+      <row name="rowParameters11" reveal="(userName)=kimberly.diaz@ehrinternational.com|dansmith@sonic.net|andrewmpatrick@yahoo.com">>
+        <control type="label" label="Item Master"	 span="4"/>
+        <control type="buttongroup" name="ItemParameter" source="True,False" span="4" edit="true"/>
+      </row>
+      <row name="rowParameters12" reveal="(userName)=kimberly.diaz@ehrinternational.com|dansmith@sonic.net|andrewmpatrick@yahoo.com">>
+        <control type="label" label="Calendar"		 span="4"/>
+        <control type="buttongroup" name="CalendarParameter" source="True,False" span="4" edit="true"/>
+      </row>
+      <row name="rowParameters13" reveal="(userName)=kimberly.diaz@ehrinternational.com|dansmith@sonic.net|andrewmpatrick@yahoo.com">>
+        <control type="label" label="Ledger"		 span="4"/>
+        <control type="buttongroup" name="LedgerParameter" source="True,False" span="4" edit="true"/>
+      </row>
+      <row name="rowParameters14" reveal="(userName)=kimberly.diaz@ehrinternational.com|dansmith@sonic.net|andrewmpatrick@yahoo.com">>
+        <control type="label" label="Medications"	 span="4"/>
+        <control type="buttongroup" name="MedsGuidParameter" span="4" 
+          source="True,False" edit="true" default="False" required="true"/>
+      </row>
+      <row>
+        <control type="modalbutton" name="btnSaveNewReport"
+          reveal="[ReportItemGuid]="
+          color="green" icon="cloud-upload" label="Save"	
+          action="save|close|new"
+          affector="ReportItemGuid"
+          setaffector="ReportItemGuid"
+          capture="grpReportInfo"
+          acctsvc="true"
+          datainsert="InsertLookupReportItems"
+          provoke="ReportList|refresh"/>
+        <control type="modalbutton" name="btnSaveAndNewReport"
+          reveal="[ReportItemGuid]="
+          color="green" icon="cloud-upload" label="Next"	
+          action="save|new"
+          affector="none"
+          capture="grpReportInfo"
+          acctsvc="true"
+          datainsert="InsertLookupReportItems"
+          provoke="ReportList|refresh"/>
+        <control type="modalbutton" name="btnUpdateReport"
+          reveal="[ReportItemGuid]!"
+          color="green" icon="cloud-upload" label="Update"	
+          action="save|close|new"
+          affector="ReportItemGuid"
+          setaffector="ReportItemGuid"
+          capture="grpReportInfo"
+          acctsvc="true"
+          dataupdate="UpdateLookupReportItems"
+          appendupdate="reportItemGuid=[ReportItemGuid]"
+          provoke="ReportList|refresh"/>
+      </row>
+    </group>
+  </section>
+</module>

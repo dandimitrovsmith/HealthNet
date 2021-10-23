@@ -1,0 +1,11 @@
+﻿<partial>
+  <!-- Partial to display patient photo -->
+  <row>
+    <!--Patient photo-->
+    <control type="image"
+      format="jpg=circle" 
+      name="Admit_ProfilePhoto"
+      default="null"
+      span="12" />
+  </row>
+</partial> 

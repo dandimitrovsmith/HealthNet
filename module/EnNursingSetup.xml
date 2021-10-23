@@ -1,0 +1,310 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Last edit by Dan 4/13/2018-->
+
+<module name="Nursing">
+  <section type="tab" title="Nursing Order Frequencies"	>
+    <group>
+      <row>
+        <control type="datagrid" label="Nursing Order Frequencies"	 name="NursingFrequencies"
+          modalname="NewNursingFrequency" span="12"
+          searchable="true"
+          rows="20"
+          datasource="GetNursingOrderFrequenciesByFacilityAll"
+          datarequest="GetNursingOrderFrequenciesByFacilityAll"          
+          acctsvcinsert="true"
+          acctsvcupdate="true"
+          datainsert="InsertNursingOrderFrequencies"
+          dataupdate="UpdateNursingOrderFrequencies"
+          source="Active,FrequencyCode,FrequencyName,Scheduled,ScheduledTimes"
+          sourcelabels="Active,Frequency Code,Frequency Name,Scheduled,Scheduled Time"	
+          align="|left|left||left"
+          format="boolean|||boolean|"
+          sort="FrequencyName=asc"
+          key="FrequencyGuid"
+          provoke="FrequencyCode,DefaultFrequency"/>
+      </row>
+    </group>
+  </section>
+
+  <section type="modal" name="NewNursingFrequency" title="Nursing Order Frequencies"	 size="small" provoke="DefaultFrequency"
+    enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+    dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">
+    <group name="NewNursingFrequencyGroup">
+      <row>
+        <control type="label" label="Active"	 span="4"/>
+        <control type="buttongroup" name="Freq_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Frequency Name"	 span="4"/>
+        <control type="text" name="FrequencyName" span="7" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Frequency Code"	 span="4"/>
+        <control type="select" name="NewMedicationFrequencyGroup1_FrequencyCode" span="7"  edit="true"   required="true"
+          datasource="GetLookupDrugFrequencies" source="FrequencyCode|FrequencyDescription,FrequencyCode" sort="FrequencyCode=asc"/>
+      </row>         
+      <row>
+        <control type="label" label="Scheduled"	 span="4"/>
+        <control type="buttongroup" name="Scheduled" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True"  required="true"/>
+      </row>
+      <row name="rowScheduledTimes" reveal="Scheduled=True">       
+        <control type="label" label="Hours"	 span="4"/>        
+        <control type="textarea" name="ScheduledTimes" span="6" edit="Scheduled=True"  rows="1" required="true"/>   
+           
+      </row>
+    </group>
+  </section>
+ 
+  <section type="tab" title="Nursing Order Categories"	>
+    <group>
+      <row>
+        <control type="datagrid" label="Nursing Order Categories"	 name="NursingCategories"
+          modalname="NewNursingCategory" span="12"
+          searchable="true"
+          rows="20"    
+          datasource="GetNursingCategoriesForFacility"
+          append="getAll=true"
+          datarequest="GetNursingCategoriesForFacility"
+          appendrequest="getAll=true"
+          acctsvc="true"
+          acctsvcreq="true"
+          acctsvcinsert="true"
+          acctsvcupdate="true"
+          datainsert="InsertNursingOrderCategories"
+          dataupdate="UpdateNursingOrderCategories"
+          source="Active,CategoryName"
+          sourcelabels="Active,Category Name"	
+          align="|left|left"
+          format="boolean||"
+          sort="CategoryName=asc"
+          key="CategoryGuid"
+          provoke="NursingCategories"/>
+      </row>
+    </group>
+  </section>
+  <section type="modal" name="NewNursingCategory" title="Nursing Category"	 size="small" provoke="NursingOrderCategory"
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">
+    <group name="NewNursingCategoryGroup">
+      <row>
+        <control type="label" label="Active"	 span="4"/>
+        <control type="buttongroup" name="Category_Active" span="3" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Category"			 span="4"/>
+        <control type="text" name="CategoryName" span="6"  edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="Category_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+        </row>
+        <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="Category_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+
+  <section type="tab" title="Nursing Orders"	>
+    <group>
+     <row>
+        <!--Replace datasource with GetCaseTypes-->
+        <control type="datagrid" label="Nursing Orders"	 name="NursingActivities"
+          modalname="NewNursingActivity" span="12"
+          searchable="true"
+          rows="20"
+          datasource="GetNursingOrderItemsByFacilityAll"
+          datarequest="GetNursingOrderItemsByFacilityAll"
+          datainsert="InsertNursingOrderItems"
+          dataupdate="UpdateNursingOrderItems"
+          source="Active,NursingOrderCategory,NursingOrderItemCode,NursingOrderItem,FrequencyName,BasePrice,Note"
+          sourcelabels="Active,Category,Code,Order,Frequency,Base Price,Notes"	
+          align="|left|left|left|right|left"
+          format="boolean|||||0,0.00|"
+          sort="NursingOrderCategory=asc"
+          key="NursingOrderItemGuid" />
+     </row>
+    </group>
+  </section>
+  <section type="modal" name="NewNursingActivity" title="Nursing Order"	 size="small"
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">
+    <group name="NewNursingActivityGroup">
+      <row>
+        <control type="label" label="Active"	 span="4"/>
+        <control type="buttongroup" name="Activity_Active" span="3" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>      
+      <row>
+        <control type="label" label="Category"			 span="4"/>
+        <control type="select" name="NursingOrderCategory" span="4" edit="true"  
+          datasource="GetNursingCategoriesForFacility"  acctsvc="true"
+          filter="Active=true"
+          source="CategoryName,CategoryCode"/>
+       <!--  <control type="select" name="NursingOrderCategory" span="4" edit="true"  required="true" 
+           datasource="GetNursingOrderCategoriesForFacility"
+           source="NursingOrderCategory,NursingOrderCategory"/> -->
+      </row>
+      <row>
+        <control type="label" label="Code"	 span="4"/>
+        <control type="text" name="NursingOrderItemCode" span="4"  edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Nursing Order"	 span="4"/>
+        <control type="textarea" name="NursingOrderItem" span="7" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Default Frequency"	 span="4"/>
+        <control type="select" name="DefaultFrequency" span="7" edit="true"  
+          datasource="GetNursingOrderFrequenciesByFacility"  
+          source="FrequencyName,FrequencyGuid"/>
+      </row>
+      <row>
+        <control type="label" label="Base Price"	 span="4"/>
+        <control type="text" name="BasePrice" span="4"  format="0,0.00" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Note"	 span="4"/>
+        <control type="textarea" rows="3" name="Note" span="6"  edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="Activity_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+        </row>
+        <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="Activity_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+
+  <section type="tab" title="Intravenous Lines"	>
+    <group>
+      <row>
+        <!--Replace datasource with GetCaseTypes-->
+        <control type="datagrid" label="Intravenous Lines"	 name="PatientIVLines" searchable="true"
+          modalname="NewPatientIVLine" span="8"
+          rows="20"
+          datasource="GetLinesForThisFacility"
+          datarequest="GetLinesForThisFacility"
+          datainsert="InsertLookupLines"
+          dataupdate="UpdateLookupLines"
+          source="Active,LineType,LineDescription"
+          sourcelabels="Active,Type,Description"	
+          align="|left|left"
+          format="boolean"
+          sort="LineType=asc"
+          key="LineGuid" />
+      </row>
+    </group>
+  </section>
+  <section type="modal" name="NewPatientIVLine" title="Intravenous Line"	 size="small"
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">
+    <group name="NewPatientIVLineGroup">
+      <row>
+        <control type="label" label="Active"	 span="4"/>
+        <control type="buttongroup" name="IVLine_Active" span="3" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Line Type"	 span="4"/>
+        <control type="text" name="LineType" span="4" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Description"	 span="4"/>
+        <control type="text" name="LineDescription" span="4"  edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="IVLine_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+        </row>
+        <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="IVLine_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+
+
+  <section type="tab" title="Diet Types"	>
+    <group>
+     <row>
+        <control type="datagrid" label="Diet Types"	 name="DietTypes" searchable="true"
+          modalname="NewDietType" span="8"
+          rows="20"
+          datasource="GetNutritionMealTypesForThisFacility"
+          datarequest="GetNutritionMealTypesForThisFacility"
+          datainsert="InsertNutritionMealTypes"
+          dataupdate="UpdateNutritionMealTypes"
+          source="Active,MealType"
+          sourcelabels="Active,Diet Type"	
+          align="|left"
+          format="boolean"
+          sort="MealType=asc"
+          key="MealTypeGuid" />
+     </row>
+    </group>
+  </section>
+
+  <section type="modal" name="NewDietType" title="Diet Type"	 size="small"
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">
+    <group name="NewDietTypeGroup">
+      <row>
+        <control type="label" label="Active"	 span="4"/>
+        <control type="buttongroup" name="DietType_Active" span="3" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Diet Type"	 span="4"/>
+        <control type="text" name="MealType" span="4" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="DietType_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+        </row>
+        <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="DietType_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+</module>

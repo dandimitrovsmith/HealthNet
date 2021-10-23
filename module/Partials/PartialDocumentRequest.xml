@@ -1,0 +1,164 @@
+﻿<partial>
+  <!-- Tabmodal to enter new document reqest -->
+  <section type="tabmodal" badge="none" name="mdlDocumentRequest" title="Physical Record Request"	 size="small">
+    <group name="grpGuidStorage" showif="never">
+      <row>
+        <!-- Store patient id,read and inject info -->
+        <control type="hidden" name="DocumentPatientId"
+          datarequest="GetPatientAllFields"
+          appendrequest="PatientId=[DocumentPatientId]"
+          inject="subPatientInfo,rowDepartment,rowBedName,grpGuidStorage"
+          provoke="Document_PatientVisit"/>
+        <!-- Get user RUT (ApplicationId) -->
+        <control type="text" name="GetUserApplicationId"
+          datarequest="GetUserProfileFromUserId"
+          appendrequest="UserId=[DocumentEnteredBy]"
+          inject="rowApplicationId" provoke="btnApplicationId"/>
+        <control type="hidden" name="Document_PatientVisit"
+          datarequest="GetPatientVisitByUniqueId"
+          appendrequest="UniqueId=[Document_PatientVisit]"
+          inject="rowAdmitDate,rowDepartment"/>
+      </row>
+      <row name="rowApplicationId">
+        <control type="text" name="ApplicationId"/>
+        <control type="button" name="btnApplicationId"
+          action="trigger" set="PhysicianSSN=[ApplicationId]"/>
+      </row>
+    </group>
+    <group name="grpDocPatientInfo">
+      <subset name="subPatientInfo" bgcolor="white">
+        <!-- Store HasOpenVisit and RoomGuid -->
+        <row>
+          <control type="hidden" name="Document_HasOpenVisit"/>
+          <control type="hidden" name="Document_RoomGuid"/>
+        </row>
+        <row>
+          <control type="label" label="Patient"			 align="left"/>
+        </row>
+        <!-- Display patient names -->
+        <row>
+          <control type="text" name="Document_AccountNumber" span="3" readonly="true"/>
+          <control type="text" name="Document_PatientFirstName" span="3" readonly="true"/>
+          <control type="text" name="Document_PatientMiddleName" span="3" readonly="true"/>
+          <control type="text" name="Document_PatientLastName" span="3" readonly="true"/>
+        </row>
+      </subset>
+      <!-- Current visit information -->
+      <subset name="subPatientVisit" bgcolor="white" reveal="[Document_HasOpenVisit]=true">
+        <row>
+          <control type="label" label="Hospitalization"	 align="left"/>
+        </row>
+        <row name="rowAdmitDate">
+          <control type="label" label="Admitted"	 span="4"/>
+          <control type="datetime" span="4" name="Document_AdmitDateTime" readonly="true"/>      
+        </row>
+        <row name="rowDepartment">
+          <control type="label" label="Department"			 span="4"/>
+          <control type="text" span="5" name="Document_CurrentDepartmentName" readonly="true"/>      
+        </row>
+        <row name="rowBedName">
+          <control type="label" label="Bed"	 span="4"/>
+          <control type="text" name="Document_RoomFullName" span="5" readonly="true"/>
+        </row>
+      </subset>
+      <!-- Document request information -->
+      <subset name="subConsultRequest" bgcolor="white">
+        <row>
+          <control type="label" label="Request"	 align="left"/>
+        </row>
+        <row>
+          <control type="label" label="Attention of Patient"	 span="3"/>
+          <control type="datetime" name="Document_DateTimeRequiredBy"
+            span="3" default="now"/>
+          <control type="label" label="Entered"	 span="2"/>
+          <control type="datetime" name="Document_DateTimeEntered" default="(dateTimeNow)"
+            readonly="true" span="3"/>
+        </row>
+        <row>
+          <control type="label" label="Type of Consult"	 span="3"/>
+          <control type="buttongroup" name="Document_RequestType"
+            source="New,Followup"
+            sourcelabels="New,Followup" 
+            default="New" span="3"/>
+          <control type="label" span="2" label="Priority"	/>
+          <control type="select" name="Document_Priority" span="3"
+          required="true" edit="true" default="1" source="1,2,3" 
+          sourcelabels="Normal,Medium,Critical"	/>
+        </row>
+        <row>
+          <control type="label" label="Physical Record Number"	 span="3"/>
+          <control type="text" name="Document_DocumentAccountNumber" span="3"/>
+        </row>
+        <row>
+          <control type="label" span="3" label="Specialty"	/>
+            <control type="select" span="3"
+              name="Document_Specialty"
+              explicit="true"
+              edit="true" 
+              filter="ParentSpecialty=null"
+              acctsvc="true"
+              required="true"
+              datasource="GetMedicalSpecialties" 
+              source="Specialty,MedicalSpecialtyGuid"
+              provoke="Document_Subspecialty"/>
+        <!-- Subspecialty (has parent of Specialty) (optional)-->
+          <control type="label" span="2" label="Subspecialty"	/>
+          <control type="select" span="3"
+            name="Document_Subspecialty"
+            explicit="true"
+            edit="true" 
+            acctsvc="true"
+            filter="ParentSpecialty=[Document_Specialty]"
+            datasource="GetMedicalSpecialties" 
+            source="Specialty,MedicalSpecialtyGuid"/>
+        </row>
+        <row>
+          <control type="label" label="Clinic"	 span="3"/>
+          <control type="select" name="Document_DepartmentGuid"
+            persist="true"
+            acctsvc="true" span="5"
+            namefield="Document_Policlinic"
+            datasource="GetDepartmentsActive"
+            source="DepartmentName,DepartmentGuid"/>
+        </row>
+        <row>
+          <control type="label" label="Reason"	 span="3"/>
+          <control type="select" name="Document_Reason" span="5" rows="2" required="true"
+            source="Admin,Specialty,Hospital"/>
+        </row>
+        <!-- Originating physician and RUN  (ApplicationId)-->
+        <row>
+            <control type="label" span="5" label="Name and Surname of the Applicant"	/>
+            <control type="select" name="DocumentEnteredBy"
+              acctsvc="true" datasource="GetUsersByAttributes" append="LocationId=(facilityData.LocationId),role=Physician|MedWave" 
+              source="UserFirstMiddleLast,UserId"
+              default="(userName)"
+              searchable="true" 
+              readonly="true" span="4"
+              provoke="GetUserApplicationId"
+              required="true"/>
+            <control type="text" name="PhysicianSSN" span="2" readonly="true"/>
+        </row>
+      </subset>
+    </group>
+    <group>
+      <row>
+        <!-- Save new document request -->
+        <control type="label" label=""	 span="6"/>
+        <control type="button" name="btnCloseDocRequest"
+          span="2" color="grey" label="Close"	 size="large"
+          action="close|new"/>
+        <control type="button" name="btnSaveDocumentRequest"
+          span="3" icon="cloud-upload" label="Save"	
+          size="large" color="grey"
+          action="save|close|new"
+          affector="none"
+          acctsvc="true"
+          capture="grpDocPatientInfo"
+          datainsert="InsertPatientDocumentRequest"
+          appendinsert="PatientId=[PatientId],status=Active"
+          provoke="DocumentRequests"/>
+      </row>
+    </group>
+  </section>
+  </partial>

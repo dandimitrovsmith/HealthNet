@@ -1,0 +1,65 @@
+﻿<partial>
+<section type="tab" title="Emergency Patients" trigger="PatientList">
+  <group showif="never">
+      <control type="select"
+        acctsvc="true" 
+        name="LookupTransferFacility" 
+        datasource="GetTransferHospitalsActive" 
+        source="HospitalName,HospitalGuid"
+        default="(facilityData.HospitalName)"/>
+    </row>
+  </group>
+  <group name="SetDepartmentGroup">
+    <row>
+      <!-- Select the department -->
+      <control type="select" 
+        span="4"
+        name="DepartmentGuidLookup"
+        acctsvc="true"
+        explicit="true"
+        filter="Emergency=true"
+        edit="true" default="true"
+        default="Emergency"
+        datasource="GetDepartmentsActive" 
+        source="DepartmentName,DepartmentGuid"
+        provoke="SaveLastDepartment,PatientList"/>
+      <control type="buttongroup" name="ListFilter" span="6" 
+        source="Waiting,Emergency"
+        sourcelabels="Waiting,Emergency"
+        default="Waiting"
+        value="Waiting"
+        action="trigger"
+        trigger="PatientList"/>
+    </row>
+    <row>
+        <control type="datagrid" label="Emergency Patients"	 
+          name="PatientList"
+          action="redirect" 
+          target="PatientTabModal"
+          searchable="true"
+          rows="25"
+          fitrows="true"
+          gridfilter="ListFilter|HospitalService"
+          rowcolor="TriageLevel|1=red;2=orange;3=yellow;4=yellowgreen;5=green"
+          datarequest="GetPatientListWithOpenVisitsByFacility"
+          appendrequest="DepartmentGuid=[DepartmentGuidLookup],excludePhoto=true"
+          source="ReadyForDischarge,AdmitDateTime,OpenRoom,AccountNumber,PatientFullName,PatientAge,PatientSex,HospitalService,AttendingDoctorFullName"
+          sourcelabels="Discharge,Admitted,Bed,Account,Name,Age,Sex,Service,Doctor"	
+          translate="PatientSex"
+          align="||left|left|left|left|left|left|left|left"
+          format="boolean|datetime"
+          sort="AdmitDateTime=asc"
+          key="RecordUniqueId"
+          onselectset="PatientId=[[RecordUniqueId]],PatientVisitGuid=[[PatientVisitId]],ESI_PatientId=[[RecordUniqueId]],ESI_PatientVisitGuid=[[PatientVisitId]]"
+          onselect="PatientId,PatientVisitGuid">
+          <control type="button" name="btnQuickAdmit"
+            action="redirect" target="mdlQuickAdmit"
+            color="red" icon="ambulance" label="Enter Unconscious"	/>
+          <control type="button" name="RefreshPatientList"
+            label="Refresh"	 icon="refresh" 
+            action="trigger" trigger="PatientList"/>
+        </control>
+      </row>
+    </group>
+  </section>
+</partial>

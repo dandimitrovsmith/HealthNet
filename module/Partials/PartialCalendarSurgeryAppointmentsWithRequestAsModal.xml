@@ -1,0 +1,171 @@
+﻿<partial>
+  <!-- Partial to manage patient surgeries -->
+  <!-- Surgeries include the appointment information within the surgery record. -->
+  <!-- A calendar view is shown and the user can select the calendar,view,and surgery room (Sala) -->
+  <template name="SurgeryMoveTextMessage">
+    Su cita con el Dr. ${[SurgeryDrop_ProviderName]} a sido reprogramada para el día @DateTime en el hospital ${(facilityData.HospitalName)} en el servicio ${[SurgeryDrop_CalendarName]}. En caso de tener alguna duda favor de comunicarse al ${(facilityData.HospitalPhone)}. 
+  </template>
+  <template name="SurgeryNewTextMessage">
+    Su cita con el Dr. ${[NewAptProvider]} a sido programada para el día @DateTime en el hospital ${(facilityData.HospitalName)} en el servicio ${[NewAptCalendarName]}. En caso de tener alguna duda favor de comunicarse al ${(facilityData.HospitalPhone)}.
+  </template>
+  <template name="SurgeryUpdateTextMessage">
+    Su cita con el Dr. ${[NewAptProvider]} a sido reprogramada para el día @DateTime en el hospital ${(facilityData.HospitalName)} en el servicio ${[NewAptCalendarName]}. En caso de tener alguna duda favor de comunicarse al ${(facilityData.HospitalPhone)}.
+  </template>
+  <template name="SurgeryCancelTextMessage">
+    Se ha cancelado su cita con el Dr. ${[NewAptProvider]} para el día @DateTime. Favor de comunicarse al ${(facilityData.HospitalPhone)} para reprogramar su cita.
+  </template>
+  <template name="SurgeryRescheduleTextMessage">
+    Su cita con el Dr. ${[NewAptProvider]} para el día @DateTime ha sido programada para ser reprogramada. Será contactado para encontrar otro momento. Favor de comunicarse al ${(facilityData.HospitalPhone)} para reprogramar su cita.
+  </template>
+  <template name="dayMonthTemplate" type="markup">
+      [span size=12 color=darkgrey] 
+      [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+      [IF ${[[Status]]}=Reschedule][icon color=red]exclamation-sign[/icon][/IF]
+      [icon color=green]female[/icon]${[[PatientName]]}[br]
+      [icon color=blue]user-md[/icon]${[[SurgeonName]]}[br]
+      [/span] 
+  </template>
+    <!-- Template for day view that shows the provider,description,and location-->
+  <template name="timeWeekTemplate" type="markup">
+      [span size=12 color=darkgrey] 
+      [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+      [IF ${[[Status]]}=Reschedule][icon color=red]exclamation-sign[/icon][/IF]
+      [icon color=green]female[/icon]${[[PatientName]]}[br]
+      [/span]
+  </template>
+  <!-- Template for day view that shows the provider,description,and location-->
+  <template name="timeDayTemplate" type="markup">
+      [span size=12 color=darkgrey] 
+      [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+      [IF ${[[Status]]}=Reschedule][icon color=red]exclamation-sign[/icon][/IF]
+      [icon color=green]female[/icon]${[[PatientName]]}
+      [/span]
+  </template>
+  <!-- Template for agenda (list) view that shows the provider,description,and location-->
+  <template name="listMonthTemplate" type="markup">
+      [span size=12 color=darkgrey] 
+      [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+      [IF ${[[Status]]}=Reschedule][icon color=red]exclamation-sign[/icon][/IF]
+      [icon color=blue]user-md[/icon]${[[SurgeonName]]}[br]
+      [icon color=green]female[/icon]${[[PatientName]]}[br]
+      [IF ${[[RoomName]]}!]${[[RoomName]]}[br][/IF]
+      ${[[PrimaryProcedureName]]}[/span]
+  </template>
+  <template name="ToolTipGridDayTemplate" type="markup">
+      [div size=12 align=left] 
+      [b format=time]${[[DateTimeScheduled]]}[/b] - [b format=time]${[[EndDateTime]]}[/b][br]
+      [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF] ${[[PatientName]]}[br]
+      ${[[SurgeonName]]}[br]
+      [IF ${[[RoomName]]}!]${[[RoomName]]}[br][/IF]
+      ${[[PrimaryProcedureName]]}
+      [/div]
+  </template>
+  <!-- Template for bacground scheduler times records-->
+  <template name="BackgroundTemplate" type="markup">
+      [span size=12 color=darkgrey] 
+      ${[[MedicalSpecialtyName]]}[/span]
+  </template>
+  <template name="BackgroundToolTipTemplate" type="markup">
+      [div size=12 align=left] 
+      [b format=time]${[[StartDateTime]]}[/b] - [b format=time]${[[EndDateTime]]}[/b][br]
+      ${[[MedicalSpecialtyName]]}[br]
+      ${[[ProviderFirstMiddleLast]]}
+      [/div]
+  </template>
+  <section type="tabmodal" name="tabSurgeryCalendarAppointments" title="Surgery Schedule"	 trigger="SurgeryInf_RoomGuid,Surgery_RoomGuid,SurgeryTimes" badge="none">
+    <group showif="never">
+      <row>
+        <control type="text" name="SurgeryDrop_SurgeryGuid"/>
+        <control type="text" name="SurgeryDrop_StartTime"/>
+        <control type="text" name="SurgeryDrop_EndTime"/>
+        <control type="text" name="SurgeryDrop_ResourceGuid"/>
+        <control type="hidden" name="SurgeryCalendarSource"/>
+      </row>
+      <row>
+        <control type="button" name="btnSurgeryUpdateDrop"
+          action="save"
+          affector="none" 
+          dataupdate="UpdateScheduledSurgeries"
+				  appendupdate="RoomGuid=[SurgeryDrop_ResourceGuid],SurgeryGuid=[SurgeryDrop_SurgeryGuid],dateTimeScheduled=[SurgeryDrop_StartTime],endDateTime=[SurgeryDrop_EndTime],txtMessage=[MoveTextMessage]"/>
+        <control type="button" name="btnSurgeryUpdateResize"
+          action="save"
+          affector="none" 
+          dataupdate="UpdateScheduledSurgeries"
+				  appendupdate="SurgeryGuid=[SurgeryDrop_SurgeryGuid],dateTimeScheduled=[SurgeryDrop_StartTime],endDateTime=[SurgeryDrop_EndTime],calculateEstimatedLength=true"/>
+        <control type="button" name="CloseSurgeryCalendar" action="close"/>
+      </row>
+    </group>
+  	<group>
+      <row>
+        <!-- Select the calendar to view filter="CalendarType=Surgery" -->
+        <control type="select" 
+				  name="SurgeryCalendarLookup" span="4"
+				  datasource="GetSchedulerAppointmentTypesByFacility" 
+				  source="CalendarName,CalendarGuid" 
+          explicit="true"
+				  default="true"
+          filter="CalendarType=Surgery,Active=true"
+				  edit="true" 
+					sort="CalendarName=asc"
+				  provoke="SurgeryTimes"/>
+        <!-- Select surgeon -->
+        <control type="label" label="Surgeon"	 span="1"/>
+        <control type="select" name="SurgeryInf_SurgeonId"
+          searchable="true"
+          acctsvc="true" datasource="GetUsersByAttributes" append="LocationId=(facilityData.LocationId),role=Physician|MedWave"
+          source="UserFirstMiddleLast,UserId"
+          span="3" explicit="true" edit="true"
+          provoke="SurgeryTimes"/>
+      </row>
+			<row>
+          <!-- Surgery Calendar add roomGuid=[Inf_RoomGuid] -->
+          <control type="calendar" 
+            span="12"
+            aspect="10/6"
+            name="SurgeryTimes"
+            headerleft="prev,next today"
+            headercenter="title"
+            headerright="dayGridMonth,resourceTimeGridDay,listDay"
+            resource="RoomAndBedNumber,RoomGuid"
+            dataresource="GetRoomsAndBedsForThisFacility"
+            resourcefilter="RoomType%Quirófano"
+            default="resourceTimeGridDay"
+            navlinking="true"
+            slotduration="00:15"
+            duration="00:15"
+            eventcolor="Status|Background=blue;Scheduled=yellowgreen;Confirmed=green;In Process=purple;Completed=yellow;Requested=blue;Canceled=red"
+            source="tooltip=ToolTipGridDayTemplate,dayGridMonth=timeWeekTemplate,resourceTimeGridDay=dayMonthTemplate,timeGridWeek=timeDayTemplate,listDay=listMonthTemplate"
+            bgsource="tooltip=BackgroundToolTipTemplate,resourceTimeGridDay=BackgroundTemplate"
+            bgevent="Type|Background=true"
+            edit="true"
+            editable="SurgeryGuid!"
+            editduration="SurgeryGuid!"
+            idle="[SurgeryCalendarLookup]=|reset"
+            acctsvcreq="true"
+            datarequest="GetScheduledSurgeriesAndExceptionsByDateRange"
+            appendrequest="calendarGuid=[SurgeryCalendarLookup],surgeonId=[SurgeryInf_SurgeonId]"
+            map="start=StartDateTime,end=EndDateTime,title=SurgeryGuid,resourceId=RoomGuid"
+          	daterange="start=start,end=end"
+            key="SurgeryGuid"
+            action="redirect"
+            target="mdlSurgeryModal"
+            selectable="true"
+            selectabletarget="mdlSurgeryModal"
+            onselectableset="EditMode=Surgery,Surgery_CalendarGuid=[SurgeryCalendarLookup],Surgery_DateTimeScheduled=[[start]],Surgery_EstimatedLength=[[duration]],Surgery_RoomGuid=[[resourceId]],Surgery_Status=Scheduled,Surgery_EndDateTime=[[end]]"
+            onselectable="[SurgeryCalendarSource]!;GetSurgeryRequest"
+            onselectset="EditMode=Surgery,SurgeryGuid=[[SurgeryGuid]],PatientId=[[PatientId]]"
+            onselect="SurgeryGuid,PatientId"
+            droptarget="none"
+            ondropset="SurgeryDrop_ResourceGuid=[[RoomGuid]],SurgeryDrop_AppointmentTypeGuid=[SurgeryCalendarLookup],SurgeryDrop_SurgeryGuid=[[SurgeryGuid]],SurgeryDrop_StartTime=[[start]],SurgeryDrop_EndTime=[[end]]"
+            ondrop="btnSurgeryUpdateDrop"
+            resizetarget="none"
+            onresize="btnSurgeryUpdateResize"
+            onresizeset="SurgeryDrop_SurgeryGuid=[[SurgeryGuid]],SurgeryDrop_StartTime=[[start]],SurgeryDrop_EndTime=[[end]]">
+            <!-- Button to refresh the calendar -->
+            <control type="button" name="SurgerybtnRefreshCalendar"
+              icon="refresh" label="Update"	 action="trigger" trigger="SurgeryTimes"/>
+          </control>
+      </row>
+		</group>
+  </section>
+</partial>

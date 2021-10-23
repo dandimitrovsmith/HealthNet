@@ -1,0 +1,153 @@
+﻿<partial>
+  <!-- Tabmodal to merge patient records -->
+  <!-- Requires PartialPatientSearchModal.xml -->
+	<section type="tabmodal" badge="none" name="mdlMergePatients" title="Merge Patients"	 size="small">
+    <group showif="never">
+      <row>
+        <control type="button" name="SetMergePatient1"
+          action="trigger" 
+          set="FromPatientSelect=[PatientSearchResults]"
+          provoke="FromPatientSelect"/>
+        <control type="button" name="SetMergePatient2"
+          action="trigger" 
+          set="ToPatientSelect=[PatientSearchResults]"
+          provoke="ToPatientSelect"/>
+        </row>
+    </group>
+    <group name="mdlFromPatientInfo" bgcolor="lightgrey" title="Merge the Patient"	>
+      <row>
+        <control type="hidden" name="FromPatientSelect"
+          datarequest="GetPatientAllFields"
+          appendrequest="PatientId=[FromPatientSelect]"
+          inject="mdlFromPatientInfo"/>
+      </row>
+      <row>
+        <control type="label" label=""	 span="4"/>
+        <control type="button" name="btnSearchMergeFrom"
+          label="Search From Patient"	 span="4" icon="search" color="grey"
+          preset="PatientSearchSource=1"
+          action="redirect" target="mdlFindPatients"/>
+      </row>
+      <row>
+        <control type="label" label=""	 span="1"/>
+        <control type="label" label="Name"	 align="left" span="3"/>
+        <control type="label" label="Parent"	 align="left" span="3"/>
+        <control type="label" label="Maternal"	 align="left" span="3"/>
+        
+      </row>
+      <row>
+        <control type="label" label=""	 span="1"/>
+        <control type="text" name="mdlMergeFrom_PatientFirstName" span="3" readonly="true"  />
+        <control type="text" name="mdlMergeFrom_PatientMiddleName" span="3" readonly="true"  />
+        <control type="text" name="mdlMergeFrom_PatientLastName" span="3" readonly="true" />
+      </row>
+      <row>
+        <control type="label" label="Birth"	 span="2" />
+        <control type="date" name="mdlMergeFrom_PatientDOB" span="3" readonly="true" compare="≤now"/>
+        <control type="label" label="Sex"	 span="2" />
+        <control type="select" 
+          name="mdlMergeFrom_PatientSex" span="3" 
+          required="true" 
+          source="Male,Female,Indeterminate"  
+          readonly="true" 
+          default="female"
+          sourcelabels="1 Male,2 Female,3 Undefined,4 Unknown"	/>
+      </row>
+      <row>
+				<control type="label" label="Account"		 span="2" />
+        <control type="text" name="mdlMergeFrom_AccountNumber" span="2" readonly="true" />
+				<control type="text" name="mdlMergeFrom_MedicalRecordNumber" span="2" readonly="true"/>
+        <control type="label" label="Marital Status"	 span="2" />
+        <control type="select" name="mdlMergeFrom_PtMaritalStatus" span="2"
+          datasource="GetLookupMaritalStatus"
+          source="MaritalStatus,MaritalStatus"
+          explicit="true" 
+          readonly="true"/>
+      </row>
+      <row>
+          <control type="label" label="Phone"	 span="2" />
+        <control type="text" name="mdlMergeFrom_PtPhoneNumber" span="3" readonly="true"/>
+        <control type="label" label="Cell Phone"	 span="2" />
+        <control type="text" name="mdlMergeFrom_PatientCellPhone" span="3" readonly="true"/>
+      </row>
+    </group>
+    <group bgcolor="lightgrey" name="mdlToPatientInfo" title="Merge the Patient"	>
+      <row>
+        <control type="hidden" name="ToPatientSelect"
+          datarequest="GetPatientAllFields"
+          appendrequest="PatientId=[ToPatientSelect]"
+          inject="mdlToPatientInfo"/>
+      </row>
+     <row>
+        <control type="label" label=""	 span="4"/>
+        <control type="button" name="btnSearchMergeTo"
+          label="Search for Patient"	 span="4" icon="search" color="grey"
+          preset="PatientSearchSource=2"
+          action="redirect" target="mdlFindPatients"/>
+      </row>
+      <row>
+        <control type="label" label=""	 span="1"/>
+        <control type="label" label="Name"	 align="left" span="3"/>
+        <control type="label" label="Parent"	 align="left" span="3"/>
+        <control type="label" label="Maternal"	 align="left" span="3"/>
+      </row>
+      <row>
+        <control type="label" label=""	 span="1"/>
+        <control type="text" name="mdlMergeTo_PatientFirstName" span="3" readonly="true"  />
+        <control type="text" name="mdlMergeTo_PatientMiddleName" span="3" readonly="true"  />
+        <control type="text" name="mdlMergeTo_PatientLastName" span="3" readonly="true" />
+      </row>
+      <row>
+        <control type="label" label="Birth"	 span="2" />
+        <control type="date" name="mdlMergeTo_PatientDOB" span="3" readonly="true" compare="≤now"/>
+        <control type="label" label="Sex"	 span="2" />
+        <control type="select" 
+          name="mdlMergeTo_PatientSex" span="3" 
+          required="true" 
+          source="Male,Female,Indeterminate"  
+          readonly="true" 
+          default="female"
+          sourcelabels="1 Male,2 Female,3 Undefined,4 Unknown"	/>
+      </row>
+      <row>
+          <control type="label" label="Account"		 span="2" />
+        <control type="text" name="mdlMergeTo_AccountNumber" span="2" readonly="true" />
+				<control type="text" name="mdlMergeTo_MedicalRecordNumber" span="2" readonly="true"/>
+        <control type="label" label="Marital Status"	 span="2" />
+        <control type="select" name="mdlMergeTo_PtMaritalStatus" span="2"
+          datasource="GetLookupMaritalStatus"
+          source="MaritalStatus,MaritalStatus"
+          explicit="true" 
+          readonly="true"/>
+      </row>
+      <row>
+          <control type="label" label="Phone"	 span="2" />
+        <control type="text" name="mdlMergeTo_PtPhoneNumber" span="3" readonly="true" />
+        <control type="label" label="Cell Phone"	 span="2" />
+        <control type="text" name="mdlMergeTo_PatientCellPhone" span="3" readonly="true"/>
+      </row>
+    </group>
+		<group name="grpMergeButtons" reveal="[FromPatientSelect]!+[ToPatientSelect]!">
+			<row>
+        <control type="label" label=""	 span="2"/>
+        <control type="button" name="btnCloseMerge"
+          color="grey" span="3" size="large" label="Close"	
+          action="close|new"/>
+				<control type="button"
+					name="MergePatientsButton"
+					span="6" color="grey" size="large"
+					label="Merge Patients"	
+					icon="group"
+					action="save|close|new"
+					acctsvc="true"
+					affector="none"
+          confirm="Please confirm you want to merge these patients. Reminder: patients can be separated into two patients,but after combining 3 records,it is not possible to separate them."
+					datainsert="MergePatientRecords"
+          compare="[FromPatientSelect]![ToPatientSelect]|The same patient cannot be combined."
+					appendinsert="fromPatientId=[FromPatientSelect],toPatientId=[ToPatientSelect]"
+          success="Estos registros de pacientes se han fusionado."
+          provoke="PatientList"/>
+			</row>
+		</group>
+  </section>
+</partial>

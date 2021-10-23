@@ -1,0 +1,46 @@
+﻿ <partial> 
+  <!--Tabmodal to discharge a patient -->
+	<section type="tabmodal" badge="none" name="mdlDischargePatient" title="Discharge"	 size="small">
+		<group name="DischargeInfo">
+			<row>
+				<control type="label" label="Destination"	 span="4"/>
+				<control type="select" name="Discharge_DischargeDisposition" span="7" required="true" 
+				datasource="GetLookupDischargeDispositions" searchable="true"
+				source="DischargeDisposition,DischargeDisposition" edit="true" />
+			</row>
+			<row>
+				<control type="label" label="Transfer to"	 span="4"/>
+				<control type="select" 
+					span="7"
+					acctsvc="true" searchable="true"
+					name="Discharge_FacilityTransferredTo"  
+					datasource="GetTransferHospitalsActive" 
+					source="HospitalName,HospitalGuid" 
+					edit="true"/>
+			</row>
+		</group>
+		<group>
+			<row>
+			<!--Discharge patient-->
+				<control type="label" label=""	 span="5"/>
+				<control type="button" name="btnCloseDischarge"
+					span="3" color="grey" size="large"
+					label="Close"	
+					action="close|new"/>
+				<control type="button"
+					span="3" size="large"
+					name="DischargeSave"
+					label="Discharge"
+					color="green"
+					action="save|close|new" 
+					confirm="Please confirm you want to discharge this patient."	
+					affector="none"
+					capture="DischargeInfo"
+					icon="home"
+					dataupdate="UpdatePatientVisitAllFields"
+					appendupdate="patientId=[PatientId],patientVisitUniqueId=[PatientVisit],dischargeDateTime=(dateTimeNow)"
+					provoke="ClosePatientTabModal,PatientList"/>
+			</row>
+		</group>
+	</section>
+</partial>

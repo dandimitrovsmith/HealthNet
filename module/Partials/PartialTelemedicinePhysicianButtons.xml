@@ -1,0 +1,170 @@
+﻿<partial>
+  <!-- Partial Telemedicine Physician Buttons -->
+  <!-- (Buttons display on the right side of the screen from patient info) -->
+  <row showif="never">
+    <control type="button" 
+      name="btnCompletePatientAppointment"
+      action="save|close|new"
+      affector="none"
+      dataupdate="UpdateSchedulerAppointments"
+      appendupdate="appointmentGuid=[NewApt_AppointmentGuid],active=false,status=Completed"
+      set="TelemedicineConferenceUrl="
+      provoke="AppointmentTimes"/>
+    <control type="hidden" name="VisitOpenedBy"/>
+    <control type="hidden" name="VisitUserId" default="userName"/>
+  </row>
+  <row>
+    <!-- Update the patient demographic data -->
+    <control type="button" 
+      reveal="[PatientId]!"
+      name="Consult_PatientUpdate" 
+      span="12" 
+      label="Update"	
+      affector="none"
+      capture="PatientInfo" 
+      icon="cloud-upload"
+      action="save|close|new"
+      confirm="Please confirm you want to update this patient."	
+      dataupdate="UpdatePatient"
+      appendupdate="PatientId=[PatientId]"
+      provoke="PatientList"/>
+  </row>
+  <row name="btnrowPatientSearch" reveal="PatientId=">
+    <control type="label" label=""	 span="12"/>
+    <control type="button" name="btnTeleSearchPatients" span="12"
+      label="Search for Patients"	 icon="search"
+      preset="PatientSearchSource=7,Search_PatientFirstName=[Consult_PatientFirstName],Search_PatientMiddleName=[Consult_PatientMiddleName],Search_PatientLastName=[Consult_PatientLastName]"
+      trigger="Search_FindPatient"
+      action="redirect" target="mdlFindPatients"/>
+
+    <control type="hidden" name="AdmitSearchReturn"
+      datarequest="GetPatientAllFields"
+      appendrequest="PatientId=[PatientSearchResults]"
+      inject="rowTeleAdmitPatientId"
+      provoke="PatientId"/>
+  </row>
+  <row>
+    <control type="button" name="btnReports"
+      reveal="[PatientId]!"
+      span="12"
+      icon="print" label="Reports"	
+      preset="Report_PatientId=[PatientId],Report_Type=Patient,Report_PatientFirstName=[Consult_PatientFirstName],Report_PatientMiddleName=[Consult_PatientMiddleName],Report_PatientLastName=[Consult_PatientLastName]"
+      trigger="ReportList,Report_VisitId"
+      action="redirect" target="mdlReports"/>
+  </row>
+  <row name="rowSendText" reveal="[Consult_PatientCellPhone]!">
+    <control type="button" name="btnSendTextMessage2"  
+      span="12" icon="envelope" label="Text"	
+      preset="phoneNumber=[Consult_PatientCellPhone]"
+      trigger="grdPhysicianMessages2"
+      action="redirect" target="mdlSendTextMessage"/>
+  </row>
+  <row name="rowSendEmail" reveal="[Consult_PatientEmail]!">
+    <control type="button" name="btnSendEmailMessage2"
+      span="12" icon="envelope" label="Email"			
+      preset="Send_EmailAddress=[Consult_PatientEmail],Send_PatientId=[PatientId]"
+      trigger="grdPhysicianMessages1"
+      action="redirect" target="mdlSendEmailMessage"/>
+  </row>
+  <row name="rowTelemedicineConference" reveal="[TelemedicineConferenceUrl]!">
+     <control type="button" name="btnInvalidVideoConference"
+        reveal="[TelemedicineConferenceUrl]=ERROR"
+        span="12" color="grey"
+        action="close|new" 
+        confirm="This appointment does not have a valid conference link. To establish a new conference link, please update the appointment again."
+        label="Telemedicine"	
+        icon="facetime-video"/> 
+      <control type="button" name="btnOpenVideoConference"
+        reveal="[TelemedicineConferenceUrl]!ERROR"
+        span="12" color="blue"
+        action="redirect|link" 
+        target="[TelemedicineConferenceUrl]"
+        onclose="timed|10"
+        mode="tab"
+        label="Telemedicine"	
+        icon="facetime-video"/> 
+  </row>
+  <row name="rowOpenTelemedicineVisit" reveal="[PatientId]!">
+    <control type="button" name="btnOpenVisit" span="12"
+      reveal="[HasOpenVisit]=false"
+      color="green" icon="folder-open" label="Open Visit"	
+      action="save" 
+      affector="PatientVisit"
+      setaffector="PatientVisitUniqueId"
+      datainsert="InsertPatientVisitAllFields"
+      appendinsert="patientId=[PatientId],visitType=Outpatient,ambulatoryStatus=Telemedicine
+      ,preAdmit=0,departmentGuid=[DepartmentGuidLookup],admitDateTime=(dateTimeNow)"
+      set="VisitOpenedBy=(userName),HasOpenVisit=true,PatientVisitGuid=[PatientVisit]"
+      success="La visita ya está abierta."/>
+      <control type="button" name="btnCloseVisit" span="12"
+        reveal="[HasOpenVisit]=true"
+        color="orange" icon="folder-close" label="Close Visit"	
+        action="save" 
+        confirm="Please confirm you want to close this visit (and mark the appointment completed)."
+        affector="none"
+        acctsvc="true"
+        compare="[VisitOpenedBy]=[VisitUserId]|Telemedicine visits cannot be closed if they were opened by someone else."
+        dataupdate="UpdatePatientVisitNoDepartmentTracking"
+        appendupdate="patientVisitUniqueId=[PatientVisit],dischargeDateTime=(dateTimeNow)"
+        provoke="btnCompletePatientAppointment"
+      success="La visita ya está cerrada."/>
+  </row>
+  <row name="rowBtnECDForms" reveal="[PatientId]!">
+    <!-- ECD button to load ECD list -->
+    <control type="button" name="btnNewECDForms"
+      reveal="HasOpenVisit=true"
+      span="12" color="green"
+      onclose="Advertencia: No ha guardado este documento. ¿Todavía quiere salir?"
+      action="redirect|url" 
+      target="ecd/index.html" 
+      usesource="login"
+      append="patientid=[PatientId],patientvisit=[PatientVisitGuid]"
+      label="Forms"	
+      icon="hand-right"
+      provoke="ButtonGroupSelect"/>
+  </row>
+  <row>
+    <!-- Enter new bed request -->
+    <control type="button" name="btnBedRequest"
+      reveal="[PatientId]!"
+      span="12" icon="plus" label="Hospitalization"	
+      color="orange"
+      action="redirect"
+      trigger="GetPatientForBed,Nrq_PrimaryDiagnosis"
+      target="mdlBedRequest"/>
+  </row>
+  <row> 
+    <!-- Enter new consult request -->
+    <control type="button" name="btnConsultRequest"
+      reveal="[PatientId]!"
+      span="12" icon="plus" label="Interconsult"	
+      color="orange"
+      action="redirect"
+      target="NewConsultModal"
+      preset="InterConsult_PatientId=[PatientId]"
+      trigger="InterConsult_PatientId"/>
+  </row>
+  <row>
+    <!-- Enter new physical chart request -->
+    <control type="button" name="btnChartRequest"
+      reveal="[PatientId]!"
+      span="12" icon="plus" label="Physical Record"	
+      color="orange"
+      action="redirect"
+      target="mdlDocumentRequest"
+      preset="DocumentPatientId=[PatientId],Document_DepartmentGuid=[DepartmentGuidLookup]"
+      trigger="DocumentPatientId"/>
+  </row>
+  <row>
+    <!-- Enter new surgery request -->
+      <control type="button" 
+      name="NewSurgeryRequestButton"
+      reveal="[PatientId]!"
+      label="Surgery"	
+      span="12" icon="plus" color="orange"
+      action="redirect"
+      target="NewSurgeryRequestModal"
+      preset="SurgeryRequest_PatientId=[PatientId]"
+      trigger="SurgeryRequest_PatientId"/>
+  </row>
+</partial>

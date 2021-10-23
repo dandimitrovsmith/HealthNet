@@ -1,0 +1,65 @@
+﻿<partial>
+  <row>
+    <control type="button" name="btnAltaMedica"
+      reveal="ReadyForDischarge=true"
+      span="12" icon="cloud-upload" label="Medical Discharge"	
+      color="green" action="redirect"
+      trigger="GetReadyForDischarge"
+      preset="Ready_PatientId=[PatientId],Ready_PatientVisitGuid=[PatientVisitGuid]"
+      target="mdlReadyForDischarge"/>
+    <control type="button" name="btnNoAltaMedica"
+      reveal="ReadyForDischarge=false"
+      span="12" icon="cloud-upload" label="Medical Discharge"	
+      color="grey" action="redirect"
+      trigger="GetReadyForDischarge"
+      preset="Ready_PatientId=[PatientId],Ready_PatientVisitGuid=[PatientVisitGuid]"
+      target="mdlReadyForDischarge"/>
+  </row>
+  <row>
+    <!-- ECD button to load ECD list -->
+    <control type="button" name="btnNewCEDForms"
+      reveal="[HasOpenVisit]=true"
+      span="12" color="green"
+      onclose="Advertencia: No ha guardado este documento. ¿Todavía quiere salir?"
+      action="redirect|url" 
+      target="ecd/index.html" 
+      usesource="login"
+      append="patientid=[PatientId],patientvisit=[PatientVisitGuid]"
+      label="Forms"	
+      icon="hand-right"
+      provoke="ButtonGroupSelect"/>
+  </row>
+  
+  <row>
+    <control type="button" name="btnRoomManagement" 
+      span="12"
+      icon="cloud-upload" color="orange"
+      label="Assign Bed"	
+      trigger="FindWardList"
+      action="redirect"
+      target="mdlFindRoom"/>
+  </row>
+  <row>
+    <control type="button" 
+      name="btnAssignPhysician"
+      span="12" icon="user-md" 
+      label="Assign Physician"	
+      color="orange"
+      action="redirect"
+      preset="mdlAssign_PatientId=[PatientId],mdlAssign_PatientVisitGuid=[PatientVisitGuid]"
+      target="mdlAssignPhysician"/>  
+  </row>
+  <row>
+      <control type="button" name="btnTransferPatient"
+      span="12" icon="home" label="Transfer"	
+      color="green" action="redirect"
+      target="mdlTransferPatient"/>
+  </row>
+  <row name="rowMovePatient" reveal="HasOpenVisit=true">
+      <control type="button" name="btnMove"
+        span="12" icon="move" label="Move"	
+        color="orange"
+        action="redirect"
+        target="mdlMovePatient"/>
+  </row>
+</partial>

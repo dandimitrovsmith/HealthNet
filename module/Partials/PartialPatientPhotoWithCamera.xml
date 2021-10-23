@@ -1,0 +1,25 @@
+﻿<partial>
+  <!-- Partial Patient Photo with camera -->
+  <row>
+    <!-- Patient photo -->
+    <control type="image" 
+      format="jpg=circle" 
+      default="null"
+      datarequest="GetPatientPhotoBySize"
+      appendrequest="patientId=[PatientId]"
+      inject="clmPatientPhoto"
+      name="BinaryPhoto" 
+      span="12" />
+  </row>
+  <row>
+    <control type="button" 
+      name="TakeProfilePhoto" 
+      color="grey" 
+      span="12" 
+      label="Photo"	 
+      icon="camera" 
+      action="patientphoto" 
+      append="patientId=[PatientId]" 
+      provoke="BinaryPhoto" /> 
+  </row>
+</partial>

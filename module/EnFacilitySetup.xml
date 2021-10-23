@@ -1,0 +1,1038 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--Last Edit by Dan 4/13/2018-->
+<!--type="onload" trigger="HospitalData"-->
+
+<!-- RobM: Do not expose or update the HospitalId field as this is the record number and should never be updated!!! --> 
+
+<module name="Hospital" type="onload" trigger="HospitalRecall">
+  <section type="tab" 
+    name="HospitalData" 
+    title="Hospital Information"> 
+    <group type="heading" name="HospitalHeading">
+       <row showif="edit">        
+        <control type="header" align="left" span="10">Hospital Information</control>
+        <control showif="edit" 
+          type="button" span="2" 
+          name="HospitalSave"
+          tooltip="Click to update this Hospital record" 
+          action="save" 
+          label="Update"	 
+          icon="cloud-upload"
+          affector="HospitalGuid"
+          setaffector="[HospitalGuid]"
+          capture="HospitalRecord|active"
+          dataupdate="UpdateHospitals"
+          appendupdate="patientDisplayName=[PatientDisplayNameFlat]"/>
+      </row>
+
+      <row showif="never"> 
+        <control type="text" name="UserRoles" edit="true" span="4" value="(user.UserRoles)"/>
+      </row>
+      
+      <row showif="add">        
+        <control type="header" align="left" span="10">Hospital Information</control>
+        <control showif="add" 
+          type="button" span="2" 
+          name="HospitalRecall"
+          tooltip="Click to load this Hospital record" 
+          label="Download" 
+          icon="cloud-download"
+          datarequest="GetHospitalByHospitalGuid" 
+          appendrequest="hospitalGuid=(facility)"
+          inject="HospitalRecord,HospitalHeading,LicenceInformation,TechnicalInformation"
+          provoke="HospitalCountry,PayToCountry"/>
+      </row>
+    </group>
+
+    <group name="HospitalRecord" edit="only"
+      enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+      dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">
+     <subset> 
+      <row showif="never">
+          <control type="hidden" span="5" name="HospitalGuid" />
+      </row>
+      <row>
+        <control type="label" label="Short Name"	 span="2" />
+        <control type="text" name="HospitalShortName" required="True" edit="true" span="2"  />
+        <control type="label" label="Plan Information" span="4"/>
+        <control type="select" name="ApplicationTier" edit="[UserRoles]=MedWave" span="2"  required="true"          
+           source="HIS,GOLD,PLATINUM" sourcelabels="HIS,Gold Plan,Platinum Plan" translate="true" default="true"/>        
+            
+      </row>
+      <row>
+         <control type="label" label="Phone"	 span="2" />
+        <control type="text" name="HospitalPhone" edit="true" span="2"  />
+         <control type="label" label="Fax"		 span="4" />
+        <control type="text" name="HospitalFax" edit="true" span="2"  />
+      </row>
+      <row>
+         <control type="label" label="Tax ID" span="2" />
+        <control type="text" name="TaxID" edit="true" span="2"  />
+         <control type="label" label="Provider Number" span="4" />
+        <control type="text" name="Npi" edit="true" span="2"  />
+      </row>
+      <row>
+        <control type="label" label="Hospital Name" span="2" />
+        <control type="text" name="HospitalRecord_HospitalName" required="True" edit="true" span="4"  />
+        <control type="label" label="Pay to Name" span="2" />
+        <control type="text" name="PayToName" edit="true" span="4"  />
+      </row>
+      <row>
+         <control type="label" label="Address"	 span="2" />
+        <control type="text" name="HospitalStreetAddress" edit="true" span="4" 
+         />
+        <control type="label" label="Addess" span="2" />
+        <control type="text" name="PayToStreetAddress1" edit="true" span="4"  />
+      </row>
+      <row>
+         <control type="label" label="City"	 span="2" />
+        <control type="text" name="HospitalCity" edit="true" span="4"  />
+        <control type="label" label="Payer City" span="2" />
+        <control type="text" name="PayToCity" edit="true" span="4"  />
+      </row>
+      <row>
+         <control type="label" label="State"	 span="2" />        
+        <control type="select" name="HospitalState" span="4" edit="true"
+          explicit="true"
+          datasource="GetStatesProvincesByCountryCode"
+          source="Name,Code"
+          append="countryCode=[HospitalCountry]"/>
+        <control type="label" label="Payer State" span="2" />       
+         <control type="select" name="PayToState" span="4" edit="true"
+          explicit="true"
+          datasource="GetStatesProvincesByCountryCode"
+          source="Name,Code"
+          append="countryCode=[PayToCountry]"/>
+      </row>
+      <row>
+         <control type="label" label="Postal Code"	 span="2" />
+        <control type="text" name="HospitalZip" edit="true" span="2"  />
+        <control type="label" label="Postal Code" span="4" />
+        <control type="text" name="PayToZip" edit="true" span="2"  />
+      </row>
+      <row>
+         <control type="label" label="Country"	 span="2" />        
+        <control type="select" name="HospitalCountryDescription,HospitalCountry" span="4" edit="true" default="(facilityData.HospitalCountry)" required="true"
+          datasource="GetCountries" 
+          source="Country,Code"
+          trigger="HospitalState"/>      
+        <control type="label" label="Country" span="2" />        
+        <control type="select" name="PayToCountryDescription,PayToCountry" span="4" edit="true" default="(facilityData.HospitalCountry)" 
+          datasource="GetCountries" 
+          source="Country,Code"
+          trigger="PayToState"/> 
+      </row>
+      <row>     
+        <control type="label" label="Time Zone" span="2" />
+        <control type="select" 
+			    explicit="true"
+          translate="true"
+          name="TimeZoneId"
+          span="4" edit="true"
+          acctsvc="true"
+          datasource="GetTimeZones"
+          source="GmtTimeDifferenceSpanish,TimeZoneIdentifier"
+          required="true"/>
+      </row>
+     </subset>
+     <subset name="subMedwaveOnly" reveal="[UserRoles]=MedWave"> 
+
+      <row divider="true">
+         <control type="header" align="left" span="12">Financiera</control>
+      </row>
+      <row>     
+        <control type="label" label="Use General Ledger" span="2" />
+        <control type="buttongroup" name="GeneralLedgerUse" sourcelabels="Yes,No"	 source="True,False"  default="False" edit="true" span="2"  provoke="rowGeneralLedgerAccountNumbering"/>           
+      </row>     
+
+      <row name="rowGeneralLedgerAccountNumbering" reveal="GeneralLedgerUse=True">
+        <control type="label" label="Account Digits" span="2" />
+        <control type="buttongroup" name="GeneralLedgerAccountNumbering" sourcelabels="Three,Four,Five" source="3,4,5"  default="3" required="true" edit="true" span="2" value="3" 
+           set="GeneralLedgerAccountNumbering=3;GeneralLedgerAccountMinValue=001.00,GeneralLedgerAccountNumbering=3;GeneralLedgerAccountMaxValue=999.99,GeneralLedgerAccountNumbering=4;GeneralLedgerAccountMinValue=0001.00,GeneralLedgerAccountNumbering=4;GeneralLedgerAccountMaxValue=9999.99,GeneralLedgerAccountNumbering=5;GeneralLedgerAccountMinValue=00001.00,GeneralLedgerAccountNumbering=5;GeneralLedgerAccountMaxValue=99999.99" />      
+        <control type="label" label="Min Account Number" span="2"/>
+        <control type="text" name="GeneralLedgerAccountMinValue" span="1"/>
+        <control type="label" label="Max Account Number" span="2"/>
+        <control type="text" name="GeneralLedgerAccountMaxValue" span="1"/>
+      </row>
+
+      <row divider="true">        
+        <control type="header" align="left" span="12">Sistemas Conectados</control>
+      </row>
+      <row>
+        <control type="label" label="Data Bank" span="2" />
+        <control type="select" name="DrugDatabase" span="3" edit="true"  required="true"  source="Vidal,DIT,Ninguno"/>
+        <control type="label" label="PACS System" span="3" />
+        <control type="select" name="RadiologyInformationSystem" span="4" edit="true"  required="true"  source="Novarad,TeleRad,Fuji,CareStream,Ninguno"/>
+      </row>
+      <row>
+        <control type="label" label="Laboratory System" span="2" />
+        <control type="select" name="LaboratoryInformationSystem" span="3" edit="true"  required="true"  source="Schuylab,DICIPA,Rochem,Ninguno"/>
+        <control type="label" label="Pharmacy System" span="3" />
+        <control type="select" name="PharmacyInformationSystem" span="4" edit="true"  required="true"  source="RxConnect,Ninguno"/>
+      </row>
+      <row>
+        <control type="label" label="System of Accounts" span="2" />
+        <control type="select" name="AccountingSystem" span="3" edit="true"  required="true"  source="CPSI,SAP,HarmoniMD,Ninguno"/>
+        <control type="label" label="Claims System" span="3" />
+        <control type="select" name="ClaimsManagementSystem" span="4" edit="true"  required="true"  source="CPSI,Ability,Ninguno"/>
+      </row>
+      <row>
+        <control type="label" label="ICD version" span="2" />
+        <control type="select" name="ICDVersion" span="3" edit="true"   source="9,10,11"/>
+      </row>
+    
+    <row divider="true">        
+      <control type="header" align="left" span="12">Números de Inicio</control>
+    </row> 
+      <row>
+        <control type="label" label="Medical Records" span="2" />
+        <control type="integer" name="StartingMedicalRecordNumber" required="true" edit="true" span="1"  default="1000"/>
+        <control type="label" label="Invoices" span="2" />
+        <control type="integer" name="StartingInvoiceNumber" required="true" edit="true" span="1"  default="1000"/>
+        <control type="label" label="Receipts" span="2" />
+        <control type="integer" name="StartingReceiptNumber" required="true" edit="true" span="1"  default="1000"/>
+        <control type="label" label="Claims" span="2" />
+        <control type="integer" name="StartingClaimNumber" required="true" edit="true" span="1"  default="1000"/>
+      </row>
+      <row>
+        <control type="label" label="Imaging Orders"	 span="2" />
+        <control type="integer" name="StartingImagingOrderNumber" required="true" edit="true" span="1"  default="1000"/>
+        <control type="label" label="Laboratory Orders" span="2" />
+        <control type="integer" name="StartingLabOrderNumber" required="true" edit="true" span="1"  default="1000"/>
+        <control type="label" label="Medication Orders" span="2" />
+        <control type="integer" name="StartingMedicationOrderNumber" required="true" edit="true" span="1"  default="1000"/>
+        <control type="label" label="Procedures"	 span="2" />
+        <control type="integer" name="StartingProcedureOrderNumber" required="true" edit="true" span="1"  default="1000"/>
+      </row>
+      <row>
+        <control type="label" label="Diet Orders" span="2" />
+        <control type="integer" name="StartingDietaryOrderNumber" required="true" edit="true" span="1" />
+        <control type="label" label="Nursing Orders"	 span="2" />
+        <control type="integer" name="StartingNursingOrderNumber" required="true" edit="true" span="1" />
+        <control type="label" label="POS Session" span="2" />
+        <control type="integer" name="StartingPOSSessionNumber" required="true" edit="true" span="1" />
+      </row>
+    
+      <row divider="true">        
+        <control type="header" align="left" span="12">Horarios de Comida</control>
+      </row>
+      <row>
+        <control type="label" label="Breakfast" span="2" />
+        <control type="time" name="BreakfastTime" edit="true" span="2" />
+        <control type="label" label="Lunch" span="2" />
+        <control type="time" name="LunchTime" edit="true" span="2" />
+        <control type="label" label="Dinner" span="2" />
+        <control type="time" name="DinnerTime" edit="true" span="2" />
+      </row>
+      
+      <row divider="true">        
+        <control type="header" align="left" span="12">Misceláneo</control>
+      </row>
+      <row>
+        <control type="label" label="Currency" span="2" />
+        <control type="select" name="CurrencyName,CurrencyCode" edit="true" span="2"              
+           sourcelabels="USD [$],INR [₹],MEX [$],PRY [₲],TZS [/ -],ZAR [R],GTQ [Q],CHL [$],CFA [FCFA]"
+           source="USD,INR,MEX,PRY,TZS,ZAR,GTQ,CHL,CFA"/>
+        <control type="label" label="Religion"	 span="3" />
+        <control type="select" name="DefaultReligion"
+           explicit="true"
+           source="ConceptName,ConceptName" edit="true" span="2"              
+           datasource="GetLookupReligionsActive"/>
+        <control type="label" label="Language"	 span="1"/>
+        <control type="select" name="DefaultLanguage" 
+          source="Language,Language"
+          datasource="GetLookupLanguageSpoken" edit="true" span="2" />
+      </row>
+
+      <!-- UniCode a comma is \u002c or \x2c or %2c -->
+      <row>
+        <control type="label" label="Date/Time Format" span="2" />
+        <control type="select" name="DateTimeFormat" required="true" edit="true" span="2"            
+           source="MM/dd/yyyy HH:mm,MM/dd/yyyy hh:mm tt,dd/MM/yyyy HH:mm,dd/MM/yyyy hh:mm tt"/> 
+        <control type="label" label="Display of Patient's Name" span="3"/>
+        <control type="select" name="PatientDisplayNameFlat" edit="true" span="2"  
+           required="true"    
+           translate="true"      
+           source="L F M,F M L,M L F,F L"
+           sourcelabels="Last First Middle,First Middle Last,Middle Last First,First Last"/>    
+      </row>
+
+      <row>     
+        <control type="label" label="Use SMS" span="2" />
+        <control type="buttongroup" name="SMS" sourcelabels="Yes,No"	 source="True,False"  default="False" edit="true" span="2" />    
+        <control type="label" label="Use Departments" span="3" />
+        <control type="buttongroup" name="UseDepartments" sourcelabels="Yes,No"	 source="True,False"  edit="true" default="True" span="2" />     
+      </row> 
+      
+      <row divider="true">
+      </row>
+    </subset>    
+
+    <subset name="TechnicalInformation" reveal="[UserRoles]=MedWave">       
+      <row>        
+        <control type="header" align="left" span="12">Technical Information</control>
+      </row>       
+
+      <row>
+        <control type="label" label="Entry Address" span="2" />
+        <control type="text" name="GatewayIpAddresses" edit="true" span="4" />
+        <control type="label" label="Address Code" span="2" />
+        <control type="text" name="ModuleUri" edit="true" span="4" />
+      </row>
+      <row>
+        <control type="label" label="Key Subscription" span="2" />
+        <control type="text" name="SubscribeKey" edit="true" span="4" />
+        <control type="label" label="Post Key" span="2" />
+        <control type="text" name="PublishKey" edit="true" span="4" />
+      </row>
+      <row>
+        <control type="label" label="Limited Access" span="2" />
+        <control type="buttongroup" name="LimitRemoteAccessByIp" sourcelabels="Yes,No"	 source="True,False"  default="True" required="true" edit="true" span="2" />
+        <control type="label" label="Auto Submit Charges" span="4" />
+        <control type="buttongroup" name="ChargeAutoSend" required="true" sourcelabels="Yes,No"	 source="True,False" default="False" edit="true" span="2" />
+      </row>
+      <row>
+        <control type="label" label="Network Error Message" span="2" />
+        <control type="textarea" name="TechSupportNetworkErrorMessage" edit="true" span="4" rows="1"/>
+        <control type="label" label="Auto Delete Message" span="2" />
+        <control type="buttongroup" name="AutoClearNetworkErrorMsg" sourcelabels="Yes,No"	 source="True,False" default="True" edit="true" span="2" />
+      </row>
+      <row divider="true">        
+      </row>
+     </subset> 
+    </group>
+  </section>
+
+  <section type="tab" title="Departments"	>
+    <group>
+      <row>
+        <control type="datagrid" label="Departments"	 name="Departments" searchable="true"
+          span="12"
+          rows="20"
+          modalname="NewDepartment"
+          acctsvc="true" acctsvcreq="true"
+          datasource="GetDepartmentsAll"
+          datarequest="GetDepartmentsAll"
+          datainsert="InsertDepartment"
+          dataupdate="UpdateDepartment"
+          source="Active,AdmissionType,Emergency,AutoDischargePatient,PatientVisitType,DepartmentNumber,DepartmentName,LocationID,ExternalId,Notes"
+          sourcelabels="Active,Admit,Emergency,Download,Type of Visit,Code,Department,Location,External Id,Notes"
+          translate="PatientVisitType"
+          align="|||left|left|left|left"
+          format="boolean|boolean|boolean|boolean"
+          sort="DepartmentName=asc"
+          key="DepartmentGuid">
+          <control type="button" name="btnDepartments"
+                action="print"
+                color="white"
+                mode="report" 
+                label="Print"	 
+                icon="print"                 
+                append="id=01855ba8234,FacilityId=(facility),ReportName=Departments,UserId=(userName),DateTimeNow=(dateTimeNow)"/>
+          </control>
+      </row>
+    </group>
+  </section>
+
+  <!-- Departments -->
+  <section  type="modal" name="NewDepartment" title="Department"	 provoke="Service_DepartmentGuid,Ward_DepartmentGuid" size="small"
+            enteredby="EnteredByFullName" updatedby="LastUpdatedByFullName" 
+            dtentered="DateTimeEntered" dtupdated="DateTimeLastUpdate">
+    <group name="NewDepartmentGroup">
+      <row>
+        <control type="label" label="Active"	 span="4"/>
+        <control type="buttongroup" name="NewDepartmentGroup_Active" 
+        required="true" edit="true" span="2" 
+        sourcelabels="Yes,No"	 source="True,False" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Admit" span ="4"/>
+        <control type="buttongroup" name="AdmissionType" 
+        required="true" edit="true" span="2" sourcelabels="Yes,No"	 
+        source="True,False" default="False" />
+      </row>
+      <row>
+        <control type="label" label="Emergency" span ="4"/>
+        <control type="buttongroup" name="Emergency" 
+        required="true" edit="true" span="2" 
+        sourcelabels="Yes,No"	 source="True,False" default="False" />
+      </row>
+      <row>
+        <control type="label" label="Download Automatically" span ="4"/>
+        <!-- AutoDischargePatient -->
+        <control type="buttongroup" name="AutoDischargePatient" 
+        required="true" edit="true" span="2" 
+        sourcelabels="Yes,No"	 source="True,False" default="False" />
+      </row>
+      <row>
+        <control type="label" label="Type of Patient Visit" span ="4"/>
+        <control type="select" name="PatientVisitType" required="true" edit="true"
+          source="Neutral,Inpatient,Outpatient"
+          sourcelabels="Neutral,Hospitalized Patient,Outpatient Patient"
+          span="3" default="Neutral" />
+      </row>
+      <row> 
+        <control type="label" label="Code"	 span="4" />
+        <control type="text" name="DepartmentNumber" required="false" edit="true" span="5"  />
+      </row>
+      <row> 
+        <control type="label" label="Name"	 span="4" />
+        <control type="text" name="DepartmentName" required="true" edit="true" span="5"  />
+      </row>
+      <row> 
+        <control type="label" label="Location"		 span="4" />
+        <control type="text" name="LocationID" required="true" edit="true" span="5"  />
+      </row>
+      <row> 
+        <control type="label" label="Id Externo" span="4" />
+        <control type="text" name="ExternalId" edit="true" span="5"  />
+      </row>
+      <row>
+        <control type="label" label="Notes"	 span="4" />
+        <control type="textarea" name="NewDepartmentGroup_Notes" span="5" rows="3" edit="true"  />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="UpdateResultNext1" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="InsertResultNext1" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+
+   <section type="tab" title="Department Services" provoke="Service_DepartmentGuid">
+    <group>
+     <row>
+        <control type="datagrid" label="Department Services" name="HospitalServices" searchable="true"
+          modalname="NewDepartmentServices" span="12"
+          rows="20"
+          datasource="GetDepartmentServices"
+          datarequest="GetDepartmentServices"
+          datainsert="InsertDepartmentServices"
+          dataupdate="UpdateDepartmentServices"
+          acctsvc="true"
+          acctsvcreq="true"
+          source="Active,DepartmentName,ServiceName,ServiceDescription"
+          sourcelabels="Active,Department,Name,Description"
+          align="|left|left|left"
+          format="boolean"
+          sort="DepartmentName=asc"
+          key="DepartmentServicesGuid">
+          <control type="button" name="btnDepartmentServices"
+              action="print"
+              color="white"
+              mode="report" 
+              label="Print"	 
+              icon="print"                 
+              append="id=986f142667b,FacilityId=(facility),ReportName=Servicios de Departments,UserId=(userName),DateTimeNow=(dateTimeNow)"/>
+          </control>
+      </row>
+    </group>
+  </section>
+
+  <section type="modal" name="NewDepartmentServices" size="small" title="Department Services" 
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated" 
+           provoke="Service_DepartmentGuid">
+    <group name="NewServiceGroup">
+      <row>
+        <control type="label" label="Active"	 span="3"/>
+        <control type="buttongroup" name="NewServiceGroup_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Department"			 span="3"/>
+          <control type="select" 
+            name="Service_DepartmentGuid" 
+            acctsvc="true"
+            acctsvcreq="true" 
+            explicit="true"
+            datasource="GetDepartmentsActive"
+            datarequest="GetDepartmentsActive" 
+            source="DepartmentName,DepartmentGuid" 
+            span="5" 
+            required="true" 
+            edit="true" 
+            />
+      </row>
+      <row>
+        <control type="label" label="Service"	 span="3"/>
+        <control type="text" name="ServiceName" span="5" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Description"	 span="3"/>
+        <control type="textarea" name="ServiceDescription" span="5" rows="3" edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="UpdateResultNext2" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+        </row>
+        <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="InsertResultNext2" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+
+  <section type="tab" title="Hospital Programs">
+    <group>
+     <row>
+        <control type="datagrid" label="Hospital Programs" name="grdHospitalPrograms" searchable="true"
+          modalname="NewHospitalPrograms" span="12"
+          rows="20"
+          datasource="GetPrograms"
+          datarequest="GetPrograms"
+          datainsert="InsertProgram"
+          dataupdate="UpdateProgram"
+          acctsvc="true"
+          acctsvcreq="true"
+          source="Active,ProgramId,ProgramType,ProgramName,ProgramDescription"
+          sourcelabels="Active,Code,Type,Program,Description"
+          align="|left|left|left|left"
+          format="boolean"
+          sort="ProgramName=asc"
+          key="ProgramGuid">
+          </control>
+      </row>
+    </group>
+  </section>
+
+  <section type="modal" name="NewHospitalPrograms" size="small" title="Hospital Programs" 
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated" 
+           provoke="Program_DepartmentGuid">
+    <group name="NewProgramGroup">
+      <row>
+        <control type="label" label="Active"	 span="3"/>
+        <control type="buttongroup" name="Program_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Code"	 span="3"/>
+        <control type="text" name="Program_ProgramId" span="3" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Type"			 span="3"/>
+        <control type="select" name="Program_ProgramType" span="3" edit="true" 
+         source="Medicine,Admin"
+         sourcelabels="Medicine,Admin"
+        required="true"/>
+      </row>
+      <row>
+        <control type="label" label="Department"			 span="3"/>
+          <control type="select" 
+            name="Program_Department" 
+            acctsvc="true"
+            acctsvcreq="true" 
+            explicit="true"
+            datasource="GetDepartmentsActive"
+            datarequest="GetDepartmentsActive" 
+            source="DepartmentName,DepartmentGuid" 
+            span="5" 
+            required="true" 
+            edit="true"/>
+      </row>
+      <row>
+        <control type="label" label="Start Date"	 span="3"/>
+        <control type="date" name="Program_DateStart" span="3" edit="true"  required="true"/>
+        <control type="label" label="End Date" span="2"/>
+        <control type="date" name="Program_DateEnd" span="3" edit="true"  required="true"/>
+      </row>
+      <row>
+        <control type="label" label="Program Name" span="3"/>
+        <control type="text" name="Program_ProgramName" span="8" edit="true" required="true"/>
+      </row>
+      <row>
+        <control type="label" label="Description"	 span="3"/>
+        <control type="textarea" name="Program_ProgramDescription" span="8" rows="1" edit="true"/>
+      </row>
+      <row>
+        <control type="label" label="Notes"	 span="3"/>
+        <control type="textarea" name="Program_Notes" span="8" rows="2" edit="true"/>
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="UpdateResultNextProgram" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+        </row>
+        <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="InsertResultNextProgram" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+
+	<section type="tab" title="Hospital Wards">
+    <group>
+      <row>
+        <control type="datagrid" label="Hospital Wards" name="Wards" span="8" searchable="true"
+          rows="20"
+          modalname="NewWard"
+          acctsvc="true" acctsvcreq="true"
+          datasource="GetHospitalWardsForThisFacilityActive"
+          datarequest="GetHospitalWardsForThisFacilityActive"
+          datainsert="InsertHospitalWards"
+          dataupdate="UpdateHospitalWards"
+          source="Active,DepartmentName,Ward"
+          sourcelabels="Active,Department,Room"
+          align="|left|left"
+          format="boolean"
+          sort="Ward=asc"
+          key="WardGuid">
+          <control type="button" name="btnHospitalRooms"
+             action="print"
+             color="white"
+             mode="report" 
+             label="Print"	 
+             icon="print"                 
+             append="id=d9c63f557d6,FacilityId=(facility),ReportName=Salas de Hospital,UserId=(userName),DateTimeNow=(dateTimeNow)"/>
+          </control>
+      </row>
+    </group>
+  </section>
+
+  <section  type="modal" name="NewWard" title="Hospital Ward" provoke="New_Ward" size="small"
+            enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+            dtentered="DateTimeEntered" dtupdated="DateTimeUpdated" >
+    <group name="NewWardGroup">
+      <row>
+        <control type="label" label="Active"	 span ="4"/>
+        <control type="buttongroup" name="NewWardGroup_Active" required="true" edit="true" span="2" sourcelabels="Yes,No"	 default="True" source="True,False" />
+      </row>
+      <row> 
+        <control type="label" label="Department" span="4" />
+        <control type="select" 
+          explicit="true"
+          name="Ward_DepartmentGuid" 
+          span="4" edit="true"  
+          required="true" acctsvc="true"
+          datasource="GetDepartmentsActive" 
+           
+          source="DepartmentName,DepartmentGuid"/>
+      </row>
+      <row> 
+        <control type="label" label="Ward Name" span="4" />
+        <control type="text" name="Ward_Ward" required="true" edit="true" span="5" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="UpdateResultNext3" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+        </row>
+        <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="InsertResultNext3" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+
+  <!--Added by Dan 4/12/2018-->
+  <section type="tab" title="Types of Rooms">
+    <group>
+      <row>
+        <control type="datagrid" label="Types of Rooms" name="RoomTypes" span="8" searchable="true"
+          rows="20"
+          modalname="NewRoomType"
+          acctsvc="true" 
+          acctsvcreq="true"
+          datasource="GetRoomTypesActive"
+          datarequest="GetRoomTypesActive"
+          datainsert="InsertRoomTypes"
+          dataupdate="UpdateRoomTypes"
+          source="Active,RoomTypeName,RoomTypeDescription"
+          sourcelabels="Active,Type,Description"	
+          align="|left|left"
+          format="boolean||"
+          sort="RoomTypeName=asc"
+          key="RoomTypeGuid">
+          <control type="button" name="btnRoomTypes"
+             action="print"
+             color="white"
+             mode="report" 
+             label="Print"	 
+             icon="print"                 
+             append="id=40f91695d63,FacilityId=(facility),ReportName=Tipos de Habitaciones,UserId=(userName),DateTimeNow=(dateTimeNow)"/>
+          </control>
+      </row>
+    </group>
+  </section>
+
+  <!--Modal to enter/edit Room Types-->
+  <section  type="modal" name="NewRoomType" title="Room Type" provoke="New_RoomType" size="small"
+            enteredby="EnteredByFullName" updatedby="LastUpdatedByFullName" 
+            dtentered="DateTimeEntered" dtupdated="LastUpdatedDateTime" >
+    <group name="NewRoomTypeGroup">
+      <row>
+        <control type="label" label="Active"	 span ="4"/>
+        <control type="buttongroup" name="NewRoomTypeGroup_Active" required="true" edit="true" span="2" sourcelabels="Yes,No"	 source="True,False" default="True" />
+      </row>
+      <row> 
+        <control type="label" label="Type of Room" span="4" />
+        <control type="text" name="RoomTypeName" required="true" edit="true" span="5"  />
+      </row>
+      <row> 
+        <control type="label" label="Description"	 span="4" />
+        <control type="text" name="RoomTypeDescription"  edit="true" span="5"  />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="UpdateResultNext4" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="InsertResultNext4" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+
+  <!--Added by Dan 4/12/2018-->
+  <section type="tab" title="Rooms and Beds">
+    <group>
+      <row>
+        <control type="datagrid" label="Rooms and Beds" name="RoomsAndBeds" span="12" searchable="true"
+          rows="20"
+          modalname="NewRoomBed"
+          acctsvc="true"
+          acctsvcreq="true"
+          datasource="GetFacilityPatientRoomsAndBedsForThisFacility"
+          datarequest="GetFacilityPatientRoomsAndBedsForThisFacility"
+          datainsert="InsertFacilityPatientRooms"
+          dataupdate="UpdateFacilityPatientRooms"
+          source="Active,Ward,RoomType,RoomNumber,BedNumber,RoomAndBedNumber,Rate"
+          sourcelabels="Active,Room,Type,Room,Bed,Room and Bed,Cost"
+          align="|left|left|left|left|left|right"
+          format="boolean||||||0,0.00"
+          sort="Ward=asc"
+          key="RoomGuid">
+          <control type="button" name="btnRoomsAndBeds"
+             action="print"
+             color="white"
+             mode="report" 
+             label="Print"	 
+             icon="print"                 
+             append="id=62c62473656,FacilityId=(facility),ReportName=Tipos de Habitaciones,UserId=(userName),DateTimeNow=(dateTimeNow)"/>
+          </control>
+      </row>
+    </group>
+  </section>
+
+  <!--Modal to enter/edit Rooms and Beds-->
+  <section  type="modal" name="NewRoomBed" title="Room and Bed" size="small"
+            enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+            dtentered="DateTimeEntered" dtupdated="DateTimeUpdated" >
+    <group name="grpNewRoomBed">
+      <row>
+        <control type="label" label="Active"	 span ="4"/>
+        <control type="buttongroup" name="grpNewRoomBed_Active" required="true" edit="true" span="2" sourcelabels="Yes,No"	 default="True" source="True,False" />
+      </row>
+      <row> 
+        <control type="label" label="Room" span="4" />
+        <control type="select" name="New_Ward" 
+          explicit="true" 
+          datasource="GetHospitalWardsForThisFacilityActive" source="Ward,WardGuid"
+          required="true" acctsvc="true" acctsvcreq="true" 
+          edit="true" span="4"  />
+      </row>
+      <row>
+        <control type="label" label="Type of Room" span="4" />
+        <control type="select" name="New_RoomType" span="4" edit="true" 
+          required="true" acctsvc="true" acctsvcreq="true" datasource="GetRoomTypesActive"  source="RoomTypeName,RoomTypeGuid"/>
+      </row>
+      <row> 
+        <control type="label" label="Room"	 span="4" />
+        <control type="text" name="RoomNumber" required="true" edit="true" span="2"  />
+      </row>
+      <row> 
+        <control type="label" label="Bed"	 span="4" />
+        <control type="text" name="BedNumber" required="true" edit="true" span="2"  />
+      </row>
+      <row> 
+        <control type="label" label="Room and Bed" span="4" />
+        <control type="text" name="RoomAndBedNumber" required="true" edit="true" span="2"  />
+      </row>
+      <row> 
+        <control type="label" label="Price"	 span="4" />
+        <control type="text" name="Rate" edit="true" span="2" format="0.00"  />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="UpdateResultNext5" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="InsertResultNext5" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+  <!-- Scheduler rooms -->
+  <partial link="./EnPartial/Calendars/PartialSchedulerRoomManagement.xml"/>
+  <!--Medical Devices-->
+  <section type="tab" title="Medical Devices">
+    <group>
+     <row>
+        <control type="datagrid" label="Medical Devices" name="MedicalDeviceGrid" searchable="true"
+          modalname="NewMedicalDevice" 
+          span="12"
+          rows="20"         
+          datasource="GetMedicalDeviceItems"
+          datarequest="GetMedicalDeviceItems"
+          datainsert="InsertMedicalDeviceItems"
+          dataupdate="UpdateMedicalDeviceItems"
+          source="Active,DeviceCode,DeviceDescription,Manufacturer,SerialNumber,LotNumber,DeviceStatus"
+          sourcelabels="Active,Code,Description,Manufacturer,Series #,Lot #,Status"
+          align="|left|left|left|left|left|left"
+          format="boolean"
+          sort="DeviceDescription=asc"
+          key="DeviceGuid">
+          <control type="button" name="btnMedicalDevices"
+             action="print"
+             color="white"
+             mode="report" 
+             label="Print"	 
+             icon="print"                 
+             append="id=387903436f3,FacilityId=(facility),ReportName=Dispositivos Doctors,UserId=(userName),DateTimeNow=(dateTimeNow)"/>
+          </control>
+      </row>
+    </group>
+  </section>
+
+  <section type="modal" name="NewMedicalDevice" title="Medical Device" size="small"
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated" >
+    <group name="NewMedicalDeviceGroup">
+      <row>
+        <control type="label" label="Active"	 span="4"/>
+        <control type="buttongroup" name="NewMedicalDeviceGroup_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" value="True"/>
+      </row>
+      <row>
+        <control type="label" label="Status"	 span="4"/>
+        <control type="select" name="DeviceStatus" span="4" edit="true"
+          source="In Service,Cleaning,Maintenance,Out of Service"
+          sourcelabels="In Service,Cleaning,Maintenance,Out of Service"/>
+      </row>
+      <row>
+        <control type="label" label="Code"	 span="4"/>
+        <control type="text" name="DeviceCode" span="2" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Description"	 span="4"/>
+        <control type="text" name="DeviceDescription" span="4" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Manufacturer"	 span="4"/>
+        <control type="text" name="Manufacturer" span="4" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Serial Number" span="4"/>
+        <control type="text" name="SerialNumber" span="2" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Lot Number"	 span="4"/>
+        <control type="text" name="LotNumber" span="2" edit="true" />
+      </row>
+      
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="UpdateResultNext6" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="InsertResultNext6" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+
+   <!-- Added by Dan 4/16/2018 -->
+  <section type="tab" title="Transfer Hospitals">
+    <group>
+     <row>
+        <control type="datagrid" label="Transfer Hospitals" name="TransferFacilities" searchable="true"
+          modalname="NewHospital" span="12"
+          rows="20"
+          datasource="GetTransferHospitals"
+          datarequest="GetTransferHospitals"
+          datainsert="InsertTransferHospital"
+          dataupdate="UpdateTransferHospital"
+          acctsvc="true"
+          acctsvcreq="true"
+          source="Active,HospitalName,HospitalType,Contact,Phone,CellPhone,Fax"
+          sourcelabels="Active,Hospital,Type,Contact,Telephone,Cell,Fax"
+          align="|left|left|left|left|left|left|"
+          format="boolean"
+          sort="HospitalName=asc"
+          key="HospitalGuid" 
+          provoke="Country">
+          <control type="button" name="btnTransferFacilitiesDetail"
+             action="print"
+             color="white"
+             mode="report" 
+             label="Print Details" 
+             icon="print"                 
+             append="id=59201f51566,FacilityId=(facility),ReportName=Hospitales de Transferencia,UserId=(userName),DateTimeNow=(dateTimeNow)"/>          
+          <control type="button" name="btnTransferFacilities"
+             action="print"
+             color="white"
+             mode="report" 
+             label="Print"	 
+             icon="print"                 
+             append="id=ef52001232c,FacilityId=(facility),ReportName=Hospitales de Transferencia,UserId=(userName),DateTimeNow=(dateTimeNow)"/>
+          </control>
+      </row>
+    </group>
+  </section>
+
+  <section type="modal" name="NewHospital" title="Transfer Hospital" size="small"
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeLastUpdate" >
+    <group name="NewHospitalGroup">
+      <row>
+        <control type="label" label="Hospital Code" span="3"/>
+        <control type="text" name="ABC" span="4" required="true" edit="true" />
+        <control type="label" label="Active"	 span="2"/>
+        <control type="buttongroup" name="NewHospitalGroup_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Hospital Name" span="3"/>
+        <control type="text" name="NewHospitalGroup_HospitalName" span="8" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Type of Hospital" span="3"/>
+        <control type="select" name="HospitalType" required="true"
+          source="Hospital,Clinic,Surgery,Other"
+          sourcelabels="Hospital,Clinic,Surgery,Other"
+          span="4" edit="true" />
+        <control type="label" label="Phone"	 span="2"/>
+        <control type="text" name="Phone" span="2" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Contact"	 span="3"/>
+        <control type="text" name="Contact" span="4" edit="true" />
+        <control type="label" label="Cell Phone"	 span="2"/>
+        <control type="text" name="CellPhone" span="2" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Address"	 span="3"/>
+        <control type="text" name="AddressLine1" span="4" edit="true" />
+        <control type="label" label="Fax"		 span="2"/>
+        <control type="text" name="Fax" span="2" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Apartment"	 span="3"/>
+        <control type="text" name="AddressLine2" span="4" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="City"	 span="3"/>
+        <control type="text" name="City" span="4" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="State"	 span="3"/>
+        <control type="select" name="State" span="4" edit="true"
+          datasource="GetStatesProvincesByCountryCode"
+          source="Name,Code" explicit="true"
+          append="countryCode=[Country]"/>
+      </row>
+      <row>
+        <control type="label" label="Postal Code"	 span="3"/>
+        <control type="text" name="PostalCode" span="3" edit="true" />
+      </row>           
+       <row>
+        <control type="label" label="Country"	 span ="3"/>        
+        <control type="select" name="Country" span="3" edit="true" 
+          default="(facilityData.HospitalCountry)"
+          datasource="GetCountries" 
+          source="Country,Code"
+          trigger="State"/>
+      </row>
+      <row>
+        <control type="label" label="Notes"	 span="3"/>
+        <control type="textarea" name="NewHospitalGroup_Notes" span="5" rows="3" edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="UpdateResultNext7" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="InsertResultNext7" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+</module>  

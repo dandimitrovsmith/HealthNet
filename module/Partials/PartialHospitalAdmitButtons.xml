@@ -1,0 +1,111 @@
+﻿<partial>
+  <!-- Partial hospital admit buttons -->
+  <row name="rowAdmitSearchButton" reveal="[PatientId]=">
+    <control type="label" label=""	 span="12"/>
+    <control type="button" name="btnAdmitSearchPatients" span="12"
+      label="Search for Patients"	 icon="search"
+      preset="PatientSearchSource=7,Search_PatientFirstName=[Consult_PatientFirstName],Search_PatientMiddleName=[Consult_PatientMiddleName],Search_PatientLastName=[Consult_PatientLastName]"
+      trigger="Search_FindPatient"
+      action="redirect" target="mdlFindPatients"/>
+    <control type="hidden" name="AdmitSearchReturn"
+      datarequest="GetPatientAllFields"
+      appendrequest="PatientId=[PatientSearchResults]"
+      inject="rowAdmitPatientId"
+      provoke="PatientId"/>
+  </row>
+  <row name="rowbtngrpShow" reveal="[PatientId]!">
+    <control type="buttongroup" name="btngrpShow"
+      span="12" edit="true"
+      source="Open,Close"
+      color="grey,grey"
+      sourcelabels="Open,Close"	
+      default="Close"/>
+  </row>
+  <row>
+    <!-- Admit patient with no current visit -->
+    <control type="button" 
+      name="btnAdmitButton"
+      span="12"
+      reveal="[HasOpenVisit]=false"
+      color="orange"
+      tooltip="Click to enter this patient."	 
+      action="save|close|new" 
+      confirm="Please confirm you want to admit this patient. Reminder: if this patient has an appointment,please admit him / her through the appointment option to complete the appointment."
+      affector="PatientVisit"
+      setaffector="RecordUniqueId"
+      label="Admit"	 
+      icon="cloud-upload"
+      capture="VisitInfo"
+      datainsert="InsertPatientVisitAllFields"
+      appendconfirm="runinput=[Consult_AccountNumber]"
+      confirmresponse="CheckDigitResult=true|Invalid National ID!"
+      appendinsert="patientId=[PatientId],visitType=[DefaultAdmitType],hospitalService=Waiting,ambulatoryStatus=Ambulatory
+      ,preAdmit=0,departmentGuid=[DepartmentGuidLookup],admitDateTime=(dateTimeNow)"
+      set="HasOpenVisit=true"
+      provoke="PatientList"/>
+  </row>
+  <row>
+    <!--Save patient information-->
+    <control type="button" 
+      name="btnPatientUpdate"
+      reveal="[PatientId]!" 
+      span="12" 
+      label="Update"	
+      affector="PatientId"
+      setaffector="PatientId"
+      capture="PatientInfo" 
+      icon="cloud-upload"
+      action="save"
+      confirm="Please confirm you want to update this patient."	
+      datainsert="UpdatePatient"
+      appendconfirm="runinput=[Consult_AccountNumber]"
+      confirmresponse="CheckDigitResult=true|Invalid National ID!"
+      appendinsert="PatientId=[PatientId]"
+      provoke="btnUpdatePatientVisit,ClosePatientTabModal"/>
+  </row>
+  <row>
+    <control type="button" name="btnReports"
+       reveal="[PatientId]!"
+      span="12"
+      icon="print" label="Reports"	
+      preset="Report_PatientId=[PatientId],Report_Type=Patient,Report_PatientFirstName=[Consult_PatientFirstName],Report_PatientMiddleName=[Consult_PatientMiddleName],Report_PatientLastName=[Consult_PatientLastName]"
+      trigger="ReportList,Report_VisitId"
+      action="redirect" target="mdlReports"/>
+  </row>
+  <row name="rowPrintLabel" reveal="btngrpShow=Open">
+    <!--Print patient label-->
+    <control type="button"
+      reveal="[PatientId]!" 
+      span="12"
+      name="btnPrintLabel"
+      action="print" 
+      mode="report" 
+      label="Labels"	 
+      icon="print" 
+      append="id=34b8cb70ec7,FacilityId=(facility),PatientId=[PatientId],PatientVisit=[PatientVisit]" /> 
+  </row>
+  <row name="rowPrintWristband" reveal="btngrpShow=Open">
+    <!-- Print wristband (same report as label) -->
+    <control type="button"
+      reveal="[PatientId]!" 
+      span="12"
+      name="btnPrintWristband"
+      action="print" 
+      mode="report" 
+      label="Wristband"	 
+      icon="print" 
+      append="id=34b8cb70ec7,FacilityId=(facility),PatientId=[PatientId],PatientVisit=[PatientVisit]" />
+  </row>
+  <row name="rowPrintCard" reveal="btngrpShow=Open">
+    <!-- Print patient card -->
+    <control type="button" 
+      span="12"
+      name="btnPrintCard"
+      reveal="[PatientId]!"
+      action="print" 
+      mode="report" 
+      label="Card"	 
+      icon="print" 
+      append="id=4451a5a5c53,FacilityId=(facility),PatientId=[PatientId]"/> 
+  </row>
+</partial>

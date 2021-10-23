@@ -1,0 +1,62 @@
+﻿<partial> 
+  <!-- Modal to complete quick admit -->
+  <section type="tabmodal" badge="none" name="mdlQuickAdmit" title="Admit Unconscious"	  size="small">
+    <group name="grpQuickAdmit">
+      <row>
+        <control type="label" label=""	 span="2"/>
+        <control type="label" label="Name"	 align="left" span="3"/>
+        <control type="label" label="Parent"	 align="left" span="3"/>
+        <control type="label" label="Maternal"	 align="left" span="3"/>
+      </row>
+      <row>
+        <control type="label" label=""	 span="2"/>
+        <control type="text" name="Quick_PatientFirstName" span="3" required="true" edit="true"  />
+        <control type="text" name="Quick_PatientMiddleName" span="3" required="true" edit="true"  />
+        <control type="text" name="Quick_PatientLastName" span="3" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Estimated Age"	 span="2"/>
+        <control type="integer" name="Quick_PatientAge" span="1" placeholder="Years" min="0" max="120" edit="true"/>
+        <control type="integer" name="Quick_PatientAgeMonths" span="1" placeholder="Months" min="0" max="24" edit="true"/>
+        <control type="integer" name="Quick_PatientAgeDays" span="1" placeholder="Days" min="0" max="120" edit="true"/>
+        <control type="label" label="Sex"	 span="3" />
+        <control type="select" 
+          name="Quick_PatientSex" span="3" 
+          required="true" 
+          source="Male,Female,Indeterminate"  
+          edit="true" 
+          sourcelabels="1 Male,2 Female,3 Undefined,4 Unknown"	/>
+      </row>
+      <row showif="never">
+        <control type="calc" name="Quick_PatientAdd"
+          source="Quick_PatientAge+Quick_PatientAgeMonths+Quick_PatientAgeDays"/>
+      </row>
+    </group>
+    <group>
+      <row>
+        <control type="label" label=""	 span="7"/>
+        <control type="button" name="btnQuickAdmitSave"
+          span="4" color="red" size="large" icon="ambulance"
+          label="Enter Unconscious"	
+          action="save"
+          affector="Quick_PatientId"
+          setaffector="RecordUniqueId"
+          capture="grpQuickAdmit" 
+          compare="[Quick_PatientAdd]»0|Todos los siguientes campos son obligatorios: Nombre,Appellido Paterno,Edad Estimada,y Sexo!"
+          datainsert="InsertPatient"
+          appendinsert="AccountNumber=Desconocido"
+          provoke="btnQuickAdmitVisit"/>
+      </row>
+      <row showif="never">
+        <control type="hidden" name="Quick_PatientId"/>
+        <control type="button" 
+            name="btnQuickAdmitVisit"
+            action="save|close|new" 
+            affector="none"
+            datainsert="InsertPatientVisitAllFields"
+            appendinsert="patientId=[Quick_PatientId],visitType=Outpatient,hospitalService=Waiting,preAdmit=0,admitDateTime=(dateTimeNow),departmentGuid=[DepartmentGuidLookup]"
+            provoke="PatientList"/>
+      </row>
+    </group>
+  </section>
+</partial>

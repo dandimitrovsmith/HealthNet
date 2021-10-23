@@ -1,0 +1,47 @@
+﻿<partial>
+<!-- Move patients within queus in Emergency Room -->
+  <section type="tabmodal" badge="none" name="mdlMovePatient" title="Move"	 size="small">
+    <group>
+      <row>
+        <control type="label" label=""	 span="4"/>
+        <control type="button" name="btnEsperando"
+          span="4" icon="move" label="Waiting"	
+          color="orange"
+          action="save|close|new"
+          dataupdate="UpdatePatientVisitAllFields"
+          appendupdate="patientId=[PatientId],patientVisitUniqueId=[PatientVisitGuid],departmentGuid=[DepartmentGuidLookup],hospitalService=Waiting"
+          provoke="PatientList,ClosePatientTabModal"/>
+      </row>
+      <row>
+        <control type="label" label=""	 span="4"/>
+        <control type="button" name="btnTriage"
+          span="4" icon="move" label="Triage"		
+          color="orange"
+          action="save|close|new"
+          dataupdate="UpdatePatientVisitAllFields"
+          appendupdate="patientId=[PatientId],patientVisitUniqueId=[PatientVisitGuid],departmentGuid=[DepartmentGuidLookup],hospitalService=Triaje"
+          provoke="PatientList,ClosePatientTabModal"/>
+      </row>
+      <row>
+        <control type="label" label=""	 span="4"/>
+        <control type="button" name="btnObservation"
+          span="4" icon="move" label="Observation"	
+          color="orange"
+          action="save|close|new"
+          dataupdate="UpdatePatientVisitAllFields"
+          appendupdate="patientId=[PatientId],patientVisitUniqueId=[PatientVisitGuid],departmentGuid=[DepartmentGuidLookup],hospitalService=Emergency"
+          provoke="PatientList,ClosePatientTabModal"/>
+      </row>
+      <row>
+        <control type="label" label=""	 span="4"/>
+        <control type="button" name="btnDischarge"
+          span="4" icon="move" label="Discharge"
+          color="orange"
+          action="save|close|new"
+          dataupdate="UpdatePatientVisitAllFields"
+          appendupdate="patientId=[PatientId],patientVisitUniqueId=[PatientVisitGuid],departmentGuid=[DepartmentGuidLookup],hospitalService=Discharge"
+          provoke="PatientList,ClosePatientTabModal"/>
+      </row>
+    </group>
+  </section>
+</partial>

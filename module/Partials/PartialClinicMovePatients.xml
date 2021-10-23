@@ -1,0 +1,68 @@
+﻿<partial>
+  <!-- Move clinic patients within queus -->
+  <!-- Uses Waiting,Enfermería,Pre-Consult,Consult,Complete and Missing queues -->
+  <section type="tabmodal" badge="none" name="mdlMovePatient" title="Move"	 size="small">
+    <group>
+      <row>
+        <control type="label" label=""	 span="4"/>
+        <control type="button" name="btnEsperando"
+          span="4" icon="move" label="Waiting"	
+          color="orange" 
+          action="save|close|new"
+          dataupdate="UpdatePatientVisitAllFields"
+          appendupdate="patientId=[PatientId],patientVisitUniqueId=[PatientVisitGuid],departmentGuid=[DepartmentGuidLookup],hospitalService=Waiting"
+          provoke="PatientList,ClosePatientTabModal"/>
+      </row>
+      <row>
+        <control type="label" label=""	 span="4"/>
+        <control type="button" name="btnEnfermería"
+          span="4" icon="move" label="Nursing"	
+          color="orange" 
+          action="save|close|new"
+          dataupdate="UpdatePatientVisitAllFields"
+          appendupdate="patientId=[PatientId],patientVisitUniqueId=[PatientVisitGuid],departmentGuid=[DepartmentGuidLookup],hospitalService=Nursing"
+          provoke="PatientList,ClosePatientTabModal"/>
+      </row>
+      <row>
+        <control type="label" label=""	 span="4"/>
+        <control type="button" name="btnPreConsult"
+          span="4" icon="move" label="Pre-Consultation"	
+          color="orange" 
+          action="save|close|new"
+          dataupdate="UpdatePatientVisitAllFields"
+          appendupdate="patientId=[PatientId],patientVisitUniqueId=[PatientVisitGuid],departmentGuid=[DepartmentGuidLookup],hospitalService=Pre-Consult"
+          provoke="PatientList,ClosePatientTabModal"/>
+      </row>
+      <row>
+        <control type="label" label=""	 span="4"/>
+        <control type="button" name="btnConsult"
+          span="4" icon="move" label="Consultation"	
+          color="orange" 
+          action="save|close|new"
+          dataupdate="UpdatePatientVisitAllFields"
+          appendupdate="patientId=[PatientId],patientVisitUniqueId=[PatientVisitGuid],departmentGuid=[DepartmentGuidLookup],hospitalService=Consult"
+          provoke="PatientList,ClosePatientTabModal"/>
+      </row>
+      <row>
+        <control type="label" label=""	 span="4"/>
+        <control type="button" name="btnComplete"
+          span="4" icon="move" label="Completed"	
+          color="orange" 
+          action="save|close|new"
+          dataupdate="UpdatePatientVisitAllFields"
+          appendupdate="patientId=[PatientId],patientVisitUniqueId=[PatientVisitGuid],departmentGuid=[DepartmentGuidLookup],hospitalService=Complete"
+          provoke="PatientList,ClosePatientTabModal"/>
+      </row>
+      <row>
+        <control type="label" label=""	 span="4"/>
+        <control type="button" name="btnMissing"
+          span="4" icon="move" label="Missing"	
+          color="orange" 
+          action="save|close|new"
+          dataupdate="UpdatePatientVisitAllFields"
+          appendupdate="patientId=[PatientId],patientVisitUniqueId=[PatientVisitGuid],departmentGuid=[DepartmentGuidLookup],hospitalService=Missing"
+          provoke="PatientList,ClosePatientTabModal"/>
+      </row>
+    </group>
+  </section>
+  </partial>

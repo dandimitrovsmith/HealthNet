@@ -1,0 +1,22 @@
+﻿ <partial> 
+  <!-- Consult Requests for this patient-->
+  <control type="datagrid" label="Interconsults"	
+      name="ConsultList" 
+      option="Appointments"
+      rows="5"
+      fitrows="true"
+      action="redirect"
+      target="NewConsultModal"
+      acctsvcreq="true"
+      datarequest="GetConsultRequestsByCriteria"
+      appendrequest="mode=patient,patientId=[PatientId],searchCriteria=Patient"
+      source="DateTimeEntered,ConsultNumber,ConsultRequestType,ConsultReason,RequestingHospitalName,RequestToHospitalName,ConsultRequestStatus"
+      sourcelabels="Request,File,Type,Reason,Origin,Destination,Status"	
+      align="|left|left|left|left|left|left|left"
+      format="datetime"
+      sort="DateTimeEntered=desc"
+      translate="ConsultRequestStatus"
+      key="ConsultRequestGuid"
+      onselectset="PatientConsultGuid=[[ConsultRequestGuid]],InterConsult_PatientId=[[PatientId]]"
+      onselect="PatientConsultGuid,InterConsult_PatientId"/>
+</partial>

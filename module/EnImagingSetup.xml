@@ -1,0 +1,231 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+  <!--Last Edit by Dan 4/14/2018-->
+<module name="Imaging" type="onload" trigger="ImagingOrderTypes">
+  <section type="tab" title="Imaging Order Types"	>
+    <group>
+     <row>
+        <control type="datagrid" 
+          searchable="true"
+          label="Imaging Order Types"	 
+          name="ImagingOrderTypes"
+          modalname="NewImagingOrderType" 
+          span="8"
+          rows="20"
+          persist="true"
+          datasource="GetLookupRadiologyOrderTypes"
+          datarequest="GetLookupRadiologyOrderTypes"
+          datainsert="InsertLookupRadiologyOrderTypes"
+          dataupdate="UpdateLookupRadiologyOrderTypes"
+          source="Active,OrderTypeCode,OrderType"
+          sourcelabels="Active,Code,Order Type"	
+          align="|left|left"
+          format="boolean"
+          sort="OrderType=asc"
+          key="OrderTypeGuid"/>
+     </row>
+    </group>
+  </section>
+  
+  <section type="modal" name="NewImagingOrderType" title="Imaging Order Type"	 provoke="ImageOrderType" size="small"
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName"
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">
+    <group name="NewImagingOrderTypeGroup">
+      <row>
+        <control type="label" label="Active"	 span="3"/>
+        <control type="buttongroup" name="NewImagingOrderTypeGroup_Active" span="3" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Code"	 span="3"/>
+        <control type="text" name="OrderTypeCode" span="2"  edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Type"			 span="3"/>
+        <control type="text" name="OrderType" span="4" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="NewImagingOrderTypeGroup_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="NewImagingOrderTypeGroup_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+
+  <section type="tab" title="Imaging Orders"	>
+    <group>
+     <row>
+        <control type="datagrid" label="Imaging Orders"	 name="ImagingOrders"
+          searchable="true"
+          modalname="NewImagingOrder" span="12"
+          rows="20"
+          datasource="GetImagingOrderItems"
+          datarequest="GetImagingOrderItems"
+          datainsert="InsertImagingOrderItems"
+          dataupdate="UpdateImagingOrderItems"
+          source="Active,ImageOrderType,ImageOrderName,CPTCode,CPTCodeDescription,LengthOfServiceMinutes,BasePrice"
+          sourcelabels="Active,Type,Order,CPT Code,CPT Description,Duration,Base Price"	
+          align="|left|left|left|left|right|right"
+          format="boolean||||||0,0.00"
+          sort="OrderType=asc"
+          key="ImageOrderGuid" />
+     </row>
+    </group>
+  </section>
+  
+  <section type="modal" name="NewImagingOrder" title="Imaging Order"	  size="small"
+      enteredby="EnteredByFullName" updatedby="UpdatedByFullName"
+      dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">
+    <group name="NewImagingOrderGroup">
+      <row>        
+        <control type="label" label="Active"	 span="3"/>
+        <control type="buttongroup" name="NewImagingOrderGroup_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Patient Chargeable"	 span="3"/>
+        <control type="buttongroup" name="PatientChargeable"
+          sourcelabels="Yes,No"	 source="True,False" span="2" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Order Type"	 span="3"/>
+        <control type="select" name="ImageOrderType" 
+          span="6" edit="true" required="true"
+          datasource="GetLookupRadiologyOrderTypesActive" 
+          source="OrderType,OrderTypeCode"/>
+      </row>
+      <row>
+        <control type="label" label="Order"	 span="3"/>
+        <control type="text" name="ImageOrderName" span="6" required="true" edit="true" />
+      </row>
+      <row>        
+        <control type="label" label="Base Price"	 span="3"/>
+        <control type="text" name="BasePrice" span="2" format="0,0.00" default="0.00" edit="true" />
+        <control type="label" label="Cost"	 span="2"/>
+        <control type="text" name="Cost" span="2" format="0,0.00" default="0.00" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="CPT Code"	 span="3"/>
+        <control type="text" name="CPTCode" span="2" edit="true" />
+        <control type="label" label="CPT Description"	 span="2"/>
+        <control type="text" name="CPTCodeDescription" span="4" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="LOINC Code"	 span="3"/>
+        <control type="text" name="LOINCCode" span="2"  edit="true" />
+        <control type="label" label="LOINC Description"	 span="2"/>
+        <control type="text" name="LOINCCodeDescription" span="4" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="HL7 code"	 span="3"/>
+        <control type="text" name="HL7ImagingModalityCode" span="2" edit="true" />
+        <control type="label" label="HL7 application"	 span="2"/>
+        <control type="text" name="HL7ReceivingApplication" span="4" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Charge Code"	 span="3"/>
+        <control type="text" name="ChargeCode" span="2" edit="true" />
+        <control type="label" label="Revenue Code"	 span="2"/>
+        <control type="select" span="4" name="RevenueCodeName,RevCode"
+          datasource="GetRevenueCodesForThisFacility" 
+          filter="Active=true"
+          acctsvc="true" 
+          edit="true"
+          source="RevenueCode|RevenueCodeDescription,RevenueCode" 
+           />
+      </row>
+      <row>
+        <control type="label" label="Duration (min)"	 span="3"/>
+        <control type="integer" name="LengthOfServiceMinutes" span="2" edit="true" />
+        <control type="label" label="External ID"		 span="2"/>
+        <control type="text" name="ExternalId" span="2" edit="true" 
+          tooltip=""/>
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="NewImagingOrderGroup_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="NewImagingOrderGroup_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+  <!-- Setup for imaging modalities -->
+  <section type="tab" title="Imaging Modalities"	>
+    <group>
+     <row>
+        <control type="datagrid" label="Imaging Modalities"	 name="ImagingModalities"
+          searchable="true"
+          modalname="NewImagingModality" span="12"
+          rows="20"
+          acctsvc="true"
+          acctsvcreq="true"
+          datasource="GetLookupFacilityModalityDevices"
+          datarequest="GetLookupFacilityModalityDevices"
+          datainsert="InsertLookupFacilityModalityDevices"
+          dataupdate="UpdateLookupFacilityModalityDevices"
+          source="Active,LocationId,ModalityCode,ModalityName,Room"
+          sourcelabels="Active,Location ID,Code,Name,Location"	
+          align="|left|left|left|left"
+          format="boolean"
+          sort="ModalityName=asc"
+          key="ModalityGuid"/>
+     </row>
+    </group>
+  </section>
+  <!-- Modal for imaging modalities -->
+  <section type="modal" name="NewImagingModality" title="Imaging Modality"	  size="small"
+      enteredby="EnteredByFullName" updatedby="UpdatedByFullName"
+      dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">
+    <group name="NewImagingModalityGroup">
+      <row>        
+        <control type="label" label="Active"	 span="3"/>
+        <control type="buttongroup" name="NIMG_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Location Id"	 span="3"/>
+        <control type="text" name="NIMG_LocationId" span="4" edit="true"/>
+      </row>
+      <row>
+        <control type="label" label="Code"	 span="3"/>
+        <control type="select" name="NIMG_ModalityCode" span="4" edit="true"
+          datasource="GetLookupRadiologyOrderTypesActive" 
+          source="OrderType,OrderTypeCode"
+          explicit="true" required="true"/>
+      </row>
+      <row>
+        <control type="label" label="HL7 code"	 span="3"/>
+        <control type="text" name="NIMG_HL7Code" span="4" edit="true"/>
+      </row>
+      <row>
+        <control type="label" label="Name"	 span="3"/>
+        <control type="text" name="NIMG_ModalityName" span="4" edit="true" required="true"/>
+      </row>
+      <row>
+        <control type="label" label="Room"	 span="3"/>
+        <control type="text" name="NIMG_Room" span="4" edit="true"/>
+      </row>
+    </group>
+  </section>
+</module>

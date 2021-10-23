@@ -1,0 +1,45 @@
+﻿<partial>
+  <!-- Display a list of closed visits by date and allow reopening the most recent visit -->
+  <!-- Closed Visits -->
+  <section type="tab" name="tabClosedVisits" title="Closed Visits"	 trigger="dgClosedVisits">
+    <group>
+      <row>
+        <control type="label" label="Search Date"	 span="2" />
+        <control type="date" span="2" name="ClosedVisitStartDate" default="now" trigger="dgClosedVisits"/>
+      </row>
+      <row>
+        <!-- Inbound Bed Requests for a date-->
+        <control
+          type="datagrid"
+          label="Closed Visits (Click on more to reopen closed visits.)"	
+          name="dgClosedVisits"
+          span="12" rows="20"
+          fitrows="true"
+          acctsvcreq="true"
+          datarequest="GetClosedPatientVisitsByCriteria"
+          appendrequest="startDate=[ClosedVisitStartDate],endDate=[ClosedVisitStartDate]"
+          source="InvoiceNumber,AdmitDateTime,DischargeDateTime,AccountNumber,PatientFullName,PatientDOB,PatientSex,CanReopenVisit,LastPatientVisitInvoiceNumber"
+          sourcelabels="Invoice,Admitted,Registration Date,Account,Name,Birth,Sex,May Reopen,Previous Invoice"	
+          align="left|||left|left|left|left||left"
+          format="|datetime|datetime|||date||boolean|"          
+          translate="PatientSex"
+          key="PatientVisitUniqueId">
+          <control type="button" name="btnReopenVisit"
+            showif="feature" label="Reopen Visit"	
+            reveal="[[CanReopenVisit]]=true"
+            confirm="Please confirm you want to reopen this patient visit."
+            acctsvc="true"
+            action="save"
+            dataupdate="ReopenPatientVisit"
+            appendupdate="patientVisit=[[PatientVisitUniqueId]]"
+            provoke="dgClosedVisits,PatientList"/>
+          <control type="button" name="btnNotReopenVisit"
+            showif="feature" label="This visit cannot be reopened"	
+            reveal="[[CanReopenVisit]]=false"
+            action="trigger"
+            provoke="dgClosedVisits"/>
+        </control>
+      </row>
+    </group>
+  </section>
+</partial>

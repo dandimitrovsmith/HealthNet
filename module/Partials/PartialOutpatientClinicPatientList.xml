@@ -1,0 +1,146 @@
+﻿<partial>
+  <!-- Partial outpatient clinic patient list -->
+  <!-- Includes feature buttons to transfer patients in queues -->
+  <group showif="never">
+      <row> 
+        <!-- Get the last department for the user -->
+        <control type="hidden" name="GetLastDepartment"
+          datarequest="GetUserProfileFromUserId2"
+          appendrequest="UserIdToGet=(userName)"
+          inject="SetDepartmentGroup"
+          provoke="SetDepartmentNames,PatientList"/>
+        <!-- Save the last department for the user -->
+        <control type="button" 
+          name="SaveLastDepartment"
+          action="save"
+      		affector="none"
+      		datainsert="UpdateUserProfileSetDepartment"
+          appendinsert="UserId=(userName),departmentGuid=[DepartmentGuidLookup]"/>
+        <control type="button" name="SetAdmitRequestPatientId"
+          action="redirect" target="PatientTabModal"
+          preset="PatientId=[PatientSearchResults]"
+          trigger="PatientId"/>
+      </row>
+    </group>
+    <group name="SetDepartmentGroup">
+      <row>
+        <!-- Select the department to display -->
+        <control type="select" 
+          span="4"
+          name="DepartmentGuidLookup"
+          namefield="DepartmentGuidLookupName"
+          injectname="Department" 
+          acctsvc="true"
+          explicit="true"
+          edit="true" 
+          datasource="GetDepartmentsActive" 
+          source="DepartmentName,DepartmentGuid"
+          provoke="SaveLastDepartment,PatientList,SetDepartmentNames"/>
+        <!-- Select the hospital service (queue) to display -->
+         <control type="buttongroup" name="ListFilter" span="7" 
+          source="Waiting,Nursing,Pre-Consult,Consult,Complete,Missing"
+          value="Waiting"
+          action="trigger"
+          trigger="PatientList"/>
+      </row>
+    </group>
+    <group>
+      <row>
+        <!-- Display the list of patients currently admitted to the selected department -->
+        <control type="datagrid" label="Admitted Patients"	
+          span="12" 
+          name="PatientList"
+          action="redirect" 
+          target="PatientTabModal"
+          searchable="true"
+          gridfilter="ListFilter|HospitalService"
+          rowcolor="ReadyForDischarge|true=green"
+          rows="20"
+          fitrows="true"
+          datarequest="GetPatientListWithOpenVisitsByFacility"
+          appendrequest="DepartmentGuid=[DepartmentGuidLookup],excludephoto=true"
+          source="ReadyForDischarge,AdmitDateTime,AccountNumber,PatientFullName,PatientDOB,PatientAge,PatientSex,Room"
+          sourcelabels="Discharge,Admitted,Account,Name,Birth,Age,Sex,Room"	
+          translate="PatientSex"
+          align="||left|left|left|left|left"
+          format="boolean|datetime|||date"
+          sort="AdmitDateTime=asc"
+          key="key"
+          onselectset="PatientId=[[RecordUniqueId]],PatientVisitGuid=[[PatientVisitId]],GuidStorage_HospitalService=[[HospitalService]]"
+          onselect="PatientId,PatientVisitGuid,ButtonGroupSelect">
+        <control type="button" name="btnOutpatientSearchForPatients"
+						action="redirect" icon="search" label="Search for Patients"	 
+            preset="PatientSearchSource=5" target="mdlFindPatients"/>
+        <control type="button" name="btnRefreshPatientList"
+          label="Refresh"	 icon="refresh"
+          action="trigger" trigger="PatientList"/>
+        <!-- Display info -->
+      
+        <!-- Display and enter nursing notes for a patient -->
+        <control type="button" name="grdbtnNursingNotes"
+          showif="feature"
+          color="yellowgreen"
+          action="redirect|view"
+          target="patient-notes"
+          append="patientid=[[RecordUniqueId]],patientvisit=[[PatientVisitId]],notetype=Nurse"
+          label="Notes"	
+          icon="user-md"
+          provoke="PatientList"/>
+        <!-- Transfer the patient to the waiting queue -->
+        <control type="button" name="grdbtnEsperando"
+          showif="feature"
+          icon="move" label="Waiting"	
+          color="white" 
+          action="save"
+          dataupdate="UpdatePatientVisitAllFields"
+          appendupdate="patientId=[[RecordUniqueId]],patientVisitUniqueId=[[PatientVisitId]],departmentGuid=[DepartmentGuidLookup],hospitalService=Waiting"
+          provoke="PatientList"/>
+        <!-- Transfer the patient to the nursing queue -->
+        <control type="button" name="grdbtnEnfermería"
+          showif="feature"
+          icon="move" label="Nursing"	
+          color="lightblue" 
+          action="save"
+          dataupdate="UpdatePatientVisitAllFields"
+          appendupdate="patientId=[[RecordUniqueId]],patientVisitUniqueId=[[PatientVisitId]],departmentGuid=[DepartmentGuidLookup],hospitalService=Nursing"
+          provoke="PatientList"/>
+        <!-- Transfer the patient to the pre-consult queue -->
+        <control type="button" name="grdbtnPreConsult"
+          showif="feature"
+          icon="move" label="Pre-Consultation"	
+          color="green" 
+          action="save"
+          dataupdate="UpdatePatientVisitAllFields"
+          appendupdate="patientId=[[RecordUniqueId]],patientVisitUniqueId=[[PatientVisitId]],departmentGuid=[DepartmentGuidLookup],hospitalService=Pre-Consult"
+          provoke="PatientList"/>
+        <!-- Transfer the patient to the consult queue -->
+        <control type="button" name="grdbtnConsult"
+          showif="feature"
+          icon="move" label="Consultation"	
+          color="yellowgreen" 
+          action="save"
+          dataupdate="UpdatePatientVisitAllFields"
+          appendupdate="patientId=[[RecordUniqueId]],patientVisitUniqueId=[[PatientVisitId]],departmentGuid=[DepartmentGuidLookup],hospitalService=Consult"
+          provoke="PatientList"/>
+        <!-- Complete the patient visit -->
+        <control type="button" name="grdbtnComplete"
+          showif="feature"
+          icon="move" label="Completed"	
+          color="yellow" 
+          action="save"
+          dataupdate="UpdatePatientVisitAllFields"
+          appendupdate="patientId=[[RecordUniqueId]],patientVisitUniqueId=[[PatientVisitId]],departmentGuid=[DepartmentGuidLookup],hospitalService=Complete"
+          provoke="PatientList"/>
+        <!-- Transfer the patient to the missing queue -->
+        <control type="button" name="grdbtnMissing"
+          showif="feature"
+          icon="move" label="Missing"	
+          color="red" 
+          action="save"
+          dataupdate="UpdatePatientVisitAllFields"
+          appendupdate="patientId=[[RecordUniqueId]],patientVisitUniqueId=[[PatientVisitId]],departmentGuid=[DepartmentGuidLookup],hospitalService=Missing"
+          provoke="PatientList"/>
+        </control>
+      </row>
+    </group>
+</partial>

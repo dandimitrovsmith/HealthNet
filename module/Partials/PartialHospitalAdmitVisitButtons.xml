@@ -1,0 +1,55 @@
+﻿<partial>
+  <!-- Partial Hospital Visit Buttons -->
+  <row name="rowSendText" reveal="[Consult_PatientCellPhone]!">
+    <control type="button" name="btnSendTextMessage2"  
+      span="12" icon="envelope" label="Text"	
+      preset="phoneNumber=[Consult_PatientCellPhone]"
+      trigger="grdPhysicianMessages2"
+      action="redirect" target="mdlSendTextMessage"/>
+  </row>
+  <row name="rowSendEmail" reveal="[Consult_PatientEmail]!">
+    <control type="button" name="btnSendEmailMessage2"
+      span="12" icon="envelope" label="Email"			
+      preset="Send_EmailAddress=[Consult_PatientEmail],Send_PatientId=[PatientId]"
+      trigger="grdPhysicianMessages1"
+      action="redirect" target="mdlSendEmailMessage"/>
+  </row>
+  <row>
+    <!-- Assign a patient room -->
+    <control type="button" name="btnAssignPatientBed" span="12"
+      reveal="[HasOpenVisit]=true"
+      icon="cloud-upload" color="orange"
+      label="Assign Bed"	
+      trigger="FindWardList"
+      action="redirect"
+      target="mdlFindRoom"/>
+  </row>
+  <row>
+      <!-- Transfer patient to another department -->
+      <control type="button" name="btnTransferPatient"
+      reveal="[HasOpenVisit]=true"
+      span="12" icon="hospital" label="Transfer"	
+      color="orange" 
+      action="save" 
+      affector="none"
+      capture="VisitInfo"
+      acctsvc="true"
+      dataupdate="UpdatePatientVisitNoDepartmentTracking"
+      appendupdate="patientId=[PatientId],patientVisitUniqueId=[PatientVisitGuid]"
+      provoke="btnDisplayTransfer"/>
+  </row>
+  <row showif="never">
+    <control type="button" name="btnDisplayTransfer"
+      action="redirect"
+      preset="Transfer_DepartmentGuid=[DepartmentGuidLookup]"
+      target="mdlTransferPatient"/>
+  </row>
+  <row>
+    <!-- Discharge patient button -->
+    <control type="button" name="btnDischargePatient"
+      reveal="[HasOpenVisit]=true"
+      span="12" icon="home" label="Discharge"
+      color="green" action="redirect"
+      target="mdlDischargePatient"/>
+  </row> 
+</partial>

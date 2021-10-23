@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<module name="Calendar Management" type="onload" trigger="dgrPhysicianCalendars">
+  <facet name="FileName" value="SolcaCalendarManagement"/>
+  <facet name="CalendarOption"/>
+  <facet name="SurgeryWardName" value="Pabellon"/>
+  <!-- Specialist calendar for all types of consult appointments -->
+  <partial link="./EnPartial/Calendars/PartialCalendarPhysiciansAsResourcesSetup.xml"/>
+  <!-- Imaging calendar for modality appointments -->
+  <partial link="./EnPartial/Calendars/PartialCalendarImagingWithModalitiesSetup.xml"/>
+  <!-- Services calendar for services that are not assigned to physicians and do not have time blocks -->
+  <partial link="./EnPartial/Calendars/PartialCalendarLabSetup.xml"/>
+  
+</module>

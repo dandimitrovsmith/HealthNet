@@ -1,0 +1,999 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Last Edit by Dan 4/13/2018-->
+<module name="Documentation">
+  <!--Admission Types-->
+  <!--Added by Dan 4/11/2018-->
+  <section type="tab" title="Admission Types"	>
+    <group>
+     <row>
+        <control type="datagrid" label="Types of Admission"	 name="AdmissionTypes" searchable="true"
+          modalname="NewAdmissionTypes" span="6"
+          rows="20"
+          datasource="GetLookupAdmissionTypes"
+          datarequest="GetLookupAdmissionTypes"
+          datainsert="InsertLookupAdmissionTypes"
+          dataupdate="UpdateLookupAdmissionTypes"
+          source="Active,AdmissionTypeCode,AdmissionType"
+          sourcelabels="Active,Code,Admission Type"	
+          filter="Facility!ALL"
+          align="|left|left"
+          format="boolean||"
+          sort="AdmissionType=asc"
+          key="AdmissionTypeGuid" />
+
+        <control type="datagrid" label="Origins of Admission"	 name="AdmissionSources" searchable="true"
+          modalname="NewAdmissionSources" span="6"
+          rows="20"
+          datasource="GetLookupAdmitSourcesByFacility"
+          datarequest="GetLookupAdmitSourcesByFacility"
+          datainsert="InsertLookupAdmitSources"
+          dataupdate="UpdateLookupAdmitSources"
+          source="Active,AdmitSourceCode,AdmitSource"
+          sourcelabels="Active,Code,Source of Admission"	
+          align="|left|left"
+          format="boolean||"
+          sort="AdmitSource=asc"
+          key="AdmitSourceGuid"/>
+     </row>
+    </group>
+  </section>
+
+  <section type="modal" name="NewAdmissionTypes" title="Admission Type"	 size="small"
+    enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+    dtentered="DateTimeEntered" dtupdated="DateTimeUpdated"> 
+    <group name="NewAdmissionTypesGroup">
+      <row>
+        <control type="label" label="Active"	 span="5"/>
+        <control type="buttongroup" name="NewAdmissionType_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Code"	 span="5"/>
+        <control type="text" name="AdmissionTypeCode" span="2" max="20"  edit="true" required="true" />
+      </row>
+      <row>
+        <control type="label" label="Type"			 span="5"/>
+        <control type="text" name="AdmissionType" span="5" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="NewAdmissionType_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="NewAdmissionType_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+
+  <section type="modal" name="NewAdmissionSources" title="Origin of Admission"	 size="small"
+           enteredby="EnteredByFullName" updatedby="LastUpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeLastUpdate"> 
+    <group>
+      <row>
+        <control type="label" label="Active"	 span="5"/>
+        <control type="buttongroup" name="NewAdmissionSource_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Code"	 span="5"/>
+        <control type="text" name="AdmitSourceCode" span="2" edit="true" required="true" />
+      </row>
+      <row>
+        <control type="label" label="Origin"	 span="5"/>
+        <control type="text" name="AdmitSource" max="50" span="5" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="NewAdmissionSource_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="NewAdmissionSource_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+
+<!--Discharge Dispositions-->
+  <!--Added by Dan 4/12/2018-->
+  <section type="tab" title="Discharge Dispositions"	>
+    <group>
+     <row>
+        <control type="datagrid" label="Discharge Types"	 name="DischargeDispositions" searchable="true"
+          modalname="NewDischargeDispositions" 
+          span="8"
+          rows="20"
+          datasource="GetLookupDischargeDispositions"
+          datarequest="GetLookupDischargeDispositions"
+          datainsert="InsertLookupDischargeDisposition"
+          dataupdate="UpdateLookupDischargeDisposition"
+          source="Active,Code,DischargeDisposition"
+          sourcelabels="Active,Code,Discharge Disposition"	
+          align="|left|left"
+          format="boolean||"
+          sort="DischargeDisposition=asc"
+          key="DispositionGuid" />
+     </row>
+    </group>
+  </section>
+
+  <section type="modal" name="NewDischargeDispositions" title="Discharge Disposition"	 size="small"
+           enteredby="EnteredByFullName" updatedby="LastUpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">
+    <group name="NewDischargeDispositionsGroup">
+      <row>
+        <control type="label" label="Active"	 span="5"/>
+        <control type="buttongroup" name="NewDischargeDisposition_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Code"	 span="5"/>
+        <control type="text" name="NewDischargeDisposition_Code" span="2"  edit="true" required="true" />
+      </row>
+      <row>
+        <control type="label" label="Type"			 span="5"/>
+        <control type="text" name="DischargeDisposition" max="50" span="5" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="NewDischargeDisposition_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="NewDischargeDisposition_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+  <!--Note Types-->
+  <!--Added by Dan 4/13/2018-->
+  <section type="tab" title="Note Types"	>
+    <group>
+     <row>
+        <control type="datagrid" label="Note Types"	 name="NoteTypes" searchable="true"
+          modalname="NewNoteType" span="8"
+          rows="20"
+          datasource="GetLookupNoteTypes"
+          datarequest="GetLookupNoteTypes"
+          datainsert="InsertLookupNoteTypes"
+          dataupdate="UpdateLookupNoteTypes"
+          source="Active,SubType,NoteType"
+          sourcelabels="Active,Category,Note Type"	
+          translate="SubType"
+          align="|left|left"
+          format="boolean||"
+          sort="SubType=asc"
+          key="NoteTypeGuid" />
+     </row>
+    </group>
+  </section>
+  <!--Modal Window for User Identification Types-->
+  <!--Added by Dan 4/10/2018-->
+  <section type="modal" name="NewNoteType" title="Note Type"	 size="small"
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">  
+    <group>
+      <row>
+        <control type="label" label="Active"	 span="5"/>
+        <control type="buttongroup" name="NewNoteType_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Category"			 span="5"/>
+        <control type="select" source="Physician,Nurse,Interdisciplinary,Billing" 
+        sourcelabels="Physician,Nurse,Interdisciplinary,Billing"	 
+        name="SubType" span="3" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Type"			 span="5"/>
+        <control type="text" name="NoteType" span="4" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="NewNoteType_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="NewNoteType_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+
+  <!--Document Categories-->
+  <!--Added by Dan 4/13/2018-->
+  <section type="tab" title="Document Categories"	>
+    <group>
+     <row>
+        <control type="datagrid" label="Document Categories"	 name="DocumentCategories"
+          searchable="true"
+          modalname="NewDocumentCategory" span="6"
+          rows="20"
+          datasource="GetDocumentCategories"
+          datarequest="GetDocumentCategories"
+          datainsert="InsertDocumentCategories"
+          dataupdate="UpdateDocumentCategories"
+          source="Active,DocumentCategoryCode,DocumentCategoryName"
+          sourcelabels="Active,Code,Category"	
+          align="|left|left"
+          format="boolean||"
+          sort="DocumentCategoryName=asc"
+          key="DocumentCategoryGuid" />
+
+        <control type="datagrid" label="Document Types"	 name="DocumentTypes"
+          searchable="true"
+          modalname="NewDocumentType" span="6"
+          rows="20"
+          datasource="GetDocumentTypes"
+          datarequest="GetDocumenTypes"
+          datainsert="InsertDocumentTypes"
+          dataupdate="UpdateDocumentTypes"
+          source="Active,Category,DocumentTypeCode,DocumentTypeName"
+          sourcelabels="Active,Category,Code,Document Type"	
+          align="|left|left|left"
+          format="boolean||"
+          sort="DocumentTypeName=asc"
+          key="DocumentTypeGuid" />
+     </row>
+    </group>
+  </section>
+  <!--Modal Window for User Identification Types-->
+  <!--Added by Dan 4/10/2018-->
+  <section type="modal" name="NewDocumentCategory" title="Document Category"	 provoke="Category" size="small"
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">  
+    <group>
+      <row>
+        <control type="label" label="Active"	 span="5"/>
+        <control type="buttongroup" name="NewDocumentCategory_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Code"	 span="5"/>
+        <control type="text" name="DocumentCategoryCode" span="2"  edit="true" required="true" />
+      </row>
+      <row>
+        <control type="label" label="Category"			 span="5"/>
+        <control type="text" name="DocumentCategoryName" span="4" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="NewDocumentCategory_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="NewDocumentCategory_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+
+  <!--Added by Dan 4/10/2018-->
+  <section type="modal" name="NewDocumentType" title="Document Type"	 size="small"
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">  
+    <group>
+      <row>
+        <control type="label" label="Active"	 span="5"/>
+        <control type="buttongroup" name="NewDocumentType_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Category"			 span="5"/>
+        <control type="select" name="Category" span="4" edit="true"  required="true"
+          datasource="GetDocumentCategoriesActive" 
+          source="DocumentCategoryName,DocumentCategoryName"
+          />
+        </row>
+      <row>
+        <control type="label" label="Code"	 span="5"/>
+        <control type="text" name="DocumentTypeCode" span="2"  edit="true" required="true" />
+      </row>
+      <row>
+        <control type="label" label="Type"			 span="5"/>
+        <control type="text" name="DocumentTypeName" span="4" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="NewDocumentType_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="NewDocumentType_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+
+  <section type="tab" title="Languages"	>
+    <group>
+      <row>
+        <control type="datagrid" label="Languages"	 name="Languages" searchable="true"
+          modalname="NewLanguage" span="6"
+          rows="20"
+          datasource="GetLookupLanguageSpoken"
+          datarequest="GetLookupLanguageSpoken"
+          datainsert="InsertLookupLanguageSpoken"
+          dataupdate="UpdateLookupLanguageSpoken"
+          source="Active,Code,Language"
+          sourcelabels="Active,Code,Language"	
+          align="|left|left"
+          format="boolean||"
+          sort="Language=asc"
+          key="LanguageGuid" />
+      <!-- </row>
+      <row> -->
+        <control type="datagrid" label="Other Languages"	 name="OtherLanguages" searchable="true"
+          modalname="NewOtherLanguage" span="6"
+          rows="20"
+          acctsvc="true"
+          acctsvcreq="true"
+          datasource="GetLookupOtherLanguage"
+          datarequest="GetLookupOtherLanguage"
+          acctsvcinsert="true"
+          acctsvcupdate="true"
+          datainsert="InsertLookupOtherLanguage"
+          dataupdate="UpdateLookupOtherLanguage"
+          source="Active,OtherLanguageCode,OtherLanguage"
+          sourcelabels="Active,Code,Language"	
+          align="|left|left"
+          format="boolean||"
+          sort="OtherLanguage=asc"
+          key="OtherLanguageGuid" />
+      </row>
+    </group>
+  </section>
+  <!--Added by Dan 4/10/2018-->
+  <section type="modal" name="NewLanguage" title="Language"	 size="small"
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">  
+    <group>
+      <row>
+        <control type="label" label="Active"	 span="5"/>
+        <control type="buttongroup" name="NewLanguage_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Code"	 span="5"/>
+        <control type="text" name="NewLanguage_Code" span="2" edit="true" required="true" />
+      </row>
+      <row>
+        <control type="label" label="Language"	 span="5"/>
+        <control type="text" name="Language" span="4" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="NewLanguage_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="NewLanguage_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+  <section type="modal" name="NewOtherLanguage" title="Other Language"	 size="small"
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">
+    <group>
+      <row>
+        <control type="label" label="Active"	 span="5"/>
+        <control type="buttongroup" name="NewOtherLanguage_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Code"	 span="5"/>
+        <control type="text" name="OtherLanguageCode" span="2" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Language"	 span="5"/>
+        <control type="text" name="OtherLanguage" span="4" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="NewOtherLanguage_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="NewOtherLanguage_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+
+  <!--Added by Dan 04/1/2018-->
+  <section type="tab" title="Marital Statuses"	>
+    <group>
+     <row>
+        <control type="datagrid" label="Marital Statuses"	 name="MaritalStatusGrid" searchable="true"
+          modalname="NewMaritalStatus" span="8"
+          rows="20"
+          datasource="GetLookupMaritalStatus"
+          datarequest="GetLookupMaritalStatus"
+          datainsert="InsertLookupMaritalStatus"
+          dataupdate="UpdateLookupMaritalStatus"
+          source="Active,Code,MaritalStatus"
+          sourcelabels="Active,Code,Marital Status"	
+          align="|left|left"
+          format="boolean||"
+          sort="MaritalStatus=asc"
+          key="MaritalStatusGuid" />
+     </row>
+    </group>
+  </section>
+  <!--Added by Dan 4/10/2018-->
+  <section type="modal" name="NewMaritalStatus" title="Marital Statuses"	 size="small"
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">  
+    <group>
+      <row>
+        <control type="label" label="Active"	 span="5"/>
+        <control type="buttongroup" name="NewMaritalStatus_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Code"	 span="5"/>
+        <control type="text" name="NewMaritalStatus_Code" span="2"  edit="true" required="true" />
+      </row>
+      <row>
+        <control type="label" label="Marital Statuses"	 span="5"/>
+        <control type="text" name="MaritalStatus" span="4" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="NewMaritalStatus_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="NewMaritalStatus_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+  <!--Added by Dan 4/15/2018-->
+  <section type="tab" title="Religions"	>
+    <group>
+      <row>
+        <control type="datagrid" label="Religions"	 name="Religions" searchable="true"
+          modalname="NewReligion" 
+          span="8"
+          rows="20"
+          datasource="GetLookupReligions"
+          datarequest="GetLookupReligions"
+          datainsert="InsertLookupReligions"
+          dataupdate="UpdateLookupReligions"
+          source="Active,Code,ConceptName"
+          sourcelabels="Active,Code,Religion"	
+          align="|left|left"
+          format="boolean||"
+          sort="ConceptName=asc"
+          key="ReligionGuid" />
+      </row>
+    </group>
+  </section>
+  <!--Added by Dan 4/10/2018-->
+  <section type="modal" name="NewReligion" title="Religion"	 size="small"
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated" >  
+    <group>
+      <row>
+        <control type="label" label="Active"	 span="5"/>
+        <control type="buttongroup" name="NewReligion_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Code"	 span="5"/>
+        <control type="text" name="NewReligion_Code" span="2"  edit="true" required="true" />
+      </row>
+      <row>
+        <control type="label" label="Religion"	 span="5"/>
+        <control type="text" name="ConceptName" span="4" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="NewReligion_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="NewReligion_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+
+  <section type="tab" title="Social History Findings"	>
+    <group>
+     <row>
+       <control type="datagrid" label="Housing Types"	 name="LivingArrangements" searchable="true"
+          modalname="NewLivingArrangement" span="6"
+          rows="20"
+          datasource="GetLookupLivingArrangements"
+          datarequest="GetLookupLivingArrangements"
+          datainsert="InsertLookupLivingArrangement"
+          dataupdate="UpdateLookupLivingArrangement"
+          source="Active,Code,LivingArrangement"
+          sourcelabels="Active,Code,Type"	
+          align="|left|left"
+          format="boolean||"
+          sort="LivingArrangement=asc"
+          key="LivingArrangementGuid" />
+        <control type="datagrid" label="Social History Findings"	 name="SocialHistory" searchable="true"
+          modalname="NewSocialHistory" span="6"
+          rows="20"
+          datasource="GetLookupSocialHistoryFindings"
+          datarequest="GetLookupSocialHistoryFindings"
+          datainsert="InsertLookupSocialHistoryFindings"
+          dataupdate="UpdateLookupSocialHistoryFindings"
+          source="Active,Code,English"
+          sourcelabels="Active,Code,Finding"	
+          align="|left|left"
+          format="boolean||"
+          sort="English=asc"
+          key="SocialHistoryFindingGuid" />
+     </row>
+    </group>
+  </section>
+  <!--Added by Dan 4/10/2018-->
+  <section type="modal" name="NewLivingArrangement" title="Type of Housing"	 size="small"
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">  
+    <group>
+      <row>
+        <control type="label" label="Active"	 span="5"/>
+        <control type="buttongroup" name="NewLivingArrangement_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Code"	 span="5"/>
+        <control type="text" name="NewLivingArrangement_Code" span="2"  edit="true" required="true" />
+      </row>
+      <row>
+        <control type="label" label="Type of Housing"	 span="5"/>
+        <control type="text" name="LivingArrangement" span="4" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="NewLivingArrangement_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="NewLivingArrangement_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+  <!--Added by Dan 4/10/2018-->
+  <section type="modal" name="NewSocialHistory" title="Social History Finding"	 size="small"
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">  
+    <group>
+      <row>
+        <control type="label" label="Active"	 span="5"/>
+        <control type="buttongroup" name="NewSocialHistory_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Code"	 span="5"/>
+        <control type="text" name="NewSocialHistory_Code" span="2"  edit="true" required="true" />
+      </row>
+      <row>
+        <control type="label" label="Finding"	 span="5"/>
+        <control type="text" name="English" span="6" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="NewSocialHistory_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="NewSocialHistory_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+  <!--Added by Dan 04/15/2018-->
+  <section type="tab" title="Ethnicities"	>
+    <group>
+     <row>
+        <control type="datagrid" label="Ethnicities"	 name="PatientRaces" searchable="true"
+          modalname="NewPatientRace" span="8"
+          rows="20"
+          datasource="GetLookupRaceOrEthnicity"
+          datarequest="GetLookupRaceOrEthnicity"
+          datainsert="InsertLookupRaceOrEthnicity"
+          dataupdate="UpdateLookupRaceOrEthnicity"
+          appendinsert="typeRaceOrEthnicity=Ethnicity"
+          appendupdate="typeRaceOrEthnicity=Ethnicity"
+          source="Active,Code,Race"
+          sourcelabels="Active,Code,Ethnicity"	
+          align="|left|left|left"
+          format="boolean"
+          sort="Race=asc"
+          key="RaceEthnicityGuid" />
+     </row>
+    </group>
+  </section>
+  <!--Added by Dan 4/10/2018-->
+  <section type="modal" name="NewPatientRace" title="Ethnicity"	 size="small"
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">  
+    <group>
+      <row>
+        <control type="label" label="Active"	 span="5"/>
+        <control type="buttongroup" name="NewPatientRace_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Code"	 span="5"/>
+        <control type="text" name="NewPatientRace_Code" span="2"  edit="true" required="true" />
+      </row>
+      <row>
+        <control type="label" label="Ethnicity"	 span="5"/>
+        <control type="text" name="Race" span="4" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="NewPatientRace_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="NewPatientRace_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+  <!--Added by Dan 4/10/2018-->
+  <section type="tab" title="Identification Types"	>
+    <group>
+     <row>
+        <control type="datagrid" label="ID Types"	 name="UserIDs" searchable="true"
+          modalname="NewIDTypes" span="8"
+          rows="20"
+          datasource="GetPersonIdentificationTypes"
+          datarequest="GetPersonIdentificationTypes"
+          datainsert="InsertPersonIdentificationTypes"
+          dataupdate="UpdatePersonIdentificationTypes"
+          source="Active,IdTypeCode,IdType"
+          sourcelabels="Active,Code,Identification Type"	
+          align="|left|left|left"
+          format="boolean|"
+          sort="IdType=asc"
+          key="IdentificationTypeGuid" />
+     </row>
+    </group>
+  </section>
+  <!--Modal Window for User Identification Types-->
+  <!--Added by Dan 4/10/2018-->
+  <section type="modal" name="NewIDTypes" title="Identification Type"	 size="small"
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">  
+    <group>
+      <row>
+        <control type="label" label="Active"	 span="5"/>
+        <control type="buttongroup" name="NewIDTypes_Active" span="2" source="True,False" sourcelabels="Yes,No"	 edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Code"	 span="5"/>
+        <control type="text" name="IdTypeCode" span="2" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="ID Type"	 span="5"/>
+        <control type="text" name="IdType" span="4" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="NewIDTypes_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="NewIDTypes_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+
+  <section type="tab" title="Case Types"	>
+    <group>
+     <row>
+        <control type="datagrid" label="Case Types"	 name="CaseTypes" searchable="true"
+          modalname="NewCaseType" span="8"
+          rows="20"
+          datasource="GetCaseTypesActive"
+          datarequest="GetCaseTypesActive"
+          datainsert="InsertCaseType"
+          dataupdate="UpdateCaseType"
+          acctsvc="true"
+          acctsvcreq="true"
+          source="Active,CharityCare,CaseTypeName"
+          sourcelabels="Active,Patient Chargeable,Case Type"	
+          align="||left"
+          format="boolean|boolean|"
+          sort="CaseTypeName=asc"
+          key="CaseTypeGuid" />
+     </row>
+    </group>
+  </section>
+
+  <section type="modal" name="NewCaseType" title="Case Type"	 size="small"
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">
+    <group name="NewCaseTypeGroup">
+      <row>
+        <control type="label" label="Active"	 span="5"/>
+        <control type="buttongroup" name="NewCaseType_Active" span="3" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Patient Subject to Charges"	 span="5"/>
+        <control type="buttongroup" name="CharityCare" span="3" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Case Type"		 span="5"/>
+        <control type="text" name="CaseTypeName" span="4" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="NewCaseType_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="NewCaseType_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+  <!-- Enter and edit Medical Specialties -->
+  <section type="tab" title="Medical Specialties"	>
+    <group>
+     <row>
+        <control type="datagrid" label="Specialties"	 name="MedicalSpecialties" searchable="true"
+          modalname="NewMedicalSpecialty" 
+          span="8"
+          rows="20"
+          acctsvc="true"
+          acctsvcreq="true"
+          datasource="GetMedicalSpecialties"
+          datarequest="GetMedicalSpecialties"
+          datainsert="InsertMedicalSpecialties"
+          dataupdate="UpdateMedicalSpecialties"
+          source="Active,SpecialtyCode,Specialty,ParentSpecialtyName"
+          sourcelabels="Active,Code,Specialty,Parent Specialty"	
+          align="|left|left|left"
+          format="boolean"
+          sort="Specialty=asc"
+          key="MedicalSpecialtyGuid"/>
+     </row>
+    </group>
+  </section>
+  <!-- Medical Specialty Modal -->
+  <section type="modal" name="NewMedicalSpecialty" title="Specialty"	 provoke="ParentSpecialty" size="small"
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">
+    <group>
+      <row>
+        <control type="label" label="Active"	 span="4"/>
+        <control type="buttongroup" name="NewMedicalSpecialty_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Code"	 span="4"/>
+        <control type="text" name="SpecialtyCode" span="4"  edit="true" required="true" />
+      </row>
+      <row>
+        <control type="label" label="Father"	 span="4"/>
+        <control type="select" name="ParentSpecialty" edit="true"
+          span="6"
+          datasource="GetMedicalSpecialties"
+          source="Specialty,MedicalSpecialtyGuid"/>
+      </row>
+      <row>
+        <control type="label" label="Specialty"	 span="4"/>
+        <control type="text" name="Specialty" max="50" span="6" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="NewMedicalSpecialty_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="NewMedicalSpecialty_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+  <!-- Enter and edit Medical Exams -->
+  <section type="tab" title="Medical Exams"	>
+    <group>
+     <row>
+        <control type="datagrid" label="Medical Exams"	 name="MedicalExams" searchable="true"
+          modalname="NewMedicalExam" 
+          span="12"
+          rows="20"
+          acctsvc="true"
+          acctsvcreq="true"
+          datasource="GetExaminations"
+          datarequest="GetExaminations"
+          datainsert="InsertExaminations"
+          dataupdate="UpdateExaminations"
+          source="Active,ExamCode,ExamName,ExamDescription"
+          sourcelabels="Active,Code,Exam,Description"	
+          align="|left|left|left"
+          format="boolean"
+          sort="ExamName=asc"
+          key="Guid"/>
+     </row>
+    </group>
+  </section>
+  <!-- Medical Exam Modal -->
+  <section type="modal" name="NewMedicalExam" title="Exam"	 size="small"
+           enteredby="EnteredByFullName" updatedby="UpdatedByFullName" 
+           dtentered="DateTimeEntered" dtupdated="DateTimeUpdated">
+    <group>
+      <row>
+        <control type="label" label="Active"	 span="2"/>
+        <control type="buttongroup" name="NewMedicalExam_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
+      </row>
+      <row>
+        <control type="label" label="Code"	 span="2"/>
+        <control type="text" name="ExamCode" span="4" max="50" edit="true" required="true" />
+      </row>
+      <row>
+        <control type="label" label="Exam"	 span="2"/>
+        <control type="textarea" name="ExamName"  span="8" rows="3" required="true" edit="true" />
+      </row>
+      <row>
+        <control type="label" label="Description"	 span="2"/>
+        <control type="textarea" name="ExamDescription" span="8" rows="3" edit="true" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="edit"
+          name="NewMedicalExam_UpdateResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="update|next" />
+      </row>
+      <row>
+        <control type="modalbutton" 
+          showif="add"
+          name="NewMedicalExam_InsertResultNext" 
+          label="Next"	
+          color="grey"
+          icon="circle-arrow-right"
+          modaltask="insert|add" />
+      </row>
+    </group>
+  </section>
+</module>

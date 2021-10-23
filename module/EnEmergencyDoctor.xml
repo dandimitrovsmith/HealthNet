@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<module name="Emergency Physician" type="onload" trigger="GetLastDepartment">
+  <facet name="CalendarOption" value="Admitting"/>
+  <facet name="SurgeryRequestOption" value="Physician"/>
+  <facet name="DefaultAdmitType" value="Outpatient"/>
+  <facet name="FileName" value="EmergencyDoctor"/>
+  <!-- Emergency patient list -->
+  <partial link="Partials/PartialEmergencyAdmittingPatientList.xml"/>
+  <!-- Patient Tabmodal displays the patient chart -->
+  <section type="tabmodal" badge="none" name="PatientTabModal" title="Patient Information"	 edit="false">
+    <group name="GuidStorage">
+      <row showif="never">
+        <control type="text" name="GetUserName" default="(userName)"/>
+        <control type="text" span="4" name="PatientId"
+          datarequest="GetPatientAllFields"
+          appendrequest="PatientId=[PatientId]"
+          inject="PatientInfo,rowRoomFullName"
+          provoke="GetPatientVisit"/>
+        <control type="hidden" span="4" name="PatientVisitGuid" 
+          datarequest="GetPatientVisitByUniqueId"
+          appendrequest="UniqueId=[PatientVisitGuid]"
+          inject="VisitInfo"
+          provoke="ERProblemList|active,ERPastProblemList|active,ERAllergyList|active"/>
+        <control type="button" name="ClosePatientTabModal" action="close|new"/>
+        <control type="text" span="4" name="InsertNewBedAssignment"
+          datarequest="GetPatientAllFields"
+          appendrequest="PatientId=[PatientId]"
+          inject="rowRoomFullName"/>
+        <control type="button" 
+          name="btnUpdateVisit"
+          action="save|close|new" 
+          affector="none"
+          capture="VisitInfo"
+          acctsvc="true"
+          dataupdate="UpdatePatientVisitNoDepartmentTracking"
+          appendupdate="patientId=[PatientId],patientVisitUniqueId=[PatientVisitGuid],hospitalService=[ListFilter]"
+          provoke="PatientList"/>      
+      </row>
+    </group>
+    <group name="PatientInfo">
+      <columns>
+        <column span="2">
+          <partial link="Partials/PartialPatientPhoto.xml"/>
+        </column>
+        <column span="8">
+          <partial link="Partials/PartialHospitalPatientInfo.xml"/>
+        </column>
+        <column span="2">
+          <partial link="Partials/PartialEmergencyPhysicianPatientButtons.xml"/>
+        </column>
+      </columns>
+    </group>
+    <group name="VisitInfo">
+      <columns>
+        <column span="10">
+          <partial link="Partials/PartialEmergencyVisitInfo.xml"/>
+        </column>
+        <column span="2">
+          <partial link="Partials/PartialEmergencyPhysicianVisitButtons.xml"/>
+        </column>
+      </columns>
+    </group>
+    <group name="PatientGridGroup">
+      <row>
+        <control type="buttongroup" 
+          name="ButtonGroupSelect" 
+          edit="true" 
+          source="Problems,Nursing,Vitals,Physicians,Studies,Medication,Surgery,Documents" 
+          sourcelabels="Diagnosis,Nursing,Vitals,Doctors,Studies,
+          Medicines,Surgery,Documents" 
+          span="12" 
+          default="Problems" 
+          value="Problems"  
+          provoke="ERGridList,ERProblemList,ERPastProblemList,ERAllergyList,ERVitalSigns,ERFluids,24HourNetFluids,ERNeuroVitalSigns,ERBloodSugarVitalSigns,ERNursingOrders,ERNursingOrdersComplete,ERNursingNotes,ERPhysicianAssignments,ERPhysicianNotes,EREncounterNotes,ERLabOrders,ERLabResults,ERMedications,ERMedicationsCompleted,ERMedicationAdminActive,ERMedicationAdminComplete,ERMedicationHistory,ERRadiologyOrders,ERRadiologyReports,EREcdForms,PriorEcdForms,ScannedForms,ERProcedures,ERSurgeries,PastMedications,ERHomeMedications"/>
+      </row>
+      <row>
+          <control name="ERGridList" affector="ButtonGroupSelect" type="options" span="12">
+          <partial link="./EnPartial/Grids/PartialDiagnosisActiveForPatient.xml"/>
+          <partial link="./EnPartial/Grids/PartialDiagnosisHistoryForPatient.xml"/>
+          <partial link="./EnPartial/Grids/PartialAllergiesWithNewAndEdit.xml"/>
+          <partial link="./EnPartial/Grids/PartialVitalSignsWithNewAndGraph.xml"/>
+          <partial link="./EnPartial/Grids/PartialNeuroVitalSignsWithNew.xml"/>
+          <partial link="./EnPartial/Grids/PartialBloodSugarVitalSignsWithNew.xml"/>
+          <partial link="./EnPartial/Grids/PartialFluidsWithTotalsAnd24Hour.xml"/>
+          <partial link="./EnPartial/Grids/PartialPhysicianAssignmentsWithNewAndEdit.xml"/>
+          <partial link="./EnPartial/Grids/PartialNursingOrdersWithNewAndEdit.xml"/>
+          <partial link="./EnPartial/Grids/PartialNursingOrdersCompleted.xml"/>
+          <partial link="./EnPartial/Grids/PartialLabOrdersWithNewAndEdit.xml"/>
+          <partial link="./EnPartial/Grids/PartialLabOrderResults.xml"/>
+          <partial link="./EnPartial/Grids/PartialPathologyReports.xml"/>
+          <partial link="./EnPartial/Grids/PartialInpatientMedicationsWithNewAndAdminister.xml"/>
+          <partial link="./EnPartial/Grids/PartialHomeMedicationWithNewAndEdit.xml"/>
+          <partial link="./EnPartial/Grids/PartialImagingOrdersWithNewAndEdit.xml"/>
+          <partial link="./EnPartial/Grids/PartialImagingReports.xml"/>
+          <partial link="./EnPartial/Grids/PartialProcedureOrdersWithNewAndEdit.xml"/>
+          <partial link="./EnPartial/Grids/PartialSurgeryListForPatient.xml"/>
+          <partial link="./EnPartial/Grids/PartialECDFormsWithNewEditAndCancel.xml"/>
+          <partial link="./EnPartial/Grids/PartialScannedDocumentsWithNewAndCancel.xml"/>
+        </control>
+       </row>
+     </group>
+   </section>
+
+  <partial link="./EnPartial/Admin/PartialPatientSearchModal.xml"/>
+  <partial link="./EnPartial/Admin/PartialReadyForDischarge.xml"/>
+  <partial link="./EnPartial/Beds/PartialClinicBedAssignment.xml"/>
+  <partial link="./EnPartial/Beds/PartialBedRequest.xml"/>
+  <partial link="Partials/PartialCalendarNewAppointmentModal.xml"/>
+	<partial link="./EnPartial/Admin/PartialSelectTime2.xml"/>
+  <partial link="Partials/PartialInterconsultRequestPhysician.xml"/>
+  <partial link="Partials/PartialDocumentRequest.xml"/>
+  <partial link="Partials/PartialSurgeryRequest.xml"/>
+  <partial link="./EnPartial/Admin/PartialEmergencyESICalculation.xml"/>
+  <partial link="./EnPartial/Grids/PartialFluidTotals.xml"/>
+  <partial link="./EnPartial/Grids/Partial24HourBalance.xml"/>
+  <partial link="./EnPartial/Admin/PartialMedicationDetailModal.xml"/>
+  <partial link="./EnPartial/Admin/PartialReportModals.xml"/>
+  <partial link="./EnPartial/Move/PartialEmergencyMovePatients.xml"/>
+  <partial link="./EnPartial/Admin/PartialAssignAttendingPhysician.xml"/>
+  <partial link="./EnPartial/Move/PartialTransferPatientWithBedAssignment.xml"/>
+  <partial link="./EnPartial/Move/PartialEmergencyQuickAdmit.xml"/>
+</module>
