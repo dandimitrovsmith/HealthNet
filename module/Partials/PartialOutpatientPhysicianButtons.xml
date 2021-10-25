@@ -46,19 +46,12 @@
       trigger="ReportList,Report_VisitId"
       action="redirect" target="mdlReports"/>
   </row>
-  <row name="rowSendText" reveal="[Consult_PatientCellPhone]!">
-    <control type="button" name="btnSendTextMessage2"  
-      span="12" icon="envelope" label="Text"	
-      preset="phoneNumber=[Consult_PatientCellPhone]"
-      trigger="grdPhysicianMessages2"
-      action="redirect" target="mdlSendTextMessage"/>
-  </row>
-  <row name="rowSendEmail" reveal="[Consult_PatientEmail]!">
-    <control type="button" name="btnSendEmailMessage2"
-      span="12" icon="envelope" label="Email"			
-      preset="Send_EmailAddress=[Consult_PatientEmail],Send_PatientId=[PatientId]"
-      trigger="grdPhysicianMessages1"
-      action="redirect" target="mdlSendEmailMessage"/>
+  <row>
+    <control type="button" name="btnPhysicianMessages" 
+      reveal="[PatientId]!" 
+      span="12" icon="envelope" label="Messages"	
+      trigger="grdPhysicianMessages"
+      action="redirect" target="mdlPhysicianMessages"/>
   </row>
   <row name="rowECDForms" reveal="HasOpenVisit=true">
     <!-- ECD button to load ECD list -->
@@ -84,15 +77,6 @@
         target="timeline"
         append="patientid=[PatientId],patientvisit=[PatientVisitGuid],distinct=true"/>
   </row>
-  <row>
-    <!-- Enter new bed request -->
-    <control type="button" name="btnBedRequest"
-      span="12" icon="plus" label="Hospitalization"	
-      color="orange"
-      action="redirect"
-      trigger="GetPatientForBed,Nrq_PrimaryDiagnosis"
-      target="mdlBedRequest"/>
-  </row>
   <row> 
     <!-- Enter new consult request -->
     <control type="button" name="btnConsultRequest"
@@ -102,27 +86,6 @@
       target="NewConsultModal"
       preset="InterConsult_PatientId=[PatientId]"
       trigger="InterConsult_PatientId"/>
-  </row>
-  <row>
-    <!-- Enter new physical chart request -->
-    <control type="button" name="btnChartRequest"
-      span="12" icon="plus" label="Physical Record"	
-      color="orange"
-      action="redirect"
-      target="mdlDocumentRequest"
-      preset="DocumentPatientId=[PatientId],Document_DepartmentGuid=[DepartmentGuidLookup]"
-      trigger="DocumentPatientId"/>
-  </row>
-  <row>
-    <!-- Enter new surgery request -->
-      <control type="button" 
-      name="NewSurgeryRequestButton"
-      label="Surgery"	
-      span="12" icon="plus" color="orange"
-      action="redirect"
-      target="NewSurgeryRequestModal"
-      preset="SurgeryRequest_PatientId=[PatientId]"
-      trigger="SurgeryRequest_PatientId"/>
   </row>
   <row name="rowReadyForDischarge" reveal="HasOpenVisit=true">
     <!-- Set/unset ready for discharge -->
@@ -141,18 +104,13 @@
       trigger="GetReadyForDischarge"
       target="mdlReadyForDischarge"/>
   </row>
-  <row name="rowMovePatient" reveal="HasOpenVisit=true">
-    <control type="button" name="btnMove"
-      span="12" icon="move" label="Move"	
-      color="green"
+  <row>
+    <!-- Home conditions button -->
+    <control type="button" name="btnPatientHomeConditions"
+      reveal="[PatientId]!"
+      span="12" icon="home" label="Home Conditions"
       action="redirect"
-      target="mdlMovePatient"/>
-  </row>
-  <row name="rowAuditPatient" reveal="HasOpenVisit=true">
-    <control type="button" name="btnAuditPatient"
-      span="12" icon="search" label="Audit"	
-      action="redirect"
-      trigger="grdPatientChartAudit"
-      target="mdlChartAudit"/>
-  </row>
+      trigger="GetHomeConditions"
+      target="mdlHomeConditions"/>
+  </row> 
 </partial>

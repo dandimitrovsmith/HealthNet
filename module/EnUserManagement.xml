@@ -1,43 +1,38 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <module name="User Management" type="onload" trigger="UserList">
   <facet name="FileName" value="UserManagement"/>
+  <!-- Tab to manage non-physician users -->
   <section type="tab" title="User Management" >
     <group>
       <row>
+        <!-- Select active/inactive -->
         <control type="buttongroup" name="ListFilter" span="4" 
-          source="True,False"
+          source="true,false"
           sourcelabels="Active,Inactive"
           default="true" 
           value="true"
-          action="trigger"
-          trigger="UserList"/>
-        <control type="button" 
-          name="CreateNewUser" 
-          span="2" 
-          label="New User" 
-          action="modalview" 
-          modalname="NewUserTabModal" 
           provoke="UserList"/>
-        <control type="label" span="1" label="User"		/>
+        <!-- Display the current user name -->
+        <control type="label" span="1" label="User"/>
         <control type="text" span="2" 
          name="UserName2" 
          default="(fullname)" 
-         readonly="true" 
-         /> 
+         readonly="true"/> 
       </row>
       <row>
-        <control type="datagrid" 
+      <!-- List of users is displayed -->
+      <!-- Note: if the user is not a MedWave employee,other MedWave users are not displayed-->
+      <control type="datagrid" 
           label="Users" 
           name="UserList"
           searchable="true"
-          persist="true"
-          gridfilter="ListFilter|Active"
-          action="redirect" 
+          action="redirect"
           target="UserTabModal"
           span="12"
           rows="25"
           fitrows="true"
-          datarequest="GetUsersForThisFacility" append="LocationId=(facilityData.LocationId)"
+          datarequest="GetUsersForThisFacility"
+          appendrequest="LocationId=(facilityData.LocationId),active=[ListFilter]"
           source="FullName,UserId,UserType,UserRoles,Title,DepartmentName,CellPhone"
           sourcelabels="Name,User,Permission,Role,Title,Department,Mobile"
           align="|left|left|left|left|left"
@@ -45,315 +40,251 @@
           key="UniqueId"
           translate="UserType,UserRoles"
           onselectset="sel_UserId=[[UserId]]"
-          onselect="sel_UserId"/>
+          onselect="sel_UserId">
+        <!-- Button to create new user -->
+        <control type="button" 
+          name="CreateNewUser" 
+          label="New User" 
+          action="redirect" 
+          target="UserTabModal"/>
+        <!-- Refresh user list -->
+        <control type="button"
+            name="btnRefreshUserList"
+            action="trigger"
+            label="Update"	 
+            icon="refresh" 
+            trigger="UserList"/>
+        </control>
         </row>
       </group>
 </section>
-
+<!-- Tabmodal to enter/edit users -->
 <section type="tabmodal" badge="none" name="UserTabModal" title="User Information">
-    <group name="GuidStorage">
+    <group name="GuidStorage" reveal="[sel_UserId]!">
       <row>
-        <control type="label" span="2" label="User Identification"	/>
+        <!-- Display an existing user -->
+        <control type="label" span="3" label="User Identification"/>
         <control type="text" span="4" name="sel_UserId" 
           readonly="true" 
           datarequest="GetUserProfileFromUserId2"
           appendrequest="UserIdToGet=[sel_UserId]"
-          inject="UserTabInfo"/>
-        <control type="button" name="btnEmployeeCard"
-          span="2" offset="3"
-          reveal="ListFilter=true"
-          icon="print"
-          label="Card"	
-          action="redirect"
-          target="mdlEmployeeCard"/>
+          inject="UserTabInfo"
+          provoke="ScannedForms"/>
       </row>
     </group>
+    <!-- User information group -->
     <group name="UserTabInfo">
-
-      <row>
-      	<control type="label" label="" span="2"/>
-        <control type="label" label="Name"	 align="left" span="3"/>
-        <control type="label" label="Parent"	 align="left" span="3"/>
-        <control type="label" label="Maternal"	 align="left" span="3"/>
-      </row>
-      <row>
-        <control type="label" label="" span="2"/>
-        <control type="text" name="UserTabInfo_FirstName" span="3" required="true" edit="true" />
-        <control type="text" name="UserTabInfo_MiddleName" span="3" required="true" edit="true"  />
-        <control type="text" name="UserTabInfo_LastName" span="3" required="true" edit="true" />
-      </row>	
-      <row>
-        <control type="label" span="2" label="Account"		 />
-        <control type="text" span="3" name="UserTabInfo_ApplicationId" required="true" edit="true" />
-      </row>
-      <row>
-        <control type="label" span="2" label="Title"/>
-        <control type="text" span="3" name="UserTabInfo_Title" edit="true" />
-        <control type="label" label="Active"	 span="3"/>
-        <control type="buttongroup" 
-          name="UserTabInfo_Active" 
-          edit="true"
-          span="3" 
-          source="True,False"
-          required="UserTabInfo_SignaturePin"
-          sourcelabels="Yes,No"	
-          />   
-      </row>
-      <row>	
-      	<control type="label" label="Department"			 span="2"/>
-    	  <control type="select" 
-    	    span="3"
-          name="UserTabInfo_Department"
-          explicit="true"
-          required="true"
-          acctsvc="true"
-          edit="true" 
-          datasource="GetDepartmentsActive" 
-          source="DepartmentName,DepartmentGuid" 
-          />
-        <control type="label" label="Specialty 1" span="3"/>
-        <control type="select" span="3"
-          name="UserTabInfo_MedicalSpecialty1"
-          explicit="true" edit="true"
-          filter="ParentSpecialty=null"
-          acctsvc="true"
-          datasource="GetMedicalSpecialties" 
-          source="Specialty,Specialty"/>
-      </row>
-      <row>
-      	<control type="label" label="Permission" span="2"/>
-      	<control type="select" 
-      	  name="UserTabInfo_UserType"	
-      	  span="3" 
-      	  edit="true"
-      	  source="Physician,Resident,Nurse,Nurse Supervisor,Social Worker,Clerk"
-      	  sourcelabels="Physician,Resident,Nurse,Nurse Supervisor,Social Worker,Employee"
-      	  explicit="true"
-      	  required="true"
-      	  />
-        <control type="label" label="Specialty 2" span="3"/>
-        <control type="select" span="3"
-          name="UserTabInfo_MedicalSpecialty2"
-          explicit="true" edit="true"
-          acctsvc="true"
-          datasource="GetMedicalSpecialties" 
-          source="Specialty,Specialty"/>
-      </row>
-      <row>
-      	<control type="label" label="User Role" span="2"/>
-      	<control type="select" 
-      	  name="UserTabInfo_UserRoles"
-      	  span="3"
-      	  edit="true"
-      	  source="MedWave,Insurance,Pathologist,Physician,Resident,Nurse,Nurse Supervisor,Social Worker,Admitting,Scheduling,Billing,Cashier,Pharmacy,Laboratory,Imaging,Inventory,Purchasing,Administration,Accounting,Director,SysAdmin,Transport,Bed Manager,Biomedical Engineer,Maintenance Engineer,Biomedical Manager,Maintenance Manager"
-      	  sourcelabels="MedWave,Insurance,Pathologist,Physician,Resident,Nurse,Nurse Supervisor,Social Worker,Admission,Programming,Billing,Cash,Pharmacy,Laboratory,Images,Inventory,Purchase,Administration,Accounting,Address,System,Transportation,Bed Manager,Biomedical Engineer,Maintenance Engineer,Biomedical Manager,Maintenance Manager "
-      	  explicit="true"
-          required="true"
-      	  />
-        <control type="label" label="Specialty 3" span="3"/>
-        <control type="select" span="3"
-          name="UserTabInfo_MedicalSpecialty3"
-          explicit="true" edit="true"
-          acctsvc="true"
-          datasource="GetMedicalSpecialties" 
-          source="Specialty,Specialty"/>
-      </row>
-      <row>
-        <control type="label" span="2" label="Email"		 />
-      	<control  type="text" span="4" name="UserTabInfo_EmailAddress" edit="true" required="true" verify="email" />
-      </row>
+      <columns>
+        <column span="10">
+          <row>
+            <control type="label" label="Active" span="3"/>
+            <control type="buttongroup" 
+              name="UserTabInfo_Active" 
+              edit="true" default="True"
+              span="3" 
+              source="True,False"
+              required="true"
+              sourcelabels="Yes,No"	/>  
+            <control type="label" span="3" label="Credential"/>
+            <control type="text" span="3" name="UserTabInfo_CredentialNumber" readonly="true" edit="true" />
+            <control type="hidden" name="UserTabInfo_UniqueId"/>
+          </row>
+          <row>
+            <control type="label" label="" span="3"/>
+            <control type="label" label="First Name"	 align="left" span="3"/>
+            <control type="label" label="Middle Name"	 align="left" span="3"/>
+            <control type="label" label="Last Name"	 align="left" span="3"/>
+          </row>
+          <row>
+            <control type="label" label="" span="3"/>
+            <control type="text" name="UserTabInfo_FirstName" span="3" required="true" edit="true" />
+            <control type="text" name="UserTabInfo_MiddleName" span="3" required="true" edit="true"  />
+            <control type="text" name="UserTabInfo_LastName" span="3" required="true" edit="true" />
+          </row>	
+          <row>
+            <control type="label" label="Position" span="3"/>
+            <control type="text" name="UserTabInfo_ClinicName" span="7" required="true" edit="true" />
+          </row>
+          <row>
+            <control type="label" span="3" label="Cellular 1"/>
+            <control type="text" span="3" name="UserTabInfo_CellPhoneNumber" edit="true" required="true"/>
+            <control type="label" span="3" label="Cellular 2"/>
+            <control type="text" span="3" name="UserTabInfo_PagerNumber" edit="true" />
+          </row>
+          <row>
+            <control type="label" span="3" label="Title"/>
+            <control type="text" span="3" name="UserTabInfo_Title" edit="true" />
+          </row>
+          <row>
+            <control type="label" label="Permission" span="3"/>
+            <control type="select" 
+              name="UserTabInfo_UserType"	
+              span="3" 
+              edit="true"
+              source="Physician,Nurse,Nurse Supervisor,Social Worker,EMT"
+              explicit="true"
+              required="true"/>
+            <control type="label" label="User Role" span="3"/>
+            <control type="select" 
+              name="UserTabInfo_UserRoles"
+              searchable="multiple"
+              span="3"
+              edit="true"
+              source="Administration,Call Center,Physician,Nurse,Nurse Supervisor,Social Worker,EMT"
+              explicit="true"
+              required="true"/>
+          </row>
+          <row>
+            <control type="label" span="3" label="Email"		 />
+            <control  type="text" span="6" name="UserTabInfo_EmailAddress" edit="true" required="true" verify="email" />
+          </row>
+          <row>
+            <control type="label" span="3" label="Specialty"	 />
+            <control  type="text" span="3" name="UserTabInfo_Credentials" edit="true" />
+            <control type="label" span="3" label="Professional ID"/>
+            <control type="text" span="3" name="UserTabInfo_NPI" edit="true" />
+          </row>
+        </column>
+        <!-- Buttons -->
+        <column span="2">
+          <row>
+            <!--User photo-->
+            <control type="image"
+              format="image=circle" 
+              name="LinkToProfilePhoto"
+              default="null"
+              span="12" />
+          </row>
+          <row>
+            <!-- Take a photo -->
+            <control type="button" 
+              reveal="[UserTabInfo_UniqueId]!"
+              name="TakeProfilePhoto"  
+              span="12" 
+              label="Photo"	 
+              icon="camera" 
+              action="userphoto" 
+              append="UniqueId=[UserTabInfo_UniqueId]" 
+              provoke="sel_UserId" /> 
+          </row>
+          <row>
+          <!-- Save and employee profile and print an employee card -->
+          <!-- Note:The report id is held in the EmployeeCard facet in the module heder -->
+          <!-- This allows this partial to manage different formats for each facility -->
+           <control type="button" name="btnEmployeeCard"
+            span="12"
+            reveal="ListFilter=true+[sel_UserId]!"
+            icon="print"
+            label="Card"	
+            affector="none"
+            capture="UserTabInfo"
+            action="save"
+            datainsert="UpdateUserAccountProfiles"
+            appendinsert="UserId=[sel_UserId]"
+            provoke="btnPrintEmployeeCard"/>
+          </row>
+          <row>
+          <!-- Print employee card back -->
+          <!-- Note: The report id is held in a facet in the module header -->
+          <!-- This button is hidden if there is no report format for the card back -->
+           <control type="button" name="btnEmployeeCardBack"
+            span="12"
+            reveal="ListFilter=true+[EmployeeCardBack]!+[sel_UserId]!"
+            icon="print"
+            label="Reverse"
+            affector="none"
+            action="print"
+            mode="report" 
+            append="id=[EmployeeCardBack]"/>
+          </row>
+          <!-- Print the employee card -->
+          <row showif="never">
+            <control type="button" name="btnPrintEmployeeCard"
+              action="print"
+              mode="report" 
+              append="id=[EmployeeCard],FindUser=[sel_UserId],FacilityId=(facility)"/>
+          </row>
+          <row>
+            <!-- Update an existing employee profile -->
+            <control type="button" 
+            span="12" color="green"
+            reveal="[sel_UserId]!"
+            name="SaveUserButton" 
+            label="Update"	
+            affector="none"
+            capture="UserTabInfo"
+            action="save|close|new"
+            datainsert="UpdateUserAccountProfiles"
+            appendinsert="UserId=[sel_UserId]"
+            confirm="Please confirm that you want to update this user"
+            provoke="UserList"/>
+          </row>
+          <row>
+            <!-- Save a new employee profile -->
+            <control type="button" 
+              span="12" color="green" label="New User"	
+              reveal="[sel_UserId]="
+              action="save"
+              name="NewUserSaveButton" 
+              affector="sel_UserId"
+              setaffector="UserId"
+              capture="UserTabInfo"
+              datainsert="CreateNewUser"
+              appendinsert="newUserId=[UserTabInfo_EmailAddress]"
+              confirm="Please confirm you wish to create this new user"
+              set="sel_Userid=[UserTabInfo_EmailAddress]"
+              provoke="sel_Userid,UserList"/>
+          </row>
+          <row>
+            <!-- Reset the employee password -->
+            <!-- An email is sent to th employee to reset their password -->
+            <control type="button" 
+              span="12"
+              reveal="[sel_UserId]!"
+              name="ResetPasswordButton" 
+              label="Reset Password"
+              action="save|close|new"
+              affector="none"
+              datainsert="ResetPasswordAndSendEmail"
+              appendinsert="UserAccountToChange=[sel_UserId],userEmail=[UserTabInfo_EmailAddress],language=spanish"
+              confirm="Please confirm that you want to reset this user's password"/>
+            </row>
+        </column>
+      </columns>
   </group>
-  
-  <group name="SaveButtonGroup">
-      <row>
-      	<control type="label" span="4" label=""/>
-      	<control type="button" 
-      		span="2"
-      		name="CancelButton" 
-      		label="Cancel"	
-      		action="close|new"/>
-
-         <control type="button" 
-      		span="2"
-      		name="SaveUserButton" 
-      		label="Update"	
-      		affector="none"
-      		capture="UserTabInfo"
-      		action="save|close|new"
-					appendconfirm="runinput=[UserTabInfo_ApplicationId]"
-					confirmresponse="CheckDigitResult=true|Invalid National ID!"
-      		datainsert="UpdateUserAccountProfiles"
-          appendinsert="UserId=[sel_UserId]"
-          confirm="Please confirm you want to update this user"
-          provoke="UserList"/>
-
-         <control type="button" 
-      		span="3"
-      		name="ResetPasswordButton" 
-      		label="Reset Password"
-      		action="save|close|new"
-          affector="none"
-      		datainsert="ResetPasswordAndSendEmail"
-          appendinsert="UserAccountToChange=[sel_UserId],userEmail=[UserTabInfo_EmailAddress],language=spanish"
-          confirm="Please confirm you want to reset this user's password"/>
-      </row>
-    </group>
-  </section>
-
-  <section type="tabmodal" badge="none" name="mdlEmployeeCard" title="User Card" size="small">
-    <group name="grpPasswordInfo">
-      <row>
-        <control type="label" label="Password" span="4"/>
-        <control type="password" name="PrintPassword" span="4" required="true" action="trigger" trigger="btnPrintEmployeeCard" />
-      </row>
-      <row>
-        <control type="label" label=""	 span="1"/>
-      </row>
-      <row name="rowPrintPassword" reveal="PrintPassword!">
-        <control type="label" label=""	 span="4"/>
-        <control type="button" name="btnPrintEmployeeCard"
-          span="4" size="large"
-          icon="print" label="Print Card"
-          capture="grpPasswordInfo"
-          action="print"
-          mode="report" 
-          append="id=3609d698f70,FindUser=[sel_UserId],FacilityId=(facility)"/>
-      </row>
-    </group>
-  </section>
-
-
-  <section type="tabmodal" badge="none" name="NewUserTabModal" title="New User">
-  	<group>
-  		<row showif="never">
-  			<control type="text" name="SaveControl" span="2" />
-  		</row>
-  	</group>
-    <group name="NewUserGroup">
-       <row>
-      	<control type="label" span="2" label=""/>
-        <control type="label" label="Name"	 align="left" span="3"/>
-        <control type="label" label="Parent"	 align="left" span="3"/>
-        <control type="label" label="Maternal"	 align="left" span="3"/>
-      </row>
-      <row>
-      	<control type="label" span="2" label=""/>
-        <control type="text" name="NewUser_FirstName" span="3" required="true" edit="true" />
-        <control type="text" name="NewUser_MiddleName" span="3" required="true" edit="true"  />
-        <control type="text" name="NewUser_LastName" span="3" required="true" edit="true" />
-      </row>	
-      <row>
-        <control type="label" span="2" label="Account"		 />
-        <control type="text" span="3" name="NewUser_ApplicationId" required="true" edit="true" />
-      </row>
-      <row>
-        <control type="label" span="2" label="Title"/>
-        <control type="text" span="3" name="NewUser_Title" edit="true" />
-        <control type="label" label="Active"	 span="3"/>
-        <control type="buttongroup" 
-          name="NewUser_Active" 
-          span="3" 
-          source="True,False"
-          required="true"
-          default="True"
-          sourcelabels="Yes,No"	
-          />     
-      </row>
-      <row>	
-      	<control type="label" label="Department"			 span="2"/>
-    	  <control type="select" span="3"
-          name="NewUser_Department" 
-          explicit="true"
-          required="true"
-          acctsvc="true" 
-          datasource="GetDepartments" 
-          source="DepartmentName,DepartmentGuid" 
-          />
-        <control type="label" label="Specialty 1" span="3"/>
-        <control type="select" span="3"
-          name="NewUser_MedicalSpecialty1"
-          explicit="true" edit="true"
-          filter="ParentSpecialty=null"
+  <!-- Scanned documents attached to the user profile -->
+  <group name="grpScannedDocuments" reveal="[sel_UserId]!">
+    <row>
+      <control type="datagrid"
+          label="Scanned Documents"	
+          name="ScannedForms"
+          span="12" rows="5"
           acctsvc="true"
-          datasource="GetMedicalSpecialties" 
-          source="Specialty,Specialty"/>
-      </row>
-      <row>
-      	<control type="label" label="Permission" span="2"/>
-      	<control type="select" 
-      	  name="NewUser_UserType"	
-      	  span="3" 
-      	  edit="true"
-      	  source="Physician,Resident,Nurse,Nurse Supervisor,Social Worker,Clerk"
-      	  sourcelabels="Physician,Resident,Nurse,Nurse Supervisor,Social Worker,Employee"
-      	  explicit="true"
-      	  required="true"
-      	  />
-        <control type="label" label="Specialty 2" span="3"/>
-        <control type="select" span="3"
-          name="NewUser_MedicalSpecialty2"
-          explicit="true" edit="true"
-          acctsvc="true"
-          datasource="GetMedicalSpecialties" 
-          source="Specialty,Specialty"/>
-      </row>
-      
-      <row>
-      	<control type="label" label="User Role" span="2"/>
-      	<control type="select" 
-      	  name="NewUser_UserRoles"
-      	  span="3"
-      	  edit="true"
-      	  source="MedWave,Insurance,Pathologist,Physician,Resident,Nurse,Nurse Supervisor,Social Worker,Admitting,Scheduling,Billing,Cashier,Pharmacy,Laboratory,Imaging,Inventory,Purchasing,Administration,Accounting,Director,SysAdmin,Transport,Bed Manager,Biomedical Engineer,Maintenance Engineer,Biomedical Manager,Maintenance Manager"
-      	  sourcelabels="MedWave,Insurance,Pathologist,Physician,Resident,Nurse,Nurse Supervisor,Social Worker,Admission,Programming,Billing,Cash,Pharmacy,Laboratory,Images,Inventory,Purchase,Administration,Accounting,Address,System,Transportation,Bed Manager,Biomedical Engineer,Maintenance Engineer,Biomedical Manager,Maintenance Manager "
-      	  explicit="true"
-          required="true"
-      	  />
-        <control type="label" label="Specialty 3" span="3"/>
-        <control type="select" span="3"
-          name="NewUser_MedicalSpecialty3"
-          explicit="true" edit="true"
-          acctsvc="true"
-          datasource="GetMedicalSpecialties" 
-          source="Specialty,Specialty"/>
-      </row>
-      <row>
-      	<control type="label" span="2" label="Email"		 />
-      	<control  type="text" span="4" name="NewUser_EmailAddress" edit="true" required="true" verify="email" />
+          acctsvcreq="true"
+          datarequest="GetImagingOrderFilesByImagingOrderGuid"
+          appendrequest="ImagingOrderGuid=[UserTabInfo_UniqueId]"
+          source="DateEntered,FileType,FileName,EnteredByFullName,"
+          sourcelabels="Date and Time,Type,Document,Entered By"	
+          translate="FileType"
+          align="left|left|left|left"
+          format="datetime"
+          sort="DateTimeEntered=desc"
+          key="PhotoGuid"
+          action="redirect|url"
+          target="printables/uploadviewer.html"
+          usesource="login"
+          append="fileGuid=[[PhotoGuid]],fileType=[[FileType]]">
+        <!-- Upload scanned documents -->
+          <control type="button"
+            name="btnScanDocuments"
+            label="Upload Documents"	
+            icon="folder-open"
+            append="labOrderId=[UserTabInfo_UniqueId]"
+            action="upload"
+            filter="pdf,jpg,jpeg"
+            provoke="ScannedForms"/>
+        </control>
       </row>
     </group>
-
-    <group name="NewSaveButtonGroup">
-     <row>
-      	<control type="label" span="7" label=""/>
-      	<control type="button" 
-      		span="2"
-      		name="NewUserCancelButton" 
-      		label="Cancel"	
-      		action="close|new"/>
-         <control type="button" name="btnConfirmRUT"
-          span="2"
-          label="Update"	 
-          action="trigger"
-					appendconfirm="runinput=[NewUser_ApplicationId]"
-					confirmresponse="CheckDigitResult=true|Invalid National ID!"
-          trigger="NewUserSaveButton"/>
-      </row>
-      <row showif="never">
-        <control type="button" 
-      		action="save|close|new"
-      		name="NewUserSaveButton" 
-      		affector="none"
-      		capture="NewUserGroup"
-          confirmrequest="GetUserProfileFromUserId2"
-          appendconfirm="UserIdToGet=[NewUser_EmailAddress]"
-          confirmresponse="length=0|This user already exists."
-      		datainsert="CreateNewUser"
-          appendinsert="newUserId=[NewUser_EmailAddress]"
-          confirm="Please confirm you want to add this new user to this department"
-          provoke="UserList"/>
-      </row>
-    </group>
-  </section>
-  <partial link="./EnPartial/Admin/PartialReportModals.xml"/>
+  </section>  
 </module>

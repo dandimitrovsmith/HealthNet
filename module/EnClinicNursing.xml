@@ -7,7 +7,7 @@
     trigger="ReportList"
     action="redirect" target="mdlReports"/>
   <headerbutton name="btnConsultCalendar"
-    icon="calendar" label="Consults"
+    icon="calendar" label="Appointments"
     preset="DefaultPatientId=,DefaultOrderGuid="
     trigger="AppointmentTimes|resource,selProviderSearch"
     action="redirect" target="tabCalendarAppointments"/>
@@ -21,20 +21,10 @@
     preset="[MultipleImagingCalendars]=false,DefaultPatientId=,DefaultOrderGuid="
     trigger="ImgAppointmentTimes|resource"
     action="redirect" target="tabImagingAppointments"/>
-  <headerbutton name="btnNursingCalendar"
-    icon="calendar" label="Nursing"
-    preset="[MultipleNursingCalendars]=false,DefaultPatientId=,DefaultOrderGuid="
-    trigger="NurseAppointmentTimes|resource"
-    action="redirect" target="tabNursingAppointments"/>
-  <headerbutton name="btnEMTCalendar"
-    icon="calendar" label="EMT"
-    preset="[MultipleEMTCalendars]=false,DefaultPatientId=,DefaultOrderGuid="
-    trigger="EMTAppointmentTimes|resource"
-    action="redirect" target="tabEMTAppointments"/>
-  <section type="tab" title="Consult Nursing">
-    <!-- Partial display list of admitted outpatient patients -->
-    <partial link="Partials/PartialOutpatientClinicPatientList.xml"/>
-  </section>
+  <!-- Partial display a list of patients admitted to a location -->
+	<partial link="./EnPartial/Lists/PartialAdmittedPatientListWithLocationFilter.xml"/>
+  <!-- Patient bed map -->
+  <partial link="./EnPartial/Beds/PartialBedMapHomeCareAsModal.xml"/>
   <!-- Partial nursing order administration by department -->
   <partial link="./EnPartial/Admin/PartialNursingOrderAdministration.xml"/>
   <!-- Partial medication administration by department -->
@@ -48,26 +38,20 @@
           datarequest="GetPatientAllFields"
           appendrequest="PatientId=[PatientId]"
           inject="PatientInfo,rowPatientVisitGuid"
-          provoke="GetPatientVisit,GridOptions,ERNursingOrders|active,ERNursingOrdersComplete|active,GetUnacknowledgedOrders|active"/>
+          provoke="ButtonGroupSelect,GetUnacknowledgedOrders"/>
+        <!--Read the patient visit and display the department-->
         <control type="hidden"
-          name="GetPatientVisit"
+          name="PatientVisitGuid"
           datarequest="GetPatientVisitByUniqueId"
           appendrequest="UniqueId=[PatientVisitGuid]"
-          inject="grpVisitInfo"/>
+          inject="VisitInfo"
+          provoke="ButtonGroupSelect"/>
         <control type="button" name="ClosePatientTabModal" action="close|new"/>
         <!-- Get the count of unacknowledged orders to set the buttons -->
         <control type="hidden" name="GetUnacknowledgedOrders"
           datarequest="GetPatientVisitByUniqueId"
           appendrequest="UniqueId=[PatientVisitGuid]"
-          inject="rowUnacknowledged"/>
-      </row>
-      <row name="rowPatientVisitGuid">
-        <control type="hidden" injectname="PatientVisit" name="PatientVisitGuid"/>
-      </row>
-      <row name="grpVisitInfo">
-        <control type="hidden" name="ReadyForDischarge"/>
-      </row>
-      <row name="rowUnacknowledged">
+          set="UnAcknowledgedOrders=[[UnAcknowledgedOrders]]"/>
         <control type="hidden" name="UnAcknowledgedOrders"/>
       </row>
     </group>
@@ -84,8 +68,18 @@
         </column>
       </columns>
     </group>
+    <group name="VisitInfo" reveal="[PatientId]!">
+      <columns>
+        <column span="10">
+          <partial link="Partials/PartialHospitalVisitInfo.xml"/>
+        </column>
+        <column span="2">
+          <partial link="Partials/PartialHospitalNurseVisitButtons.xml"/>
+        </column>
+      </columns>
+    </group>
     <!-- Patient chart datagrids -->
-    <group name="PatientGridGroup">
+    <group name="PatientGridGroup" reveal="[PatientId]!">
       <row>
         <control type="buttongroup" 
           name="ButtonGroupSelect" 
@@ -120,7 +114,6 @@
           <partial link="./EnPartial/Grids/PartialHomeMedicationNoEdit.xml"/>
           <partial link="./EnPartial/Grids/PartialImagingReports.xml"/>
           <partial link="./EnPartial/Grids/PartialProcedureOrdersWithNewAndEdit.xml"/>
-          <partial link="./EnPartial/Grids/PartialSurgeryListForPatient.xml"/>
           <partial link="./EnPartial/Grids/PartialECDFormsWithNewEditAndCancel.xml"/>
           <partial link="./EnPartial/Grids/PartialScannedDocumentsWithNewAndCancel.xml"/>
           <partial link="./EnPartial/Grids/PartialDocumentRequestsForPatientNoEdit.xml"/>
@@ -132,20 +125,19 @@
    <!-- Calendars -->
     <partial link="./EnPartial/Calendars/PartialCalendarPhysiciansAsResourcesAsTabModal.xml"/>
     <partial link="./EnPartial/Calendars/PartialCalendarLabAsModal.xml"/>
-    <partial link="./EnPartial/Calendars/PartialCalendarNursingAsModal.xml"/>
-    <partial link="./EnPartial/Calendars/PartialCalendarEMTAsModal.xml"/>
     <partial link="./EnPartial/Calendars/PartialCalendarImagingWithModalitiesAsModal.xml"/>
     <!-- Calendar Appointment modals -->
     <partial link="./EnPartial/Calendars/PartialCalendarLabAppointmentModal.xml"/>
     <partial link="./EnPartial/Calendars/PartialCalendarImagingAppointmentModal.xml"/>
     <partial link="./EnPartial/Calendars/PartialCalendarPhysiciansAppointmentModal.xml"/>
-    <partial link="./EnPartial/Calendars/PartialCalendarNursingAppointmentModal.xml"/>
-    <partial link="./EnPartial/Calendars/PartialCalendarEMTAppointmentModal.xml"/>
-    <!-- Messaging -->
+    <!-- Messaging-->
+    <partial link="./EnPartial/Messaging/PartialDocumentMessageFromPatient.xml"/>
     <partial link="./EnPartial/Messaging/PartialSendTextMessageToPatient.xml"/>
     <partial link="./EnPartial/Messaging/PartialSendEmailMessageToPatient.xml"/>
+    <partial link="./EnPartial/Messaging/PartialSendEmailMessageToStaff.xml"/>
     <partial link="./EnPartial/Messaging/PartialPhysicianMessages.xml"/>
     <!-- General modals -->
+    <partial link="./EnPartial/Modals/PartialHomeConditions.xml"/>
     <partial link="./EnPartial/Admin/PartialPatientSearchModal.xml"/>
     <partial link="./EnPartial/Admin/PartialReadyForDischarge.xml"/>
     <partial link="Partials/PartialInterconsultRequestPhysician.xml"/>
@@ -155,5 +147,4 @@
     <partial link="./EnPartial/Messaging/PartialSendTextMessageToPatient.xml"/>
     <partial link="./EnPartial/Messaging/PartialSendEmailMessageToPatient.xml"/>
     <partial link="./EnPartial/Messaging/PartialPhysicianMessages.xml"/>
-    <partial link="./EnPartial/Admin/PartialReportModals.xml"/>
 </module>

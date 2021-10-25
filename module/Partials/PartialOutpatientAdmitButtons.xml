@@ -79,7 +79,7 @@
       reveal="[PatientId]!"
       span="12" icon="home" label="Home Conditions"
       action="redirect"
-      trigger="hidHomeConditions"
+      trigger="GetHomeConditions"
       target="mdlHomeConditions"/>
   </row> 
   <row>
@@ -115,19 +115,11 @@
       icon="print" 
       append="id=34b8cb70ec7,FacilityId=(facility),PatientId=[PatientId],PatientVisit=[PatientVisit]" />
   </row>
-  <row name="rowSendText" reveal="[Consult_PatientCellPhone]!">
-    <control type="button" name="btnSendTextMessage2"  
-      span="12" icon="envelope" label="Text"	
-      preset="phoneNumber=[Consult_PatientCellPhone]"
-      trigger="grdPhysicianMessages2"
-      action="redirect" target="mdlSendTextMessage"/>
-  </row>
-  <row name="rowSendEmail" reveal="[Consult_PatientEmail]!">
-    <control type="button" name="btnSendEmailMessage2"
-      span="12" icon="envelope" label="Email"			
-      preset="Send_EmailAddress=[Consult_PatientEmail],Send_PatientId=[PatientId]"
-      trigger="grdPhysicianMessages1"
-      action="redirect" target="mdlSendEmailMessage"/>
+  <row>
+    <control type="button" name="btnPhysicianMessages"  
+      span="12" icon="envelope" label="Messages"	
+      trigger="grdPhysicianMessages"
+      action="redirect" target="mdlPhysicianMessages"/>
   </row>
   <row>
     <!-- Discharge patient button -->

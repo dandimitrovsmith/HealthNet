@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="Admin Reports" title="Informes de Administración" type="onload" trigger="ReportList">
+<facet name="Report_Type" value="Administration"/>
+<partial link="./EnPartial/Admin/PartialReportModalsAsTab.xml"/>
+</module>

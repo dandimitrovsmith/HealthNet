@@ -46,19 +46,12 @@
       trigger="ReportList,Report_VisitId"
       action="redirect" target="mdlReports"/>
   </row>
-  <row name="rowSendText" reveal="[Consult_PatientCellPhone]!">
-    <control type="button" name="btnSendTextMessage2"  
-      span="12" icon="envelope" label="Text"	
-      preset="phoneNumber=[Consult_PatientCellPhone]"
-      trigger="grdPhysicianMessages2"
-      action="redirect" target="mdlSendTextMessage"/>
-  </row>
-  <row name="rowSendEmail" reveal="[Consult_PatientEmail]!">
-    <control type="button" name="btnSendEmailMessage2"
-      span="12" icon="envelope" label="Email"			
-      trigger="grdPhysicianMessages1"
-      preset="Send_EmailAddress=[Consult_PatientEmail],Send_PatientId=[PatientId]"
-      action="redirect" target="mdlSendEmailMessage"/>
+ <row>
+    <control type="button" name="btnPhysicianMessages" 
+      reveal="[PatientId]!" 
+      span="12" icon="envelope" label="Messages"	
+      trigger="grdPhysicianMessages"
+      action="redirect" target="mdlPhysicianMessages"/>
   </row>
   <row name="rowECDForms" reveal="[HasOpenVisit]=true">
     <!-- ECD button to load ECD list -->
@@ -84,90 +77,13 @@
         icon="user-md"
         provoke="GetUnacknowledgedOrders"/>
   </row>
-  <row name="rowMovePatients" reveal="HasOpenVisit=true">
-    <!-- Move patients within queues -->
-    <control type="button" name="btnMove"
-      span="12" icon="move" label="Move"	
-      color="orange"
-      action="redirect"
-      target="mdlMovePatient"
-      provoke="GetUnacknowledgedOrders"/>
-  </row>
-  <row name="rowAcknowledgeOrders" reveal="HasOpenVisit=true">
-    <!-- Display red button if there are unacknowledged orders -->
-    <control type="button" name="btnAcknowledgeRed"
-      reveal="[UnAcknowledgedOrders]»0"
-      span="12"
-      color="red" icon="warning-sign" 
-      label="Acknowledge"	
-      action="redirect|view"
-      target="acknowledge"
-      append="patientid=[PatientId],patientvisit=[PatientVisitGuid],distinct=true"
-      provoke="GetUnacknowledgedOrders"/>
-    <!-- Display a green button if there are no unacknowledged orders -->
-    <control type="button" name="btnAcknowledgeGreen"
-      reveal="[UnAcknowledgedOrders]=0"
-      span="12"
-      color="green" icon="thumbs-up" 
-      label="Acknowledge"	
-      action="redirect|view"
-      target="acknowledge"
-      append="patientid=[PatientId],patientvisit=[PatientVisitGuid],distinct=true"
-      provoke="GetUnacknowledgedOrders"/>
-  </row>
-  <row name="rowTimeLine" reveal="HasOpenVisit=true">
-    <!-- Display the patient time line -->
-    <control type="button" name="btnTimeline"
-        span="12"
-        color="yellow" icon="time" 
-        label="Timeline"	
-        action="redirect|view"
-        target="timeline"
-        append="patientid=[PatientId],patientvisit=[PatientVisitGuid],distinct=true"
-        provoke="GetUnacknowledgedOrders"/>
-  </row>
   <row>
-    <!-- New physical chart request -->
-    <control type="button" name="btnChartRequest"
-      span="12" icon="plus" label="Physical Record"	
-      color="orange"
+    <!-- Home conditions button -->
+    <control type="button" name="btnPatientHomeConditions"
+      reveal="[PatientId]!"
+      span="12" icon="home" label="Home Conditions"
       action="redirect"
-      target="mdlDocumentRequest"
-      preset="DocumentPatientId=[PatientId],Document_DepartmentGuid=[DepartmentGuidLookup]"
-      trigger="DocumentPatientId"/>
-  </row>
-  <row name="rowMedicalDischarge" reveal="HasOpenVisit=true">
-    <!-- Set/reset ready for discharge -->
-    <control type="button" name="btnAltaMedica"
-      reveal="ReadyForDischarge=true"
-      span="12" icon="cloud-upload" label="Medical Discharge"	
-      color="green" action="redirect"
-      preset="Ready_PatientId=[PatientId],Ready_PatientVisitGuid=[PatientVisitGuid]"
-      trigger="GetReadyForDischarge"
-      target="mdlReadyForDischarge"/>
-    <control type="button" name="btnNoAltaMedica"
-      reveal="ReadyForDischarge=false"
-      span="12" icon="cloud-upload" label="Medical Discharge"	
-      color="grey" action="redirect"
-      preset="Ready_PatientId=[PatientId],Ready_PatientVisitGuid=[PatientVisitGuid]"
-      trigger="GetReadyForDischarge"
-      target="mdlReadyForDischarge"/>
-  </row>
-  <row name="rowTransferPatient" reveal="HasOpenVisit=true">
-  <!-- Transfer patient to another department -->
-  <control type="button" name="btnTransferPatient"
-    reveal="[HasOpenVisit]=true"
-    span="12" icon="hospital" label="Transfer"	
-    color="orange" action="redirect"
-    preset="Transfer_DepartmentGuid=[DepartmentGuidLookup]"
-    target="mdlTransferPatient"/>
-  </row>
-  <row name="rowDischargePatient" reveal="HasOpenVisit=true">
-    <!-- Discharge patient button -->
-    <control type="button" name="btnDischargePatient"
-      reveal="[HasOpenVisit]=true"
-      span="12" icon="home" label="Discharge"
-      color="green" action="redirect"
-      target="mdlDischargePatient"/>
+      trigger="GetHomeConditions"
+      target="mdlHomeConditions"/>
   </row> 
 </partial>

@@ -7,7 +7,7 @@
     trigger="ReportList"
     action="redirect" target="mdlReports"/>
   <headerbutton name="btnConsultCalendar"
-    icon="calendar" label="Consults"
+    icon="calendar" label="Appointments"
     preset="DefaultPatientId=,DefaultOrderGuid="
     trigger="AppointmentTimes|resource,selProviderSearch"
     action="redirect" target="tabCalendarAppointments"/>
@@ -21,20 +21,10 @@
     preset="[MultipleImagingCalendars]=false,DefaultPatientId=,DefaultOrderGuid="
     trigger="ImgAppointmentTimes|resource"
     action="redirect" target="tabImagingAppointments"/>
-  <headerbutton name="btnNursingCalendar"
-    icon="calendar" label="Nursing"
-    preset="[MultipleNursingCalendars]=false,DefaultPatientId=,DefaultOrderGuid="
-    trigger="NurseAppointmentTimes|resource"
-    action="redirect" target="tabNursingAppointments"/>
-  <headerbutton name="btnEMTCalendar"
-    icon="calendar" label="EMT"
-    preset="[MultipleEMTCalendars]=false,DefaultPatientId=,DefaultOrderGuid="
-    trigger="EMTAppointmentTimes|resource"
-    action="redirect" target="tabEMTAppointments"/>
-  <section type="tab" title="Consulting Physician" >
-  <!-- Partial outpatient clinic patient list -->
-  <partial link="Partials/PartialOutpatientClinicPatientList.xml"/>
-  </section>
+  <!-- Partial display a list of patients admitted to a location -->
+	<partial link="./EnPartial/Lists/PartialAdmittedPatientListWithLocationFilter.xml"/>
+  <!-- Patient bed map -->
+  <partial link="./EnPartial/Beds/PartialBedMApHomeCareAsModal.xml"/>
   <!-- Patient tabmodal -->
   <section type="tabmodal" badge="none" name="PatientTabModal" title="Patient Information" edit="false">
     <group name="GuidStorage" showif="never">
@@ -45,20 +35,14 @@
           appendrequest="PatientId=[PatientId]"
           inject="PatientInfo,rowPatientVisitGuid"
           provoke="GetPatientVisit,ButtonGroupSelect,ERProblemList,ERPastProblemList,ERAllergyList"/>
-          <!-- Read the patient visit record -->
+        <!--Read the patient visit and display the department-->
         <control type="hidden"
-          name="GetPatientVisit"
+          name="PatientVisitGuid"
           datarequest="GetPatientVisitByUniqueId"
           appendrequest="UniqueId=[PatientVisitGuid]"
-          inject="rowVisitInfo"
-          provoke="SetHospitalService"/>
+          inject="VisitInfo"
+          provoke="ButtonGroupSelect"/>
         <control type="button" name="ClosePatientTabModal" action="close|new"/>
-      </row>
-      <row name="rowVisitInfo">
-        <control type="hidden" name="ReadyForDischarge"/>
-      </row>
-      <row name="rowPatientVisitGuid">
-        <control type="hidden" injectname="PatientVisit" name="PatientVisitGuid"/>
       </row>
     </group>
       <!-- Patient information and nursing buttons -->
@@ -71,6 +55,16 @@
         <column span="2">
           <!-- Partial outpation physician action buttons -->
           <partial link="Partials/PartialOutpatientPhysicianButtons.xml"/>
+        </column>
+      </columns>
+    </group>
+    <group name="VisitInfo" reveal="[PatientId]!">
+      <columns>
+        <column span="10">
+          <partial link="Partials/PartialHospitalVisitInfo.xml"/>
+        </column>
+        <column span="2">
+          <partial link="Partials/PartialHospitalVisitButtons.xml"/>
         </column>
       </columns>
     </group>
@@ -118,23 +112,21 @@
   <!-- Calendars -->
     <partial link="./EnPartial/Calendars/PartialCalendarPhysiciansAsResourcesAsTabModal.xml"/>
     <partial link="./EnPartial/Calendars/PartialCalendarLabAsModal.xml"/>
-    <partial link="./EnPartial/Calendars/PartialCalendarNursingAsModal.xml"/>
-    <partial link="./EnPartial/Calendars/PartialCalendarEMTAsModal.xml"/>
     <partial link="./EnPartial/Calendars/PartialCalendarImagingWithModalitiesAsModal.xml"/>
     <!-- Calendar Appointment modals -->
     <partial link="./EnPartial/Calendars/PartialCalendarLabAppointmentModal.xml"/>
     <partial link="./EnPartial/Calendars/PartialCalendarImagingAppointmentModal.xml"/>
     <partial link="./EnPartial/Calendars/PartialCalendarPhysiciansAppointmentModal.xml"/>
-    <partial link="./EnPartial/Calendars/PartialCalendarNursingAppointmentModal.xml"/>
-    <partial link="./EnPartial/Calendars/PartialCalendarEMTAppointmentModal.xml"/>
-    <!-- Messaging -->
+    <!-- Messaging-->
+    <partial link="./EnPartial/Messaging/PartialDocumentMessageFromPatient.xml"/>
     <partial link="./EnPartial/Messaging/PartialSendTextMessageToPatient.xml"/>
     <partial link="./EnPartial/Messaging/PartialSendEmailMessageToPatient.xml"/>
+    <partial link="./EnPartial/Messaging/PartialSendEmailMessageToStaff.xml"/>
     <partial link="./EnPartial/Messaging/PartialPhysicianMessages.xml"/>
     <!-- General modals -->
+    <partial link="./EnPartial/Modals/PartialHomeConditions.xml"/>
     <partial link="./EnPartial/Admin/PartialPatientSearchModal.xml"/>
     <partial link="./EnPartial/Admin/PartialReadyForDischarge.xml"/>
     <partial link="Partials/PartialInterconsultRequestPhysician.xml"/>
     <partial link="./EnPartial/Admin/PartialReportModals.xml"/>
-    
 </module>
