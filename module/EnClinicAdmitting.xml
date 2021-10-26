@@ -61,7 +61,7 @@
           <partial link="Partials/PartialHospitalVisitInfo.xml"/>
         </column>
         <column span="2">
-          <partial link="Partials/PartialHospitalVisitButtons.xml"/>
+          <partial link="Partials/PartialHospitalAdmitVisitButtons.xml"/>
         </column>
       </columns>
     </group>
@@ -78,11 +78,11 @@
       </row>
       <row>
         <control type="options" name="GridOptions" affector="ButtonGroupSelect" span="12">
-          <partial link="./EnPartial/Grids/PartialAppointmentListForPatientWithCalendars.xml"/>
+          <partial link="./EnPartial/Grids/PartialAppointmentListForPatient.xml"/>
           <partial link="./EnPartial/Grids/PartialPatientContacts.xml"/>
           <partial link="./EnPartial/Grids/PartialLabOrdersWithScannedResultsAndNew.xml"/>
           <partial link="./EnPartial/Grids/PartialImagingOrdersWithNewModal.xml"/>
-          <partial link="./EnPartial/Grids/PartialECDFormsWithNewEditAndCancelOnlyByUser.xml"/>
+          <partial link="./EnPartial/Grids/PartialECDFormsWithEditAndCancel.xml"/>
           <partial link="./EnPartial/Grids/PartialScannedDocumentsWithNewAndCancel.xml"/>
         </control>
       </row>
