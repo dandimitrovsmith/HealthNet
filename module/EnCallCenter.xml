@@ -11,16 +11,6 @@
     preset="DefaultPatientId=,DefaultOrderGuid="
     trigger="AppointmentTimes|resource,selProviderSearch"
     action="redirect" target="tabCalendarAppointments"/>
-  <headerbutton name="btnLabCalendar"
-    icon="calendar" label="Laboratory"
-    preset="[MultipleLabCalendars]=false,DefaultPatientId=,DefaultOrderGuid="
-    trigger="LabAppointmentTimes"
-    action="redirect" target="mdlLabAppointments"/>
-  <headerbutton name="btnImagingCalendar"
-    icon="calendar" label="Imaging"
-    preset="[MultipleImagingCalendars]=false,DefaultPatientId=,DefaultOrderGuid="
-    trigger="ImgAppointmentTimes|resource"
-    action="redirect" target="tabImagingAppointments"/>
   <!-- Partial display a list of patients admitted to a location -->
 	<partial link="./EnPartial/Lists/PartialAdmittedPatientListWithLocationFilter.xml"/>
   <!-- Patient bed map for a location -->
