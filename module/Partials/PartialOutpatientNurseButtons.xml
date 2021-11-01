@@ -1,42 +1,29 @@
 ﻿<partial>
   <!-- Partial Outpatient Patient Nurse Buttons -->
   <!-- (Buttons appear in a column to the right of patient demographics) -->
+  <row>
+    <!--Patient photo-->
+    <control type="image"
+      format="jpg=circle" 
+      name="Admit_ProfilePhoto"
+      default="null"
+      span="12" />
+  </row>
    <row>
     <!-- Update patient information-->
     <control type="button" 
       name="Consult_PatientUpdate" 
-      span="12" 
-      label="Update"	
+      span="12" label="Update"	
       affector="none"
       capture="PatientInfo" 
       icon="cloud-upload"
-      action="save|close|new"
+      action="save"
       confirm="Please confirm you want to update this patient."	
-      appendconfirm="runinput=[Consult_AccountNumber]"
-      confirmresponse="CheckDigitResult=true|Invalid National ID!"
       dataupdate="UpdatePatient"
       appendupdate="PatientId=[PatientId]"
       provoke="PatientList"/>
   </row>
-  <row name="rowAdmitPatients" reveal="[HasOpenVisit]=false">
-    <!-- Admit patient with no current visit -->
-    <control type="button" 
-      name="btnAdmitButton"
-      span="12"
-      color="green"
-      tooltip="Click to enter this patient."	 
-      action="save|close|new" 
-      confirm="Please confirm you want to admit this patient. Reminder: if this patient has an appointment,please admit him / her through the appointment option to complete the appointment."
-      affector="PatientVisitGuid"
-      setaffector="RecordUniqueId"
-      label="Admit"	 
-      icon="cloud-upload"
-      datainsert="InsertPatientVisitAllFields"
-      appendinsert="patientId=[PatientId],visitType=[DefaultAdmitType],hospitalService=Waiting,ambulatoryStatus=Ambulatory
-      ,preAdmit=0,departmentGuid=[DepartmentGuidLookup],admitDateTime=(dateTimeNow)"
-      set="HasOpenVisit=true,PatientVisit=[PatientVisitGuid]"
-      provoke="PatientList"/>
-  </row>
+  
   <row>
     <control type="button" name="btnReports"
        reveal="[PatientId]!"
@@ -86,4 +73,29 @@
       trigger="GetHomeConditions"
       target="mdlHomeConditions"/>
   </row> 
+  <!-- Send an email message to the patient -->
+  <row name="rowMessage" reveal="MessageGuid=+[PatientId]!+[Consult_PatientEmail]!">
+    <control type="button" name="CreateVideoChat"
+      span="12" color="green"
+      action="save"
+      label="Send Message" icon="facetime-video"
+      datainsert="InsertPatientVideoCall"
+      appendinsert="patientId=[PatientId]"
+      affector="none"
+      set="MessageGuid=[[MessageGuid]]"
+      success="Message was sent to patient."/>
+    <control type="hidden" name="MessageGuid"/>
+  </row>
+  <!-- Initiate a video conference -->
+  <row name="rowConference" reveal="MessageGuid!">
+    <control type="button" name="OpenVideoChat"
+      span="12" color="blue pulse"
+      label="Start Conference" 
+      icon="facetime-video"
+      mode="window"
+      action="redirect|url"
+      target="vidchat/index.html"
+      append="channel=[MessageGuid]"
+      set="MessageGuid="/>
+  </row>
 </partial>

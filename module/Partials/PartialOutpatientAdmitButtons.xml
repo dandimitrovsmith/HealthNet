@@ -9,49 +9,23 @@
       span="12" />
   </row>
   <row>
-    <!-- Admit patient with no current visit -->
-    <control type="button" 
-      name="btnAdmitButton"
-      span="12"
-      reveal="[HasOpenVisit]=false"
-      color="orange"
-      tooltip="Click to enter this patient."	 
-      action="save|close|new" 
-      confirm="Please confirm you want to admit this patient. Reminder: if this patient has an appointment,please admit him / her through the appointment option to complete the appointment."
-      affector="PatientVisitGuid"
-      setaffector="RecordUniqueId"
-      label="Admit"	 
-      icon="cloud-upload"
-      datainsert="InsertPatientVisitAllFields"
-      appendinsert="patientId=[PatientId],visitType=[DefaultAdmitType],hospitalService=Waiting,ambulatoryStatus=Ambulatory
-      ,preAdmit=0,departmentGuid=[DepartmentGuidLookup],admitDateTime=(dateTimeNow)"
-      set="HasOpenVisit=true,PatientVisit=[PatientVisitGuid]"
-      provoke="PatientList"/>
-  </row>
-  <row name="btnrowPatientSearch" reveal="PatientId=">
-    <control type="label" label=""	 span="12"/>
     <control type="button" name="btnAdmitSearchPatients" span="12"
-      label="Search for Patients"	 icon="search"
-      preset="PatientSearchSource=7,Search_PatientFirstName=[Consult_PatientFirstName],Search_PatientMiddleName=[Consult_PatientMiddleName],Search_PatientLastName=[Consult_PatientLastName]"
+      reveal="[PatientId]="
+      label="Search Patients"	 icon="search"
+      preset="PatientSearched=True,PatientSearchSource=7,Search_PatientFirstName=[Consult_PatientFirstName],Search_PatientMiddleName=[Consult_PatientMiddleName],Search_PatientLastName=[Consult_PatientLastName]"
       trigger="Search_FindPatient"
       action="redirect" target="mdlFindPatients"/>
     <control type="hidden" name="AdmitSearchReturn"
-      datarequest="GetPatientAllFields"
-      appendrequest="PatientId=[PatientSearchResults]"
-      inject="rowAdmitPatientId"
+      set="PatientId=[PatientSearchResults]"
       provoke="PatientId"/>
-    <control type="button"   
-      name="SaveNewPatientButton"
-      span="12"
-      label="Generate"	
+    <control type="button" name="SaveNewPatientButton"
+      span="12" label="New Patient"	icon="cloud-upload"
+      reveal="[PatientId]=+[PatientSearched]=True"
+      action="save"
       affector="PatientId"
       setaffector="RecordUniqueId"
       capture="PatientInfo" 
-      icon="cloud-upload"
-      action="save"
-      confirm="Please confirm you want to generate this new patient."	
-      appendconfirm="runinput=[Consult_AccountNumber]"
-      confirmresponse="CheckDigitResult=true|Invalid National ID!"
+      confirm="Please confirm you want to create this new patient record."	
       datainsert="InsertPatient"
       provoke="PatientId"/>
   </row>
@@ -61,11 +35,11 @@
       name="btnPatientUpdate"
       reveal="[PatientId]!" 
       span="12" 
-      label="Update"	
+      label="Update Patient"	
       affector="none"
       capture="PatientInfo" 
       icon="cloud-upload"
-      action="save|close|new"
+      action="save"
       confirm="Please confirm you want to update this patient."
       appendconfirm="runinput=[Consult_AccountNumber]"
       confirmresponse="CheckDigitResult=true|Invalid National ID!"
@@ -77,7 +51,7 @@
     <!-- Home conditions button -->
     <control type="button" name="btnPatientHomeConditions"
       reveal="[PatientId]!"
-      span="12" icon="home" label="Home Conditions"
+      span="12" icon="home" label="Home"
       action="redirect"
       trigger="GetHomeConditions"
       target="mdlHomeConditions"/>
@@ -117,16 +91,9 @@
   </row>
   <row>
     <control type="button" name="btnPhysicianMessages"  
-      span="12" icon="envelope" label="Messages"	
+      span="12" icon="envelope" label="Messages"
+      reveal="[PatientId]!"	
       trigger="grdPhysicianMessages"
       action="redirect" target="mdlPhysicianMessages"/>
   </row>
-  <row>
-    <!-- Discharge patient button -->
-    <control type="button" name="btnDischargePatient"
-      reveal="[HasOpenVisit]=true"
-      span="12" icon="home" label="Discharge"
-      color="green" action="redirect"
-      target="mdlDischargePatient"/>
-  </row> 
 </partial>

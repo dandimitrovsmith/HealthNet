@@ -1,33 +1,6 @@
 ﻿<partial>
   <!-- Partial Hospital Physician Buttons -->
     <row>
-      <control type="button" name="btnBedRequest"
-        span="12" icon="calendar" label="Bed Request "	
-        color="orange"
-        action="redirect"
-        trigger="GetPatientForBed,Nrq_PrimaryDiagnosis"
-        target="mdlBedRequest"/>
-    </row>
-    <row>
-      <control type="button" name="btnConsultRequest"
-        span="12" icon="plus" label="Interconsult"	
-        color="orange"
-        action="redirect"
-        target="NewConsultModal"
-        preset="InterConsult_PatientId=[PatientId]"
-        trigger="InterConsult_PatientId"/>
-    </row>
-    <row>
-      <control type="button" 
-        name="NewSurgeryRequestButton"
-        label="Surgery"	
-        span="12" icon="plus" color="orange"
-        action="redirect"
-        target="NewSurgeryRequestModal"
-        preset="SurgeryRequest_PatientId=[PatientId]"
-        trigger="SurgeryRequest_PatientId"/>
-    </row>
-    <row>
       <control type="button" 
         name="btnAssignPhysician"
         span="12" icon="user-md" 
@@ -37,6 +10,17 @@
         preset="mdlAssign_PatientId=[PatientId],mdlAssign_PatientVisitGuid=[PatientVisitGuid]"
         target="mdlAssignPhysician"/>  
     </row>
+    <row> 
+    <!-- Display the patient timeline -->
+    <control type="button" name="btnPhysicianTimeline"
+        reveal="[HasOpenVisit]=true"
+        span="12"
+        color="yellow" icon="time" 
+        label="Timeline"	
+        action="redirect|view"
+        target="timeline"
+        append="patientid=[PatientId],patientvisit=[PatientVisitGuid],distinct=true"/>
+  </row>
     <row>
       <control type="button" name="btnAltaMedica"
         reveal="ReadyForDischarge=true"
@@ -53,11 +37,5 @@
         trigger="GetReadyForDischarge"
         target="mdlReadyForDischarge"/>
     </row>
-    <row name="rowMovePatient" reveal="HasOpenVisit=true">
-      <control type="button" name="btnMove"
-        span="12" icon="move" label="Move"	
-        color="orange"
-        action="redirect"
-        target="mdlMovePatient"/>
-  </row>
+    
 </partial>

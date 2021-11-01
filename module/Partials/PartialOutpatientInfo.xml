@@ -11,18 +11,18 @@
       <control type="label" label="Last Last"	 align="left" span="4"/>
   </row>
   <row>
-    <control type="text" name="Consult_PatientFirstName" span="4" required="true" edit="[FieldEdit]=1"
-      regex="^[A-ZÑ\s]+$"/>
-    <control type="text" name="Consult_PatientMiddleName" span="4" edit="[FieldEdit]=1" 
-      regex="^[A-ZÑ\s]+$"/>
-    <control type="text" name="Consult_PatientLastName" span="4" required="true" edit="[FieldEdit]=1" 
-      regex="^[A-ZÑ\s]+$"/>
+    <control type="text" name="Consult_PatientFirstName" span="4" required="true" edit="true"
+      trigger="[PatientId]=;btnAdmitSearchPatients"/>
+    <control type="text" name="Consult_PatientMiddleName" span="4" edit="true" 
+      trigger="[PatientId]=;btnAdmitSearchPatients"/>
+    <control type="text" name="Consult_PatientLastName" span="4" required="true" edit="true" 
+      trigger="[PatientId]=;btnAdmitSearchPatients"/>
   </row>
   <row>
     <control type="label" label="Birth Date"	 span="2" />
     <control type="date" name="Consult_PatientDOB" span="3" required="true" edit="true" compare="≤now"/>
     <control type="text" name="Consult_PatientAge" span="3" readonly="true"/>
-    <control type="label" label="Sex"	 span="1" />
+    <control type="label" label="Gender"	 span="1" />
     <control type="select" 
       name="Consult_PatientSex" span="3" 
       required="true" 
@@ -59,8 +59,11 @@
   <row> 
     <control type="label" label="City"	 span="2"/>
     <control type="text" name="Consult_PrimaryPayorCity" span="4"  edit="true"/>
-    <control type="label" label="State"	 span="2"/>
-    <control type="text" name="Consult_PrimaryPayorState"  span="4" edit="true"/>
+    <control type="label" label="State"	 span ="2"/>
+    <control type="select" name="Contact_PrimaryPayorState" span="3" edit="true"
+      datasource="GetStatesProvincesByCountryCode"
+      source="Name,Code" explicit="true"
+      append="countryCode=USA"/>
   </row>
   <row>
     <control type="label" label="Zip Code"	 span="2"/>
@@ -69,18 +72,17 @@
     <control type="text" name="Consult_PatientEmail" verify="email" span="6" edit="true"/>
   </row>
   <row>
-    <control type="label" label="Primary Physician" span="2"/>
+    <control type="label" label="Primary" span="2"/>
     <control type="select" name="Consult_ReferredBy"
-        span="4" explicit="true" edit="[FieldEdit]=1" sort="MdFirstName=asc"
+        span="4" explicit="true" edit="true" sort="MdFirstName=asc"
         acctsvc="true"
         datasource="GetReferringMds" 
         append="LocationId=(facilityData.LocationId)" 
-        source="MdFirstName|MdMiddleName|MdLastName,ReferringMdGuid"/>
+        source="MdFirstName|MdLastName,ReferringMdGuid"/>
     <control type="button" name="btnNewReferringMdFromPatient"
-        reveal="[FieldEdit]=1|2|4"
         icon="plus" label="" action="redirect" span="1"
         target="mdlReferringMd"/>
-    <control type="label" label="Assigned" span="2"/>
+    <control type="label" label="Assigned to" span="2"/>
     <control type="select" name="Consult_AttendingPhysician" span="3" 
         namefield="NewAptProvider" explicit="true" sort="UserFirstMiddleLast"
         searchable="true"

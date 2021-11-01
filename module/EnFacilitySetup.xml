@@ -239,9 +239,7 @@
            source="ConceptName,ConceptName" edit="true" span="2"              
            datasource="GetLookupReligionsActive"/>
         <control type="label" label="Language"	 span="1"/>
-        <control type="select" name="DefaultLanguage" 
-          source="Language,Language"
-          datasource="GetLookupLanguageSpoken" edit="true" span="2" />
+        <control type="text" name="DefaultLanguage" edit="true" span="2" />
       </row>
 
       <!-- UniCode a comma is \u002c or \x2c or %2c -->

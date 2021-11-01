@@ -21,9 +21,8 @@
           sort="AdmissionType=asc"
           key="AdmissionTypeGuid" />
 
-        <control type="datagrid" label="Origins of Admission"	 name="AdmissionSources" searchable="true"
-          modalname="NewAdmissionSources" span="6"
-          rows="20"
+        <control type="datagrid" label="Admit Sources"	 name="AdmissionSources" searchable="true"
+          modalname="NewAdmissionSources" span="6" rows="20"
           datasource="GetLookupAdmitSourcesByFacility"
           datarequest="GetLookupAdmitSourcesByFacility"
           datainsert="InsertLookupAdmitSources"
@@ -898,13 +897,14 @@
         <control type="buttongroup" name="NewMedicalSpecialty_Active" span="2" sourcelabels="Yes,No"	 source="True,False" edit="true" default="True" />
       </row>
       <row>
-        <control type="label" label="Code"	 span="4"/>
+        <control type="label" label="Specialty Code"	 span="4"/>
         <control type="text" name="SpecialtyCode" span="4"  edit="true" required="true" />
       </row>
       <row>
-        <control type="label" label="Father"	 span="4"/>
+        <control type="label" label="Parent"	 span="4"/>
         <control type="select" name="ParentSpecialty" edit="true"
           span="6"
+          acctsvc="true"
           datasource="GetMedicalSpecialties"
           source="Specialty,MedicalSpecialtyGuid"/>
       </row>

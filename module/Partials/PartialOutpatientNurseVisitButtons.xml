@@ -1,4 +1,19 @@
 ﻿<partial>
+  <row name="rowAdmitPatients" reveal="[HasOpenVisit]=false">
+    <!-- Admit patient with no current visit -->
+    <control type="button" name="btnAdmitButton"
+      span="12" color="green"	label="Admit Patient"	icon="cloud-upload"
+      action="save" 
+      confirm="Please confirm you want to admit this patient."
+      affector="PatientVisitGuid"
+      setaffector="RecordUniqueId"
+      capture="VisitInfo"
+      datainsert="InsertPatientVisitAllFields"
+      appendinsert="patientId=[PatientId],visitType=Home Care,hospitalService=Waiting,ambulatoryStatus=Ambulatory
+      ,preAdmit=0,departmentGuid="
+      set="HasOpenVisit=true,PatientVisit=[PatientVisitGuid]"
+      provoke="PatientList"/>
+  </row>
   <row name="rowAcknowledgeOrders" reveal="HasOpenVisit=true">
     <!-- Display red button if there are unacknowledged orders -->
     <control type="button" name="btnAcknowledgeRed"
@@ -23,9 +38,8 @@
   </row>
   <row name="rowTimeLine" reveal="HasOpenVisit=true">
     <!-- Display the patient time line -->
-    <control type="button" name="btnTimeline"
-        span="12"
-        color="yellow" icon="time" 
+    <control type="button" name="btnOutpatientNurseTimeline"
+        span="12" color="yellow" icon="time" 
         label="Timeline"	
         action="redirect|view"
         target="timeline"
@@ -35,21 +49,21 @@
   <row name="rowMedicalDischarge" reveal="HasOpenVisit=true">
     <!-- Set/reset ready for discharge -->
     <control type="button" name="btnAltaMedica"
-      reveal="ReadyForDischarge=true"
+      reveal="[ReadyForDischarge]=true"
       span="12" icon="cloud-upload" label="Medical Discharge"	
       color="green" action="redirect"
       preset="Ready_PatientId=[PatientId],Ready_PatientVisitGuid=[PatientVisitGuid]"
       trigger="GetReadyForDischarge"
       target="mdlReadyForDischarge"/>
     <control type="button" name="btnNoAltaMedica"
-      reveal="ReadyForDischarge=false"
+      reveal="[ReadyForDischarge]=false"
       span="12" icon="cloud-upload" label="Medical Discharge"	
       color="grey" action="redirect"
       preset="Ready_PatientId=[PatientId],Ready_PatientVisitGuid=[PatientVisitGuid]"
       trigger="GetReadyForDischarge"
       target="mdlReadyForDischarge"/>
   </row>
-  <row name="rowDischargePatient" reveal="HasOpenVisit=true">
+  <row name="rowDischargePatient" reveal="HasOpenVisit=true+[ReadyForDischarge]=true">
     <!-- Discharge patient button -->
     <control type="button" name="btnDischargePatient"
       reveal="[HasOpenVisit]=true"
@@ -62,7 +76,7 @@
       reveal="[PatientId]!"
       icon="cloud-upload"
       label="Assessment" span="12"
-      onclose="Advertencia: No ha guardado este documento. ¿Todavía quiere salir?"
+      onclose="Note: You have not saved this document. Do you want to continue?"
       action="redirect|url" 
       target="ecd/index.html" 
       usesource="login"

@@ -5,14 +5,14 @@
       <control type="hidden" name="CurrentService"/>
     </row>
     <row>
-      <control type="label" label="Admit Date" span="3"/>
-      <control type="datetime" name="mdlAdmit_AdmitDateTime" span="3" readonly="true"/>
-      <control type="label" label="Visit#" span="3"/>
-      <control type="text" name="mdlAdmit_InvoiceNumber" span="3" readonly="true"/>
+      <control type="label" label="Admit Date" span="2"/>
+      <control type="datetime" name="mdlAdmit_AdmitDateTime" span="4" readonly="true" default="(now)"/>
+      <control type="label" label="Visit#" span="2"/>
+      <control type="text" name="mdlAdmit_InvoiceNumber" span="4" readonly="true"/>
     </row>
     <row>
-      <control type="label" label="Case Type" span="3"/>
-      <control type="select" name="mdlAdmit_CaseType" span="3" 
+      <control type="label" label="Case Type" span="2"/>
+      <control type="select" name="mdlAdmit_CaseType" span="4" 
         explicit="true" edit="true" required="true"
         acctsvc="true"
         datasource="GetCaseTypesActive" 
@@ -25,20 +25,20 @@
         source="HospitalName,HospitalGuid"/>
     </row>
     <row>
-      <control type="label" label="Service Type" span="3"/>
-      <control type="select" name="mdlAdmit_AdmitType" span="3" 
+      <control type="label" label="Service Type" span="2"/>
+      <control type="select" name="mdlAdmit_AdmitType" span="4" 
         datasource="GetLookupAdmissionTypes" 
         source="AdmissionType,AdmissionTypeGuid" 
         edit="true" required="true" explicit="true"
         filter="Active=true"/>
-      <control type="label" label="Admit Source" span="3"/>
-      <control type="select" name="mdlAdmit_AdmitSource" span="3" 
+      <control type="label" label="Admit Source" span="2"/>
+      <control type="select" name="mdlAdmit_AdmitSource" span="4" 
         datasource="GetLookupAdmitSourcesByFacility" 
         source="AdmitSource,AdmitSource"
-        edit="true" required="true" explicit="true" filter="Active=true"/>
+        edit="true" explicit="true" filter="Active=true"/>
     </row>
     <row name="rowPregnancy" reveal="[Consult_PatientSex]=Female">
-      <control type="label" label="Is Pregnant" span="3"/>
+      <control type="label" label="Is Pregnant" span="2"/>
       <control type="buttongroup" name="IsPregnant" span="3" edit="true"
         source="True,False" sourcelabels="Yes,No"/>
       <control type="label" label="Weeks Pregnant" span="3"/>
@@ -51,7 +51,7 @@
       <control type="text" name="mdlAdmit_InformantContactNumber" span="3" edit="true"/>
     </row>
       <row>
-        <control type="label" label="Triage" span="3"/>
+        <control type="label" label="Triage" span="2"/>
         <control type="select" name="TriageLevel" span="3" edit="true"
           source="1,2,3" sourcelabels="Low,Medium,Critical"	
           required="true" explicit="true"/>
@@ -63,7 +63,7 @@
           span="4" explicit="true" edit="true"/>
       </row>
       <row>
-        <control type="label" label="Admit Notes"	 span="3"/>
-        <control type="textarea" name="AdmitNote" span="9" rows="1" edit="true"/>
+        <control type="label" label="Admit Notes"	 span="2"/>
+        <control type="textarea" name="AdmitNote" span="10" rows="1" edit="true"/>
       </row>
 </partial>

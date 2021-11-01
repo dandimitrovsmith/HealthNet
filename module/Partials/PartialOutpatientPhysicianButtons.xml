@@ -5,15 +5,12 @@
     <!-- Update the patient demographic data -->
     <control type="button" 
       name="Consult_PatientUpdate" 
-      span="12" 
-      label="Update"	
-      affector="none"
+      span="12" label="Update" icon="cloud-upload"
+      affector="PatientId"
+      setaffector="RecordUniqueId"
       capture="PatientInfo" 
-      icon="cloud-upload"
       action="save|close|new"
       confirm="Please confirm you want to update this patient."	
-      appendconfirm="runinput=[Consult_AccountNumber]"
-      confirmresponse="CheckDigitResult=true|Invalid National ID!"
       dataupdate="UpdatePatient"
       appendupdate="PatientId=[PatientId]"
       provoke="PatientList"/>
@@ -66,44 +63,6 @@
       icon="hand-right"
       provoke="ButtonGroupSelect"/>
   </row>
-  <row> 
-    <!-- Display the patient timeline -->
-    <control type="button" name="btnTimeline"
-        reveal="[HasOpenVisit]=true"
-        span="12"
-        color="yellow" icon="time" 
-        label="Timeline"	
-        action="redirect|view"
-        target="timeline"
-        append="patientid=[PatientId],patientvisit=[PatientVisitGuid],distinct=true"/>
-  </row>
-  <row> 
-    <!-- Enter new consult request -->
-    <control type="button" name="btnConsultRequest"
-      span="12" icon="plus" label="Interconsult"	
-      color="orange"
-      action="redirect"
-      target="NewConsultModal"
-      preset="InterConsult_PatientId=[PatientId]"
-      trigger="InterConsult_PatientId"/>
-  </row>
-  <row name="rowReadyForDischarge" reveal="HasOpenVisit=true">
-    <!-- Set/unset ready for discharge -->
-    <control type="button" name="btnAltaMedica"
-      reveal="[ReadyForDischarge]=true"
-      span="12" icon="cloud-upload" label="Medical Discharge"	
-      color="green" action="redirect"
-      preset="Ready_PatientId=[PatientId],Ready_PatientVisitGuid=[PatientVisitGuid]"
-      trigger="GetReadyForDischarge"
-      target="mdlReadyForDischarge"/>
-    <control type="button" name="btnNoAltaMedica"
-      reveal="[ReadyForDischarge]=false"
-      span="12" icon="cloud-upload" label="Medical Discharge"	
-      color="grey" action="redirect"
-      preset="Ready_PatientId=[PatientId],Ready_PatientVisitGuid=[PatientVisitGuid]"
-      trigger="GetReadyForDischarge"
-      target="mdlReadyForDischarge"/>
-  </row>
   <row>
     <!-- Home conditions button -->
     <control type="button" name="btnPatientHomeConditions"
@@ -113,4 +72,37 @@
       trigger="GetHomeConditions"
       target="mdlHomeConditions"/>
   </row> 
+  <!-- Send an email message to the patient -->
+  <row name="rowMessage" reveal="MessageGuid=+[PatientId]!+[Consult_PatientEmail]!">
+    <control type="button" name="CreateVideoChat"
+      span="12" color="green"
+      action="save"
+      label="Teleconference" icon="facetime-video"
+      affector="none"
+      dataupdate="UpdatePatient"
+      appendupdate="PatientId=[PatientId],PatientEmail=[Consult_PatientEmail]"
+      provoke="btnCompleteVideoChat"/>
+  </row>
+  <row showif="never">
+    <control type="hidden" name="MessageGuid"/>
+    <control type="button" name="btnCompleteVideoChat"
+      action="save"
+      affector="none"
+      datainsert="InsertPatientVideoCall"
+      appendinsert="patientId=[PatientId],MessageType=Email"
+      set="MessageGuid=[[MessageGuid]]"
+      success="Message was sent to patient."/>
+  </row>
+  <!-- Initiate a video conference -->
+  <row name="rowConference" reveal="MessageGuid!">
+    <control type="button" name="OpenVideoChat"
+      span="12" color="blue pulse"
+      label="Start Conference" 
+      icon="facetime-video"
+      mode="window"
+      action="redirect|url"
+      target="vidchat/index.html"
+      append="channel=[MessageGuid]"
+      set="MessageGuid="/>
+  </row>
 </partial>
