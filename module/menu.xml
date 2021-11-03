@@ -4,7 +4,7 @@
     <item widescreen="true" icon="hospital" link="EnClinicAdmitting.xml" roles="MedWave,Admitting,SysAdmin">Admitting</item>
     <item widescreen="true" icon="user-md" link="EnClinicDoctor.xml" roles="MedWave,Physician,SysAdmin">Physician</item>
     <item widescreen="true" icon="stethoscope" link="EnClinicNursing.xml" roles="MedWave,Nurse,SysAdmin">Nurse</item>
-    <item widescreen="true" icon="user-md" link="EnEMT.xml" roles="MedWave,EMT,SysAdmin">EMT</item>
+    <item widescreen="true" icon="user-md" link="EnClinicEMT.xml" roles="MedWave,EMT,SysAdmin">EMT</item>
     <item widescreen="true" icon="file-text" link="EnUserManagement.xml" roles="MedWave,SysAdmin">User Management</item>
     <item widescreen="true" icon="print" link="EnAdminReports.xml" roles="MedWave,SysAdmin">Reports</item>
   <item icon="double-angle-right" title="Configuration">

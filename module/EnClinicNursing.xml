@@ -18,7 +18,7 @@
   <!-- Partial nursing order administration by department -->
   <partial link="./EnPartial/Admin/PartialNursingOrderAdministration.xml"/>
   <!-- Partial medication administration by department -->
-  <partial link="./EnPartial/Admin/PartialInpatientMedicationDepartmentAdministration.xml"/>
+  <partial link="./EnPartial/Admin/PartialInpatientMedicationAdministrationNoDepartment.xml"/>
   <!-- Outpatient nursing patient chart -->
   <section type="tabmodal" badge="none" name="PatientTabModal" title="Patient Information">
     <group name="GuidStorage" showif="never">

@@ -1,7 +1,7 @@
 ﻿<partial>
-  <row name="rowAdmitPatients" reveal="[HasOpenVisit]=false">
+  <row name="rowNurseAdmitPatients" reveal="[HasOpenVisit]=false">
     <!-- Admit patient with no current visit -->
-    <control type="button" name="btnAdmitButton"
+    <control type="button" name="btnNurseAdmitButton"
       span="12" color="green"	label="Admit Patient"	icon="cloud-upload"
       action="save" 
       confirm="Please confirm you want to admit this patient."

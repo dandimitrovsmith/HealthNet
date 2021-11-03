@@ -25,10 +25,10 @@
       appendupdate="PatientId=[PatientId]"
       provoke="PatientList"/>
   </row>
-  <row name="rowAdmitPatients" reveal="[HasOpenVisit]=false">
+  <row name="rowVaccineAdmitPatients" reveal="[HasOpenVisit]=false">
     <!-- Admit patient with no current visit -->
     <control type="button" 
-      name="btnAdmitButton"
+      name="btnVaccineAdmitButton"
       span="12"
       color="green"
       tooltip="Click to enter this patient."	 

@@ -43,8 +43,8 @@
           <partial link="Partials/PartialOutpatientInfo.xml"/>
         </column>
         <column span="2">
-          <!-- Partial outpation physician action buttons -->
-          <partial link="Partials/PartialOutpatientPhysicianButtons.xml"/>
+          <!-- Partial outpatient nurse buttons -->
+          <partial link="Partials/PartialOutpatientNurseButtons.xml"/>
         </column>
       </columns>
     </group>

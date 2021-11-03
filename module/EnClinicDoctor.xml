@@ -65,11 +65,11 @@
         <control type="buttongroup" 
           name="ButtonGroupSelect" 
           edit="true"
-          source="Problems,Vitals,Physicians,Studies,Medication,Surgery,Documents,Appointments"
-          sourcelabels="Diagnosis,Vitals,Doctors,Studies,Medications,Procedures,Documents,Appointments" 
+          source="Problems,Vitals,Physicians,Nursing,Studies,Medication,Surgery,Documents,Appointments"
+          sourcelabels="Diagnosis,Vitals,Doctors,Nursing,Studies,Medications,Procedures,Documents,Appointments" 
           span="12" 
           default="Problems"  
-          provoke="ERGridList,ERProblemList,ERPastProblemList,ERAllergyList,ERVitalSigns,ERNeuroVitalSigns,ERBloodSugarVitalSigns,ERPhysicianAssignments,ERLabOrders,ERLabResults,Pathology,ERMedications,ERHomeMedications,ERRadiologyOrders,ERRadiologyReports,ERProcedures,ERSurgeries,EREcdForms,ScannedForms,ERRadiologyReports,Appointments,ConsultList,ERNursingOrdersComplete"/>
+          provoke="ERGridList,ERProblemList,ERPastProblemList,ERAllergyList,ERVitalSigns,ERNeuroVitalSigns,ERBloodSugarVitalSigns,ERPhysicianAssignments,ERNursingOrders,ERLabOrders,ERLabResults,Pathology,ERMedications,ERHomeMedications,ERRadiologyOrders,ERRadiologyReports,ERProcedures,ERSurgeries,EREcdForms,ScannedForms,ERRadiologyReports,Appointments,ConsultList,ERNursingOrdersComplete"/>
       </row>
       <row>
         <control name="ERGridList" affector="ButtonGroupSelect" type="options" span="12">
@@ -81,7 +81,7 @@
           <partial link="./EnPartial/Grids/PartialNeuroVitalSignsWithNew.xml"/>
           <partial link="./EnPartial/Grids/PartialBloodSugarVitalSignsWithNew.xml"/>
           <partial link="./EnPartial/Grids/PartialPhysicianAssignmentsWithNewAndEdit.xml"/>
-          <partial link="./EnPartial/Grids/PartialNursingOrdersCompleted.xml"/>
+          <partial link="./EnPartial/Grids/PartialNursingOrdersWithNewAndEdit.xml"/>
           <partial link="./EnPartial/Grids/PartialLabOrdersWithNewAndEdit.xml"/>
           <partial link="./EnPartial/Grids/PartialLabOrderResults.xml"/>
           <partial link="./EnPartial/Grids/PartialPathologyReports.xml"/>

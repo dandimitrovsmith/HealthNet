@@ -61,8 +61,7 @@
         target="patient-notes"
         append="patientid=[PatientId],patientvisit=[PatientVisitGuid],notetype=Nurse"
         label="Notes"	
-        icon="user-md"
-        provoke="GetUnacknowledgedOrders"/>
+        icon="user-md"/>
   </row>
   <row>
     <!-- Home conditions button -->

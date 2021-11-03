@@ -75,7 +75,7 @@
           <partial link="./EnPartial/Grids/PartialAppointmentListForPatient.xml"/>
           <partial link="./EnPartial/Grids/PartialPatientContacts.xml"/>
           <partial link="./EnPartial/Grids/PartialLabOrdersWithScannedResultsAndNew.xml"/>
-          <partial link="./EnPartial/Grids/PartialImagingOrdersWithNewModal.xml"/>
+          <partial link="./EnPartial/Grids/PartialImagingOrdersWithNewModalAsImaging.xml"/>
           <partial link="./EnPartial/Grids/PartialECDFormsWithEditAndCancel.xml"/>
           <partial link="./EnPartial/Grids/PartialScannedDocumentsWithNewAndCancel.xml"/>
         </control>

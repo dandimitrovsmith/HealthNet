@@ -55,10 +55,18 @@
         <control type="select" name="TriageLevel" span="3" edit="true"
           source="1,2,3" sourcelabels="Low,Medium,Critical"	
           required="true" explicit="true"/>
-        <control type="label" label="Treating Physician" span="3"/>
+        <control type="label" label="Attending Physician" span="3"/>
         <control type="select" name="AttendingDoctor"
           acctsvc="true" datasource="GetUsersByAttributes" 
           append="LocationId=(facilityData.LocationId),role=Physician|MedWave"
+          source="UserFirstMiddleLast,UserId"
+          span="4" explicit="true" edit="true"/>
+      </row>
+      <row>
+        <control type="label" label="Attending Nurse" span="3"/>
+        <control type="select" name="AttendingNurse"
+          acctsvc="true" datasource="GetUsersByAttributes" 
+          append="LocationId=(facilityData.LocationId),role=Nurse"
           source="UserFirstMiddleLast,UserId"
           span="4" explicit="true" edit="true"/>
       </row>

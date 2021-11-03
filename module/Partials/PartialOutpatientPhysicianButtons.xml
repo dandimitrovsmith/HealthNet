@@ -15,7 +15,8 @@
       appendupdate="PatientId=[PatientId]"
       provoke="PatientList"/>
   </row>
-  <row name="rowAdmitPatients" reveal="[HasOpenVisit]=false">
+  <row name="rowPhysician
+  AdmitPatients" reveal="[HasOpenVisit]=false">
     <!-- Admit patient with no current visit -->
     <control type="button" 
       name="btnAdmitButton"
@@ -72,6 +73,16 @@
       trigger="GetHomeConditions"
       target="mdlHomeConditions"/>
   </row> 
+  <row name="rowPhysicianNotes" reveal="HasOpenVisit=true">
+    <!-- View and add nursing notes -->
+    <control type="button" name="addNursingNotes" span="12"
+        color="yellowgreen"
+        action="redirect|view"
+        target="patient-notes"
+        append="patientid=[PatientId],patientvisit=[PatientVisitGuid],notetype=Physician"
+        label="Notes"	
+        icon="user-md"/>
+  </row>
   <!-- Send an email message to the patient -->
   <row name="rowMessage" reveal="MessageGuid=+[PatientId]!+[Consult_PatientEmail]!">
     <control type="button" name="CreateVideoChat"
