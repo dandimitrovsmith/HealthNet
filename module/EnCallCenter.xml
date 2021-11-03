@@ -4,7 +4,7 @@
   <facet name="CalendarOption" value="Consult"/>
   <facet name="PatientSearched"/>
   <headerbutton name="btnReportsByType"
-    icon="print" label="Informes"
+    icon="print" label="Reports"
     preset="Report_Type=Admitting"
     trigger="ReportList"
     action="redirect" target="mdlReports"/>

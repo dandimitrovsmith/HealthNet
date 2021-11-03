@@ -2,7 +2,7 @@
 <module name="Physician" type="onload" trigger="AdmittedPatientList">
   <facet name="FileName" value="ClinicDoctor"/>
   <headerbutton name="btnReportsByType"
-    icon="print" label="Informes"
+    icon="print" label="Reports"
     preset="Report_Type=Admitting"
     trigger="ReportList"
     action="redirect" target="mdlReports"/>
