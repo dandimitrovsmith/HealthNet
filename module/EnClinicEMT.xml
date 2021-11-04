@@ -23,6 +23,7 @@
         <control type="hidden" span="4" name="PatientId"
           datarequest="GetPatientAllFields"
           appendrequest="PatientId=[PatientId]"
+          inject="PatientInfo"
           set="[[HasOpenVisit]]=true;PatientVisitGuid=[[PatientVisit]]"
           provoke="[[HasOpenVisit]]=true;PatientVisitGuid,GetUnacknowledgedOrders"/>
         <!--Read the patient visit and display the department-->
