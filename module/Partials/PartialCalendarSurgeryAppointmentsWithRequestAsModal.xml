@@ -19,7 +19,7 @@
   </template>
   <template name="dayMonthTemplate" type="markup">
       [span size=12 color=darkgrey] 
-      [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+      [IF ${[[Status]]}=Confirmed][icon color=white]ok[/icon][/IF]
       [IF ${[[Status]]}=Reschedule][icon color=red]exclamation-sign[/icon][/IF]
       [icon color=green]female[/icon]${[[PatientName]]}[br]
       [icon color=blue]user-md[/icon]${[[SurgeonName]]}[br]
@@ -28,7 +28,7 @@
     <!-- Template for day view that shows the provider,description,and location-->
   <template name="timeWeekTemplate" type="markup">
       [span size=12 color=darkgrey] 
-      [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+      [IF ${[[Status]]}=Confirmed][icon color=white]ok[/icon][/IF]
       [IF ${[[Status]]}=Reschedule][icon color=red]exclamation-sign[/icon][/IF]
       [icon color=green]female[/icon]${[[PatientName]]}[br]
       [/span]
@@ -36,7 +36,7 @@
   <!-- Template for day view that shows the provider,description,and location-->
   <template name="timeDayTemplate" type="markup">
       [span size=12 color=darkgrey] 
-      [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+      [IF ${[[Status]]}=Confirmed][icon color=white]ok[/icon][/IF]
       [IF ${[[Status]]}=Reschedule][icon color=red]exclamation-sign[/icon][/IF]
       [icon color=green]female[/icon]${[[PatientName]]}
       [/span]
@@ -44,7 +44,7 @@
   <!-- Template for agenda (list) view that shows the provider,description,and location-->
   <template name="listMonthTemplate" type="markup">
       [span size=12 color=darkgrey] 
-      [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+      [IF ${[[Status]]}=Confirmed][icon color=white]ok[/icon][/IF]
       [IF ${[[Status]]}=Reschedule][icon color=red]exclamation-sign[/icon][/IF]
       [icon color=blue]user-md[/icon]${[[SurgeonName]]}[br]
       [icon color=green]female[/icon]${[[PatientName]]}[br]
@@ -54,7 +54,7 @@
   <template name="ToolTipGridDayTemplate" type="markup">
       [div size=12 align=left] 
       [b format=time]${[[DateTimeScheduled]]}[/b] - [b format=time]${[[EndDateTime]]}[/b][br]
-      [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF] ${[[PatientName]]}[br]
+      [IF ${[[Status]]}=Confirmed][icon color=white]ok[/icon][/IF] ${[[PatientName]]}[br]
       ${[[SurgeonName]]}[br]
       [IF ${[[RoomName]]}!]${[[RoomName]]}[br][/IF]
       ${[[PrimaryProcedureName]]}
@@ -133,7 +133,7 @@
             navlinking="true"
             slotduration="00:15"
             duration="00:15"
-            eventcolor="Status|Background=blue;Scheduled=yellowgreen;Confirmed=green;In Process=purple;Completed=yellow;Requested=blue;Canceled=red"
+            eventcolor="Status|Background=blue;Scheduled=yellowgreen;Confirmed=darkgreen;In Process=purple;Completed=yellow;Requested=blue;Canceled=red"
             source="tooltip=ToolTipGridDayTemplate,dayGridMonth=timeWeekTemplate,resourceTimeGridDay=dayMonthTemplate,timeGridWeek=timeDayTemplate,listDay=listMonthTemplate"
             bgsource="tooltip=BackgroundToolTipTemplate,resourceTimeGridDay=BackgroundTemplate"
             bgevent="Type|Background=true"

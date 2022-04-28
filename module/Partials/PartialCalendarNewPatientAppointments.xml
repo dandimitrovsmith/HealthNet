@@ -37,7 +37,7 @@
         <template name="NCAdayGridMonthTemplate" type="markup">
             [span size=12 color=darkgrey] 
             [IF ${[[Reschedule]]}=true][icon color=red]refresh[/icon][/IF]
-            [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+            [IF ${[[Status]]}=Confirmed][icon color=white]ok[/icon][/IF]
             [IF ${[[IsTelemedicine]]}=true][icon color=blue]facetime-video[/icon][/IF]
             ${[[PatientFirstMiddleLast]]}[/span] 
         </template>
@@ -45,7 +45,7 @@
         <template name="NCAtimeGridWeekTemplate" type="markup">
             [span size=12 color=darkgrey] 
             [IF ${[[Reschedule]]}=true][icon color=red]refresh[/icon][/IF]
-            [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+            [IF ${[[Status]]}=Confirmed][icon color=white]ok[/icon][/IF]
             [IF ${[[IsTelemedicine]]}=true][icon color=blue]facetime-video[/icon][/IF]
             ${[[PatientFirstMiddleLast]]}[br]
             [icon color=blue]user-md[/icon] 
@@ -56,7 +56,7 @@
         <template name="NCAtimeGridDayTemplate" type="markup">
             [span size=12 color=darkgrey] 
             [IF ${[[Reschedule]]}=true][icon color=red]refresh[/icon][/IF]
-            [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+            [IF ${[[Status]]}=Confirmed][icon color=white]ok[/icon][/IF]
             [IF ${[[IsTelemedicine]]}=true][icon color=blue]facetime-video[/icon][/IF]
             ${[[PatientFirstMiddleLast]]} 
             [icon color=blue]user-md[/icon] 
@@ -67,7 +67,7 @@
         <template name="NCAlistMonthTemplate" type="markup">
             [span size=12 color=darkgrey] 
             [IF ${[[Reschedule]]}=true][icon color=red]refresh[/icon][/IF]
-            [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+            [IF ${[[Status]]}=Confirmed][icon color=white]ok[/icon][/IF]
             [IF ${[[IsTelemedicine]]}=true][icon color=blue]facetime-video[/icon][/IF]
             ${[[PatientFirstMiddleLast]]} 
             [icon color=blue]user-md[/icon] 
@@ -136,7 +136,7 @@
             slotduration="00:15"
             duration="00:30"
             businesshours="1,2,3,4,5=06:00-20:00"
-            eventcolor="Status|Background=lightblue;Block=grey;Scheduled=yellowgreen;Confirmed=green;Completed=yellow;No Show=orange;Canceled=red"
+            eventcolor="Status|Background=lightblue;Block=grey;Scheduled=yellowgreen;Confirmed=darkgreen;Completed=yellow;No Show=orange;Canceled=red"
             source="dayGridMonth=NCAdayGridMonthTemplate,timeGridWeek=NCAtimeGridWeekTemplate,timeGridDay=NCAtimeGridDayTemplate,listDay=NCAlistMonthTemplate"
             bgsource="dayGridMonth=NCABackgroundTemplate,timeGridWeek=NCABackgroundTemplate,timeGridDay=NCABackgroundTemplate,listDay=NCABackgroundTemplate"
             acctsvcreq="true"

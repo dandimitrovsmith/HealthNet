@@ -48,7 +48,7 @@
         <template name="dayGridMonthTemplate3" type="markup">
             [span size=12 color=darkgrey] 
             [IF ${[[Reschedule]]}=true][icon color=red]refresh[/icon][/IF]
-            [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+            [IF ${[[Status]]}=Confirmed][icon color=white]ok[/icon][/IF]
               ${[[MedicalSpecialtyName]]}[br]
              ${[[PatientFirstMiddleLast]]}[/span]
         </template>
@@ -56,7 +56,7 @@
         <template name="timeGridDayTemplate3" type="markup">
             [span size=12 color=darkgrey] 
             [IF ${[[Reschedule]]}=true][icon color=red]refresh[/icon][/IF]
-            [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+            [IF ${[[Status]]}=Confirmed][icon color=white]ok[/icon][/IF]
             ${[[MedicalSpecialtyName]]}[br] 
             ${[[CalendarName]]} 
             ${[[Subject]]} 
@@ -66,7 +66,7 @@
         <template name="timeGridWeekTemplate3" type="markup">
             [span size=12 color=darkgrey] 
             [IF ${[[Reschedule]]}=true][icon color=red]refresh[/icon][/IF]
-            [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+            [IF ${[[Status]]}=Confirmed][icon color=white]ok[/icon][/IF]
             ${[[MedicalSpecialtyName]]}[br]  
 						${[[PatientFirstMiddleLast]]} [/span]
         </template>
@@ -74,7 +74,7 @@
         <template name="listMonthTemplate3" type="markup">
             [span size=12 color=darkgrey] 
             [IF ${[[Reschedule]]}=true][icon color=red]refresh[/icon][/IF]
-            [IF ${[[Status]]}=Confirmed][icon color=green]ok[/icon][/IF]
+            [IF ${[[Status]]}=Confirmed][icon color=white]ok[/icon][/IF]
             ${[[MedicalSpecialtyName]]}  
             ${[[CalendarName]]}  
             ${[[Subject]]}  
@@ -103,7 +103,7 @@
             slotduration="00:15"
             duration="00:30"
             businesshours="1,2,3,4,5=06:00-20:00"
-            eventcolor="Status|Background=lightblue;Scheduled=yellowgreen;Confirmed=green;Completed=yellow;No Show=orange;Canceled=red"
+            eventcolor="Status|Background=lightblue;Scheduled=yellowgreen;Confirmed=darkgreen;Completed=yellow;No Show=orange;Canceled=red"
             source="dayGridMonth=dayGridMonthTemplate3,timeGridWeek=timeGridWeekTemplate3,timeGridDay=timeGridDayTemplate3,listDay=timeGridDayTemplate3"
             idle="[ProviderId2]="
             bgsource="dayGridMonth=PhysicianBackgroundTemplate,timeGridWeek=PhysicianBackgroundTemplate,timeGridDay=PhysicianBackgroundTemplate,listDay=PhysicianBackgroundTemplate"
