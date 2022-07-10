@@ -109,7 +109,7 @@
             bgsource="dayGridMonth=PhysicianBackgroundTemplate,timeGridWeek=PhysicianBackgroundTemplate,timeGridDay=PhysicianBackgroundTemplate,listDay=PhysicianBackgroundTemplate"
             acctsvcreq="true"
             edit="true"
-            bgevent="Type|Background=true"
+            bgevent="Status|Background=true"
             editable="AppointmentGuid!"
             editduration="AppointmentGuid!"
             datarequest="GetSchedulerExceptionsByDateRange"

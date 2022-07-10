@@ -148,7 +148,7 @@
             bgsource="dayGridMonth=BackgroundTemplate,timeGridWeek=BackgroundTemplate,timeGridDay=BackgroundTemplate,listDay=BackgroundTemplate"
             acctsvcreq="true"
             edit="true"
-            bgevent="Type|Background=true"
+            bgevent="Status|Background=true"
             editable="AppointmentGuid!"
             editduration="AppointmentGuid!"
             idle="[calAppointmentTypeGuid]="

@@ -141,7 +141,7 @@
             bgsource="dayGridMonth=NCABackgroundTemplate,timeGridWeek=NCABackgroundTemplate,timeGridDay=NCABackgroundTemplate,listDay=NCABackgroundTemplate"
             acctsvcreq="true"
             edit="true"
-            bgevent="Type|Background=true"
+            bgevent="Status|Background=true"
             idle="[NCASearchCalendarGuid]="
             datarequest="GetSchedulerExceptionsByDateRange"
             appendrequest="calendarGuid=[NCASearchCalendarGuid],status=Active,ProviderId=[NCACalendarProviderId]"

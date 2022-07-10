@@ -136,7 +136,7 @@
             eventcolor="Status|Background=blue;Scheduled=yellowgreen;Confirmed=darkgreen;In Process=purple;Completed=yellow;Requested=blue;Canceled=red"
             source="tooltip=ToolTipGridDayTemplate,dayGridMonth=timeWeekTemplate,resourceTimeGridDay=dayMonthTemplate,timeGridWeek=timeDayTemplate,listDay=listMonthTemplate"
             bgsource="tooltip=BackgroundToolTipTemplate,resourceTimeGridDay=BackgroundTemplate"
-            bgevent="Type|Background=true"
+            bgevent="Status|Background=true"
             edit="true"
             editable="SurgeryGuid!"
             editduration="SurgeryGuid!"
