@@ -32,7 +32,6 @@
     <!-- Display a list of items for the selected category -->
     <row>
       <control type="datagrid"
-        search="true"
         name="ItemMasterList"
         label="Item Master"	
         span="12" rows="25"
