@@ -70,7 +70,7 @@ module_lang.es = {
   "fasting": "Ayuno",
   "fasting except meds": "Ayuno Excepto Medicines",
   "fasting after midnight":  "Ayuno después de Medianoche",
-  "fasting sfter time": "Ayuno después del Tiempo",
+  "fasting after time": "Ayuno después del Tiempo",
   "Female": "Femenino",
   "final diagnosis": "Diagnóstico Final",
   "finding": "Descubrimiento",
