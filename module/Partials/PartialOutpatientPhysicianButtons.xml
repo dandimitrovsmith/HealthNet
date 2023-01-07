@@ -26,7 +26,7 @@
       action="save|close|new" 
       confirm="Please confirm you want to admit this patient. Reminder: if this patient has an appointment,please admit him / her through the appointment option to complete the appointment."
       affector="PatientVisitGuid"
-      setaffector="RecordUniqueId"
+      setaffector="PatientVisitUniqueId"
       label="Admit"	 
       icon="cloud-upload"
       datainsert="InsertPatientVisitAllFields"

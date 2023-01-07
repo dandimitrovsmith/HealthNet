@@ -7,7 +7,7 @@
       action="save" 
       confirm="Please confirm you want to admit this patient."
       affector="PatientVisitGuid"
-      setaffector="RecordUniqueId"
+      setaffector="PatientVisitUniqueId"
       datainsert="InsertPatientVisitAllFields"
       appendinsert="patientId=[PatientId],visitType=Home Hospital,hospitalService=,ambulatoryStatus=Ambulatory
       ,preAdmit=0,departmentGuid=[DepartmentGuidLookup]"

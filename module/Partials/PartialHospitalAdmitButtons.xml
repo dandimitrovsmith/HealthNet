@@ -32,7 +32,7 @@
       action="save|close|new" 
       confirm="Please confirm you want to admit this patient. Reminder: if this patient has an appointment,please admit him / her through the appointment option to complete the appointment."
       affector="PatientVisit"
-      setaffector="RecordUniqueId"
+      setaffector="PatientVisitUniqueId"
       label="Admit"	 
       icon="cloud-upload"
       capture="VisitInfo"
@@ -41,7 +41,7 @@
       confirmresponse="CheckDigitResult=true|Invalid National ID!"
       appendinsert="patientId=[PatientId],visitType=[DefaultAdmitType],hospitalService=Waiting,ambulatoryStatus=Ambulatory
       ,preAdmit=0,departmentGuid=[DepartmentGuidLookup],admitDateTime=(dateTimeNow)"
-      set="HasOpenVisit=true"
+      set="HasOpenVisit=true,PatientVisit=[PatientVisitGuid]"
       provoke="PatientList"/>
   </row>
   <row>

@@ -94,7 +94,7 @@
       datainsert="InsertPatientVisitAllFields"
       appendinsert="patientId=[PatientId],visitType=Outpatient,ambulatoryStatus=Telemedicine
       ,preAdmit=0,departmentGuid=[DepartmentGuidLookup],admitDateTime=(dateTimeNow)"
-      set="VisitOpenedBy=(userName),HasOpenVisit=true,PatientVisitGuid=[PatientVisit]"
+      set="VisitOpenedBy=(userName),HasOpenVisit=true,PatientVisit=[PatientVisitGuid]"
       success="La visita ya está abierta."/>
       <control type="button" name="btnCloseVisit" span="12"
         reveal="[HasOpenVisit]=true"
